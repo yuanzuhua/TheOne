@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net46;netstandard2.0</TargetFrameworks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DefineConstants>$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>TheOne.RabbitMq</PackageId>
+    <PackageTags>RabbitMq</PackageTags>
+    <PackageReleaseNotes>v0.0.1 - To start over.</PackageReleaseNotes>
+    <!--<PackageIconUrl></PackageIconUrl>-->
+    <PackageProjectUrl>https://github.com/Master-Inspire/TheOne</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Master-Inspire/TheOne/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Master-Inspire/TheOne.git</RepositoryUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Authors>Master Inspire</Authors>
+    <Company>Brotherhood</Company>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <AssemblyTitle>TheOne.RabbitMq</AssemblyTitle>
+    <Description>RabbitMq client</Description>
+    <Copyright>Brotherhood 2018</Copyright>
+    <Version>0.0.1</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\external\JetBrains.Annotations.cs" Link="Properties\JetBrains.Annotations.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="NLog" Version="4.5.2" />
+    <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
+  </ItemGroup>
+</Project>
