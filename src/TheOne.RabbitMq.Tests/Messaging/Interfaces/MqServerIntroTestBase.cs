@@ -11,9 +11,9 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
     [TestFixture]
     public abstract class MqServerIntroTestBase {
 
-        public abstract IMqMessageService CreateMqServer(int retryCount = 1);
-
         public const string ReplyToMq = "mq:Hello.replyto";
+
+        public abstract IMqMessageService CreateMqServer(int retryCount = 1);
 
         [Test]
         public void Message_with_exceptions_are_retried_then_published_to_Request_dlq() {

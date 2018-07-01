@@ -131,7 +131,7 @@ namespace TheOne.RabbitMq.Messaging {
                 if (response != null) {
                     var responseMessage = response as IMqMessage;
                     Type responseType = responseMessage != null
-                        ? (responseMessage.Body?.GetType() ?? typeof(object))
+                        ? responseMessage.Body?.GetType() ?? typeof(object)
                         : response.GetType();
 
                     // If there's no explicit ReplyTo, send it to the typed Response InQ by default

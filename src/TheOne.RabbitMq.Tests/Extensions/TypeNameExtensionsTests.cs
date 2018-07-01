@@ -7,11 +7,15 @@ namespace TheOne.RabbitMq.Tests.Extensions {
     [TestFixture]
     internal sealed class TypeNameExtensionsTests {
 
+        #region Models
+
         private sealed class Poco { }
 
         private sealed class Root {
             public sealed class Nested { }
         }
+
+        #endregion
 
         [Test]
         public void Can_expand_generic_List() {

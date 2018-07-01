@@ -7,9 +7,13 @@ namespace TheOne.RabbitMq.Tests.Messaging {
     [TestFixture]
     internal sealed class MqQueueNamesTests {
 
+        #region Models
+
         private sealed class TestPrefix { }
 
         private sealed class TestFilter { }
+
+        #endregion
 
         [Test]
         public void Can_determine_TempQueue() {

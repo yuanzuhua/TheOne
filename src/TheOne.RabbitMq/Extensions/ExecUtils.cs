@@ -74,13 +74,16 @@ namespace TheOne.RabbitMq.Extensions {
         /// <summary>
         ///     How long to sleep before next retry using Exponential BackOff delay with Full Jitter.
         /// </summary>
-        public static void SleepBackOffMultiplier(int retriesAttempted) => Thread.Sleep(CalculateFullJitterBackOffDelay(retriesAttempted));
+        public static void SleepBackOffMultiplier(int retriesAttempted) {
+            Thread.Sleep(CalculateFullJitterBackOffDelay(retriesAttempted));
+        }
 
         /// <summary>
         ///     Exponential BackOff Delay with Full Jitter
         /// </summary>
-        public static int CalculateFullJitterBackOffDelay(int retriesAttempted) =>
-            CalculateFullJitterBackOffDelay(retriesAttempted, BaseDelayMs, MaxBackOffMs);
+        public static int CalculateFullJitterBackOffDelay(int retriesAttempted) {
+            return CalculateFullJitterBackOffDelay(retriesAttempted, BaseDelayMs, MaxBackOffMs);
+        }
 
         /// <summary>
         ///     Exponential BackOff Delay with Full Jitter from:
@@ -95,8 +98,9 @@ namespace TheOne.RabbitMq.Extensions {
         /// <summary>
         ///     Calculate exponential retry back-off.
         /// </summary>
-        public static int CalculateExponentialDelay(int retriesAttempted) =>
-            CalculateExponentialDelay(retriesAttempted, BaseDelayMs, MaxBackOffMs);
+        public static int CalculateExponentialDelay(int retriesAttempted) {
+            return CalculateExponentialDelay(retriesAttempted, BaseDelayMs, MaxBackOffMs);
+        }
 
         /// <summary>
         ///     Calculate exponential retry back-off.

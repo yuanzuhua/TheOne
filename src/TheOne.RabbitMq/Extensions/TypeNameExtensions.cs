@@ -25,7 +25,7 @@ namespace TheOne.RabbitMq.Extensions {
                 return genericPrefixIndex > 0 ? "'" + type.Name : type.Name;
             }
 
-            var startIndex = type.Namespace?.Length + 1 ?? 0; // trim namespace + "."
+            var startIndex = type.Namespace?.Length + 1 ?? 0;  // trim namespace + "."
             var endIndex = fullname.IndexOf("[[", startIndex); // Generic Fullname
             if (endIndex == -1) {
                 endIndex = fullname.Length;

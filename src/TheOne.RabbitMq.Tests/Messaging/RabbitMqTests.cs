@@ -38,7 +38,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
         [OneTimeTearDown]
         public void TestFixtureTearDown() {
-            var exchangeNames = new[] {
+            string[] exchangeNames = {
                 _exchange,
                 _exchangeDlq,
                 _exchangeTopic,

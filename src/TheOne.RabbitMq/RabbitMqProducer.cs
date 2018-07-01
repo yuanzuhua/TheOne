@@ -32,24 +32,18 @@ namespace TheOne.RabbitMq {
         /// </summary>
         public ushort PrefetchCount { get; set; } = 20;
 
-        public IConnection Connection {
-            get {
-                if (this._connection == null) {
-                    this._connection = this.MsgFactory.ConnectionFactory.CreateConnection();
-                }
-
-                return this._connection;
-            }
-        }
+        public IConnection Connection => this._connection ?? (this._connection = this.MsgFactory.ConnectionFactory.CreateConnection());
 
         public IModel Channel {
             get {
-                if (this._channel == null || !this._channel.IsOpen) {
-                    this._channel = this.Connection.OpenChannel();
-                    // prefetch size is no supported by RabbitMQ
-                    // http://www.rabbitmq.com/specification.html#method-status-basic.qos
-                    this._channel.BasicQos(0, this.PrefetchCount, global: false);
+                if (this._channel?.IsOpen == true) {
+                    return this._channel;
                 }
+
+                this._channel = this.Connection.OpenChannel();
+                // prefetch size is no supported by RabbitMQ
+                // http://www.rabbitmq.com/specification.html#method-status-basic.qos
+                this._channel.BasicQos(0, this.PrefetchCount, false);
 
                 return this._channel;
             }
