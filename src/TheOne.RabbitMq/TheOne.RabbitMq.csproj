@@ -29,11 +29,11 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\external\JetBrains.Annotations.cs" Link="Properties\JetBrains.Annotations.cs" />
+    <Compile Include="..\external\JetBrains.Annotations.cs" Link="Properties\JetBrains.Annotations.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="NLog" Version="4.5.2" />
-    <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
+    <PackageReference Include="NLog" Version="4.5.6" />
+    <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />
   </ItemGroup>
 </Project>
