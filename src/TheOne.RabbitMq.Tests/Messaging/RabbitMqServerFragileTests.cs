@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using NUnit.Framework;
 using RabbitMQ.Client;
+using TheOne.RabbitMq.Extensions;
 using TheOne.RabbitMq.Interfaces;
 using TheOne.RabbitMq.Messaging;
 using TheOne.RabbitMq.Models;
@@ -58,31 +59,20 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                     mqServer.Start();
 
-                    Thread.Sleep(1000);
+                    Thread.Sleep(1500);
                     Assert.That(mqServer.GetStatus(), Is.EqualTo("Started"));
                     Assert.That(mqServer.GetStats().TotalMessagesProcessed, Is.EqualTo(3));
 
                     mqClient.Publish(new Reverse { Value = "Foo" });
                     mqClient.Publish(new NothingHere { Value = "Bar" });
 
-                    for (var i = 0; i < 10; i++) {
-                        ThreadPool.QueueUserWorkItem(y => mqServer.Start());
-                    }
-
+                    ExecUtils.ExecMultiThreading(10, () => mqServer.Start());
                     Assert.That(mqServer.GetStatus(), Is.EqualTo("Started"));
 
-                    for (var i1 = 0; i1 < 5; i1++) {
-                        ThreadPool.QueueUserWorkItem(y => mqServer.Stop());
-                    }
-
-                    Thread.Sleep(1000);
+                    ExecUtils.ExecMultiThreading(5, () => mqServer.Stop());
                     Assert.That(mqServer.GetStatus(), Is.EqualTo("Stopped"));
 
-                    for (var i2 = 0; i2 < 10; i2++) {
-                        ThreadPool.QueueUserWorkItem(y => mqServer.Start());
-                    }
-
-                    Thread.Sleep(1000);
+                    ExecUtils.ExecMultiThreading(10, () => mqServer.Start());
                     Assert.That(mqServer.GetStatus(), Is.EqualTo("Started"));
 
                     Console.WriteLine("\n" + mqServer.GetStats());
@@ -95,6 +85,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         }
 
         [Test]
+        [Explicit]
         public void Does_process_messages_sent_before_it_was_started() {
             var reverseCalled = 0;
 
@@ -116,7 +107,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                     mqServer.Start();
 
-                    Thread.Sleep(1000);
+                    Thread.Sleep(2000);
                     Assert.That(mqServer.GetStats().TotalMessagesProcessed, Is.EqualTo(4));
                     Assert.That(reverseCalled, Is.EqualTo(4));
                 }
@@ -124,6 +115,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         }
 
         [Test]
+        [Explicit]
         public void Does_retry_messages_with_errors_by_RetryCount() {
             var retryCount = 1;
             // in total, inc. first try

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace TheOne.RabbitMq.Extensions {
@@ -69,6 +70,45 @@ namespace TheOne.RabbitMq.Extensions {
                     SleepBackOffMultiplier(i);
                 }
             }
+        }
+
+        public static List<Exception> ExecMultiThreading(int threadCount, Action action, int extraSleep = 20) {
+            var errors = new List<Exception>();
+            var threads = 0;
+            var mainLock = new object();
+
+            for (var i = 0; i < threadCount; i++) {
+                ThreadPool.QueueUserWorkItem(state => {
+                    Interlocked.Increment(ref threads);
+                    var threadId = Thread.CurrentThread.ManagedThreadId;
+                    Console.WriteLine("Thread {0} started...", threadId);
+
+                    try {
+                        action();
+                    } catch (Exception e) {
+                        errors.Add(e);
+                    }
+
+                    Console.WriteLine("Thread {0} finished...", threadId);
+
+                    if (Interlocked.Decrement(ref threads) == 0) {
+                        Console.WriteLine("All Threads Finished...");
+                        lock (mainLock) {
+                            Monitor.Pulse(mainLock);
+                        }
+                    }
+                });
+            }
+
+            lock (mainLock) {
+                Monitor.Wait(mainLock);
+            }
+
+            if (extraSleep > 1) {
+                Thread.Sleep(extraSleep);
+            }
+
+            return errors;
         }
 
         /// <summary>

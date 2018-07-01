@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using NUnit.Framework;
 using RabbitMQ.Client;
+using TheOne.RabbitMq.Extensions;
 using TheOne.RabbitMq.Interfaces;
 using TheOne.RabbitMq.Messaging;
 using TheOne.RabbitMq.Models;
@@ -340,24 +341,14 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                     return new NothingHereResponse { Value = x.GetBody().Value };
                 });
 
-                for (var i = 0; i < 5; i++) {
-                    ThreadPool.QueueUserWorkItem(y => mqServer.Start());
-                }
-
-                Thread.Sleep(1000);
+                ExecUtils.ExecMultiThreading(5, () => mqServer.Start());
                 Assert.That(mqServer.GetStatus(), Is.EqualTo("Started"));
                 Assert.That(mqServer.BgThreadCount, Is.EqualTo(1));
 
-                for (var i1 = 0; i1 < 10; i1++) {
-                    ThreadPool.QueueUserWorkItem(y => mqServer.Stop());
-                }
-
-                Thread.Sleep(1000);
+                ExecUtils.ExecMultiThreading(10, () => mqServer.Stop());
                 Assert.That(mqServer.GetStatus(), Is.EqualTo("Stopped"));
 
-                ThreadPool.QueueUserWorkItem(y => mqServer.Start());
-
-                Thread.Sleep(1000);
+                ExecUtils.ExecMultiThreading(1, () => mqServer.Start());
                 Assert.That(mqServer.GetStatus(), Is.EqualTo("Started"));
                 Assert.That(mqServer.BgThreadCount, Is.EqualTo(2));
 

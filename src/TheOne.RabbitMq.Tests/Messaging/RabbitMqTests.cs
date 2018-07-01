@@ -95,10 +95,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                 channel.BasicConsume(MqQueueNames<HelloRabbit>.Direct, false, consumer);
                 string recvMsg = null;
 
-                ThreadPool.QueueUserWorkItem(_ => {
-                    Thread.Sleep(100);
-                    PublishHelloRabbit(channel);
-                });
+                ExecUtils.ExecMultiThreading(1, () => PublishHelloRabbit(channel));
 
                 while (true) {
                     try {
@@ -154,17 +151,16 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                 channel.Close();
 
-                ThreadPool.QueueUserWorkItem(_ => {
+                void CallBack() {
                     try {
                         PublishHelloRabbit(channel);
                     } catch (Exception ex) {
                         lastEx = ex as OperationInterruptedException;
                         Console.WriteLine("Caught {0}: {1}", ex.GetType().Name, ex);
                     }
-                });
+                }
 
-                Thread.Sleep(1000);
-
+                ExecUtils.ExecMultiThreading(1, CallBack);
                 Assert.That(lastEx, Is.Not.Null);
             });
         }
