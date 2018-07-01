@@ -26,6 +26,12 @@ namespace TheOne.RabbitMq {
         public Action<string, IBasicProperties, IMqMessage> PublishMessageFilter { get; set; }
         public Action<string, BasicGetResult> GetMessageFilter { get; set; }
 
+        /// <summary>
+        ///     http://www.rabbitmq.com/blog/2012/04/25/rabbitmq-performance-measurements-part-2/
+        ///     http://www.rabbitmq.com/amqp-0-9-1-reference.html
+        /// </summary>
+        public ushort PrefetchCount { get; set; } = 20;
+
         public IConnection Connection {
             get {
                 if (this._connection == null) {
@@ -40,9 +46,9 @@ namespace TheOne.RabbitMq {
             get {
                 if (this._channel == null || !this._channel.IsOpen) {
                     this._channel = this.Connection.OpenChannel();
-                    // http://www.rabbitmq.com/blog/2012/04/25/rabbitmq-performance-measurements-part-2/
-                    // http://www.rabbitmq.com/amqp-0-9-1-reference.html
-                    this._channel.BasicQos(prefetchCount: 20, prefetchSize: 0, global: false);
+                    // prefetch size is no supported by RabbitMQ
+                    // http://www.rabbitmq.com/specification.html#method-status-basic.qos
+                    this._channel.BasicQos(0, this.PrefetchCount, global: false);
                 }
 
                 return this._channel;
