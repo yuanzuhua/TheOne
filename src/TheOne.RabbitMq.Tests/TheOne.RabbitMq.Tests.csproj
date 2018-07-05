@@ -24,6 +24,11 @@
     <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\TheOne.RabbitMq\TheOne.RabbitMq.csproj" />
+    <ProjectReference Include="..\TheOne.RabbitMq\TheOne.RabbitMq.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

@@ -14,5 +14,12 @@ trim_trailing_whitespace = true
 max_line_length = off
 trim_trailing_whitespace = false
 
-[*.json]
+[*.csproj]
+end_of_line = lf
+indent_size = 2
+
+[*.{json,xml]
+indent_size = 2
+
+[Directory.Build.props]
 indent_size = 2
