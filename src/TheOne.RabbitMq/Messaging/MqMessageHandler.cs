@@ -1,5 +1,5 @@
 using System;
-using NLog;
+using TheOne.OrmLite.RabbitMq.Logging;
 using TheOne.RabbitMq.Extensions;
 using TheOne.RabbitMq.Interfaces;
 using TheOne.RabbitMq.Models;
@@ -17,7 +17,7 @@ namespace TheOne.RabbitMq.Messaging {
         /// </summary>
         public const int DefaultRetryCount = 2;
 
-        private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILog _logger = LogProvider.GetCurrentClassLogger();
         private readonly IMqMessageService _messageService;
         private readonly Action<IMqMessageHandler, IMqMessage<T>, Exception> _processInExceptionFn;
         private readonly Func<IMqMessage<T>, object> _processMessageFn;
@@ -79,7 +79,7 @@ namespace TheOne.RabbitMq.Messaging {
                     }
                 }
             } catch (Exception ex) {
-                this._logger.Error(ex, "Error serializing message from mq server");
+                this._logger.Error(ex, "Error serializing message from mq server.");
             }
 
             return msgsProcessed;
@@ -151,7 +151,7 @@ namespace TheOne.RabbitMq.Messaging {
                     msgHandled = true;
                     this._processInExceptionFn(this, message, ex);
                 } catch (Exception exHandlerEx) {
-                    this._logger.Error(exHandlerEx, "Message exception handler threw an error");
+                    this._logger.Error(exHandlerEx, "Message exception handler threw an error.");
                 }
             } finally {
                 if (!msgHandled) {
@@ -164,7 +164,7 @@ namespace TheOne.RabbitMq.Messaging {
         }
 
         private void DefaultInExceptionHandler(IMqMessageHandler mqHandler, IMqMessage<T> message, Exception ex) {
-            this._logger.Error(ex, "Message exception handler threw an error");
+            this._logger.Error(ex, "Message exception handler threw an error.");
 
             var requeue = !(ex is UnRetryableMqMessagingException)
                           && message.RetryAttempts < this._retryCount;

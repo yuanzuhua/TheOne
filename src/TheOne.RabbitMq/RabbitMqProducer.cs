@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using NLog;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
+using TheOne.OrmLite.RabbitMq.Logging;
 using TheOne.RabbitMq.Interfaces;
 using TheOne.RabbitMq.Messaging;
 using TheOne.RabbitMq.Models;
@@ -12,7 +12,7 @@ namespace TheOne.RabbitMq {
     /// <inheritdoc />
     public class RabbitMqProducer : IMqMessageProducer {
 
-        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog _logger = LogProvider.GetCurrentClassLogger();
         private static HashSet<string> _queues = new HashSet<string>();
         protected readonly RabbitMqMessageFactory MsgFactory;
         private IModel _channel;
@@ -69,7 +69,7 @@ namespace TheOne.RabbitMq {
                 try {
                     this._channel.Dispose();
                 } catch (Exception ex) {
-                    _logger.Error(ex, "Error trying to dispose RabbitMqProducer model");
+                    _logger.Error(ex, "Error trying to dispose RabbitMqProducer model.");
                 }
 
                 this._channel = null;
@@ -79,7 +79,7 @@ namespace TheOne.RabbitMq {
                 try {
                     this._connection.Dispose();
                 } catch (Exception ex) {
-                    _logger.Error(ex, "Error trying to dispose RabbitMqProducer connection");
+                    _logger.Error(ex, "Error trying to dispose RabbitMqProducer connection.");
                 }
 
                 this._connection = null;

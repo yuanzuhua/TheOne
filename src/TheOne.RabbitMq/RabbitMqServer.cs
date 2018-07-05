@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using NLog;
 using RabbitMQ.Client;
+using TheOne.OrmLite.RabbitMq.Logging;
 using TheOne.RabbitMq.Extensions;
 using TheOne.RabbitMq.Interfaces;
 using TheOne.RabbitMq.Messaging;
@@ -20,7 +20,7 @@ namespace TheOne.RabbitMq {
         /// </summary>
         public const int DefaultRetryCount = 1;
 
-        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog _logger = LogProvider.GetCurrentClassLogger();
         private readonly Dictionary<Type, IMqMessageHandlerFactory> _handlerMap = new Dictionary<Type, IMqMessageHandlerFactory>();
         private readonly Dictionary<Type, int> _handlerThreadCountMap = new Dictionary<Type, int>();
         private readonly object _msgLock = new object();
@@ -229,9 +229,9 @@ namespace TheOne.RabbitMq {
                             Name = "Rabbit MQ Server " + Interlocked.Increment(ref this._bgThreadCount)
                         };
                         this._bgThread.Start();
-                        _logger.Debug("Started Background Thread: " + this._bgThread.Name);
+                        _logger.Debug($"Started background thread: {this._bgThread.Name}.");
                     } else {
-                        _logger.Debug("Retrying RunLoop() on Thread: " + this._bgThread.Name);
+                        _logger.Debug($"Retrying RunLoop() on thread: {this._bgThread.Name}.");
                         this.RunLoop();
                     }
                 } catch (Exception ex) {
@@ -273,7 +273,7 @@ namespace TheOne.RabbitMq {
             try {
                 this.DisposeWorkerThreads();
             } catch (Exception ex) {
-                _logger.Error(ex, "Error DisposeWorkerThreads(): ");
+                _logger.Error(ex, "Error DisposeWorkerThreads().");
             }
 
             try {
@@ -297,7 +297,7 @@ namespace TheOne.RabbitMq {
 
         private void Init(RabbitMqMessageFactory messageFactory) {
             this._messageFactory = messageFactory;
-            this.ErrorHandler = ex => _logger.Error(ex, "Exception in Rabbit MQ Server");
+            this.ErrorHandler = ex => _logger.Error(ex, "Exception in Rabbit MQ Server.");
             this.RetryCount = DefaultRetryCount;
             this.AutoReconnect = true;
         }
@@ -370,7 +370,7 @@ namespace TheOne.RabbitMq {
                         var op = Interlocked.CompareExchange(ref this._doOperation, MqWorkerOperation.NoOp, this._doOperation);
                         switch (op) {
                             case MqWorkerOperation.Stop:
-                                _logger.Debug("Stop Command Issued");
+                                _logger.Debug("Stop command issued...");
 
                                 Interlocked.CompareExchange(ref this._status, MqWorkerStatus.Stopping, MqWorkerStatus.Started);
                                 try {
@@ -382,7 +382,7 @@ namespace TheOne.RabbitMq {
                                 return; // exits
 
                             case MqWorkerOperation.Restart:
-                                _logger.Debug("Restart Command Issued");
+                                _logger.Debug("Restart command issued...");
 
                                 Interlocked.CompareExchange(ref this._status, MqWorkerStatus.Stopping, MqWorkerStatus.Started);
                                 try {
@@ -428,7 +428,7 @@ namespace TheOne.RabbitMq {
 
         public virtual void Restart() {
             if (Interlocked.CompareExchange(ref this._status, 0, 0) == MqWorkerStatus.Disposed) {
-                throw new ObjectDisposedException("MQ Host has been disposed");
+                throw new ObjectDisposedException("MQ Host has been disposed.");
             }
 
             if (Interlocked.CompareExchange(ref this._status, MqWorkerStatus.Stopping, MqWorkerStatus.Started) == MqWorkerStatus.Started) {
@@ -447,7 +447,7 @@ namespace TheOne.RabbitMq {
                     worker.Start();
                 } catch (Exception ex) {
                     this.ErrorHandler?.Invoke(ex);
-                    _logger.Error(ex, "Could not START Rabbit MQ worker thread");
+                    _logger.Error(ex, "Could not START Rabbit MQ worker thread...");
                 }
             }
         }
@@ -460,7 +460,7 @@ namespace TheOne.RabbitMq {
                     worker.Stop();
                 } catch (Exception ex) {
                     this.ErrorHandler?.Invoke(ex);
-                    _logger.Warn(ex, "Could not STOP Rabbit MQ worker thread");
+                    _logger.Warn(ex, "Could not STOP Rabbit MQ worker thread...");
                 }
             }
         }
@@ -473,7 +473,7 @@ namespace TheOne.RabbitMq {
         }
 
         private void WorkerErrorHandler(RabbitMqWorker source, Exception ex) {
-            _logger.Error(ex, "Received exception in Worker: " + source.QueueName);
+            _logger.Error(ex, $"Received exception in Worker: {source.QueueName}.");
             for (var i = 0; i < this._workers.Length; i++) {
                 RabbitMqWorker worker = this._workers[i];
                 if (worker == source) {
@@ -491,10 +491,10 @@ namespace TheOne.RabbitMq {
                 // give it a small chance to die gracefully
                 if (!this._bgThread.Join(500)) {
                     // ideally we shouldn't get here, but lets try our hardest to clean it up
-                    _logger.Warn("Interrupting previous Background Thread: " + this._bgThread.Name);
+                    _logger.Warn($"Interrupting previous background thread: {this._bgThread.Name}...");
                     this._bgThread.Interrupt();
                     if (!this._bgThread.Join(TimeSpan.FromSeconds(3))) {
-                        _logger.Warn(this._bgThread.Name + " just wont die, so we're now aborting it...");
+                        _logger.Warn($"{this._bgThread.Name} just won\'t die, so we\'re now aborting it...");
                         this._bgThread.Abort();
                     }
                 }

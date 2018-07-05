@@ -2,9 +2,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
-using NLog;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
+using TheOne.OrmLite.RabbitMq.Logging;
 using TheOne.RabbitMq.Interfaces;
 using TheOne.RabbitMq.Models;
 
@@ -12,7 +12,7 @@ namespace TheOne.RabbitMq {
 
     public class RabbitMqWorker : IDisposable {
 
-        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog _logger = LogProvider.GetCurrentClassLogger();
         private readonly IMqMessageHandler _messageHandler;
         private readonly RabbitMqMessageFactory _mqFactory;
         private readonly object _msgLock = new object();
@@ -58,7 +58,7 @@ namespace TheOne.RabbitMq {
             try {
                 this.KillBgThreadIfExists();
             } catch (Exception ex) {
-                _logger.Error(ex, "Error Disposing MessageHandlerWorker for: " + this.QueueName);
+                _logger.Error(ex, $"Error disposing MessageHandlerWorker for: {this.QueueName}...");
             }
         }
 
@@ -281,10 +281,10 @@ namespace TheOne.RabbitMq {
                     // give it a small chance to die gracefully
                     if (!this._bgThread.Join(500)) {
                         // ideally we shouldn't get here, but lets try our hardest to clean it up
-                        _logger.Warn("Interrupting previous Background Worker: " + this._bgThread.Name);
+                        _logger.Warn($"Interrupting previous background worker: {this._bgThread.Name}.");
                         this._bgThread.Interrupt();
                         if (!this._bgThread.Join(TimeSpan.FromSeconds(3))) {
-                            _logger.Warn(this._bgThread.Name + " just wont die, so we're now aborting it...");
+                            _logger.Warn($"{this._bgThread.Name} just won\'t die, so we\'re now aborting it...");
                             this._bgThread.Abort();
                         }
                     }
