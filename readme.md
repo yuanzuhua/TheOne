@@ -221,7 +221,7 @@ mqClient.Ack(dlqMsg);
 Assert.That(called, Is.EqualTo(2));
 ```
 
-`.dlp` Messages retains the original message in their body as well as the last exception serialized in the `IMqMessage.Error` MqErrorStatus metadata property, e.g:
+`.dlq` Messages retains the original message in their body as well as the last exception serialized in the `IMqMessage.Error` MqErrorStatus metadata property, e.g:
 
 ```csharp
 dlqMsg.GetBody().Name   // = World
@@ -245,3 +245,7 @@ where you can replay and re-process `.dlq` messages and continue processing them
 Queue name is simply the POCO's name combine with customizable prefix and postfix.
 
 see [MqQueueNames.cs](src/TheOne.RabbitMq/Models/MqQueueNames.cs) and [MqQueueNamesTests](src/TheOne.RabbitMq.Tests/Messaging/MqQueueNamesTests.cs) for example.
+
+## Logging
+
+see [LibLog](https://github.com/damianh/LibLog/wiki#transparent-logging-support)
