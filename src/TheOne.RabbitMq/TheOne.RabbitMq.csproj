@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net46;netstandard2.0</TargetFrameworks>
@@ -10,7 +10,7 @@
   <PropertyGroup>
     <PackageId>TheOne.RabbitMq</PackageId>
     <PackageTags>RabbitMq</PackageTags>
-    <PackageReleaseNotes>v0.0.1 - To start over.</PackageReleaseNotes>
+    <PackageReleaseNotes>0.0.2</PackageReleaseNotes>
     <!--<PackageIconUrl></PackageIconUrl>-->
     <PackageProjectUrl>https://github.com/Master-Inspire/TheOne</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/Master-Inspire/TheOne/blob/master/LICENSE</PackageLicenseUrl>
@@ -25,8 +25,8 @@
     <AssemblyTitle>TheOne.RabbitMq</AssemblyTitle>
     <Description>RabbitMq client</Description>
     <Copyright>Brotherhood 2018</Copyright>
-    <Version>0.0.1</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.2</Version>
+    <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\external\**\*.cs">
