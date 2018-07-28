@@ -15,13 +15,13 @@ namespace TheOne.RabbitMq.Messaging {
 
         public static T FromJsonBytes<T>(byte[] bytes) {
             if (bytes == null) {
-                return default(T);
+                return default;
             }
 
             var s = Encoding.UTF8.GetString(bytes);
 
             if (string.IsNullOrEmpty(s)) {
-                return default(T);
+                return default;
             }
 
             return JsonConvert.DeserializeObject<T>(s);

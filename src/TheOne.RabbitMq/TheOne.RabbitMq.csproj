@@ -2,40 +2,23 @@
 
   <PropertyGroup>
     <TargetFrameworks>net46;netstandard2.0</TargetFrameworks>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>$(NoWarn);1591</NoWarn>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn)</NoWarn>
     <DefineConstants>$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
+    <AssemblyTitle>TheOne.RabbitMq</AssemblyTitle>
+    <Description>RabbitMq client</Description>
     <PackageId>TheOne.RabbitMq</PackageId>
     <PackageTags>RabbitMq</PackageTags>
     <PackageReleaseNotes>0.0.2</PackageReleaseNotes>
-    <!--<PackageIconUrl></PackageIconUrl>-->
-    <PackageProjectUrl>https://github.com/Master-Inspire/TheOne</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/Master-Inspire/TheOne/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/Master-Inspire/TheOne.git</RepositoryUrl>
-  </PropertyGroup>
-  <PropertyGroup>
-    <Authors>Master Inspire</Authors>
-    <Company>Brotherhood</Company>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyTitle>TheOne.RabbitMq</AssemblyTitle>
-    <Description>RabbitMq client</Description>
-    <Copyright>Brotherhood 2018</Copyright>
     <Version>0.0.2</Version>
-    <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\external\**\*.cs">
       <Link>External\%(RecursiveDir)%(FileName)%(Extension)</Link>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="*.DotSettings" />
     <Folder Include="External\" />
+    <None Remove="*.DotSettings" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />

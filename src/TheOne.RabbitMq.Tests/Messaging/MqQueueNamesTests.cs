@@ -9,9 +9,9 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
         #region Models
 
-        private sealed class TestPrefix { }
-
         private sealed class TestFilter { }
+
+        private sealed class TestPrefix { }
 
         #endregion
 

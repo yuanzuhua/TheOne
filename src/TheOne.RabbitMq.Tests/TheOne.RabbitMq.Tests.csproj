@@ -1,18 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net46;netcoreapp2.1</TargetFrameworks>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn)</NoWarn>
     <DefineConstants>$(DefineConstants)</DefineConstants>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <PropertyGroup>
-    <Authors>Master Inspire</Authors>
-    <Company>Brotherhood</Company>
-    <NeutralLanguage>en-US</NeutralLanguage>
     <AssemblyTitle>TheOne.RabbitMq.Tests</AssemblyTitle>
     <Description>TheOne.RabbitMq.Tests</Description>
-    <Copyright>Brotherhood 2018</Copyright>
     <Version>0.0.2</Version>
   </PropertyGroup>
   <ItemGroup>
