@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
-using TheOne.OrmLite.RabbitMq.Logging;
+using TheOne.Logging;
 using TheOne.RabbitMq.Interfaces;
 using TheOne.RabbitMq.Messaging;
 using TheOne.RabbitMq.Models;

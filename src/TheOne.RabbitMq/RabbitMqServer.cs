@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using RabbitMQ.Client;
-using TheOne.OrmLite.RabbitMq.Logging;
+using TheOne.Logging;
 using TheOne.RabbitMq.Extensions;
 using TheOne.RabbitMq.Interfaces;
 using TheOne.RabbitMq.Messaging;

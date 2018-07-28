@@ -1,5 +1,5 @@
 using System;
-using TheOne.OrmLite.RabbitMq.Logging;
+using TheOne.Logging;
 using TheOne.RabbitMq.Extensions;
 using TheOne.RabbitMq.Interfaces;
 using TheOne.RabbitMq.Models;
