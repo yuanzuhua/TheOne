@@ -1,4 +1,4 @@
-namespace TheOne.OrmLite.RabbitMq.Logging.LogProviders
+namespace TheOne.Logging.LogProviders
 {
     using System;
     using System.Collections.Generic;

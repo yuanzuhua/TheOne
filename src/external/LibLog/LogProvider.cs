@@ -45,11 +45,11 @@ using global::System.Diagnostics.CodeAnalysis;
 
 // If you copied this file manually, you need to change all "YourRootNameSpace" so not to clash with other libraries
 // that use LibLog
-namespace TheOne.OrmLite.RabbitMq.Logging
+namespace TheOne.Logging
 {
     using global::System.Collections.Generic;
     using global::System.Diagnostics.CodeAnalysis;
-    using global::TheOne.OrmLite.RabbitMq.Logging.LogProviders;
+    using global::TheOne.Logging.LogProviders;
     using global::System;
 #if !LIBLOG_PROVIDERS_ONLY
     using global::System.Diagnostics;

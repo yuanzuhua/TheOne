@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TheOne.OrmLite.RabbitMq.Logging
+namespace TheOne.Logging
 {
     /// <summary>
     /// Represents a way to get a <see cref="ILog"/>

@@ -1,4 +1,4 @@
-namespace TheOne.OrmLite.RabbitMq.Logging
+namespace TheOne.Logging
 {
     /// <summary>
     ///     The log level.
