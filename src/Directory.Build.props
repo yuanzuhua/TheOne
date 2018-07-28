@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <Authors>Master Inspire</Authors>
+    <Copyright>Brotherhood 2018</Copyright>
+    <Company>Brotherhood</Company>
+    <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <LangVersion>latest</LangVersion>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <!--<PackageIconUrl></PackageIconUrl>-->
+    <PackageProjectUrl>https://github.com/Master-Inspire/TheOne</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Master-Inspire/TheOne/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Product>TheOne</Product>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Master-Inspire/TheOne.git</RepositoryUrl>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>
