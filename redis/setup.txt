@@ -1,0 +1,18 @@
+redis-server --service-install 6379\redis.windows.conf --service-name redis6379
+redis-server --service-install 6378\redis.windows.conf --service-name redis6378
+redis-server --service-install 6380\redis.windows.conf --service-name redis6380
+redis-server --service-install 6381\redis.windows.conf --service-name redis6381
+redis-server --service-install 6382\redis.windows.conf --service-name redis6382
+redis-server --service-install 6380\sentinel.windows.conf --service-name redissentinel6380 --sentinel
+redis-server --service-install 6381\sentinel.windows.conf --service-name redissentinel6381 --sentinel
+redis-server --service-install 6382\sentinel.windows.conf --service-name redissentinel6382 --sentinel
+
+
+rem redis-server --service-uninstall --service-name redis6379
+rem redis-server --service-uninstall --service-name redis6378
+rem redis-server --service-uninstall --service-name redis6380
+rem redis-server --service-uninstall --service-name redis6381
+rem redis-server --service-uninstall --service-name redis6382
+rem redis-server --service-uninstall --service-name redissentinel6380
+rem redis-server --service-uninstall --service-name redissentinel6381
+rem redis-server --service-uninstall --service-name redissentinel6382

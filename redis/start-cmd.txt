@@ -1,0 +1,16 @@
+start cmd.exe /e:on /k "redis-server 6379\redis.windows.conf"
+start cmd.exe /e:on /k "redis-server 6378\redis.windows.conf"
+
+start cmd.exe /e:on /k "redis-server 6380\redis.windows.conf"
+start cmd.exe /e:on /k "redis-server 6381\redis.windows.conf"
+start cmd.exe /e:on /k "redis-server 6382\redis.windows.conf"
+
+start cmd.exe /e:on /k "redis-server 6380\sentinel.windows.conf --sentinel"
+start cmd.exe /e:on /k "redis-server 6381\sentinel.windows.conf --sentinel"
+start cmd.exe /e:on /k "redis-server 6382\sentinel.windows.conf --sentinel"
+
+pause
+
+redis-cli -p 26380 sentinel masters 
+
+pause
