@@ -22,5 +22,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
         private void factory_MessageReceived(object sender, EventArgs e) {
             this.Start();
         }
+
     }
+
 }

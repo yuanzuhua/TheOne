@@ -16,5 +16,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         protected override MqTransientMessageServiceBase CreateMessagingService() {
             return this._messageService;
         }
+
     }
+
 }

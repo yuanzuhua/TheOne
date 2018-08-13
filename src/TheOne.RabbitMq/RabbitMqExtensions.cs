@@ -258,5 +258,7 @@ namespace TheOne.RabbitMq {
 
             return message;
         }
+
     }
+
 }

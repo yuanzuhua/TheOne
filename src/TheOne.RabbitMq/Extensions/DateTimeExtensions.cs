@@ -30,5 +30,7 @@ namespace TheOne.RabbitMq.Extensions {
             TimeSpan universal = dtUtc.Subtract(_unixEpochDateTimeUtc);
             return universal;
         }
+
     }
+
 }

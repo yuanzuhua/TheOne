@@ -60,5 +60,7 @@ namespace TheOne.RabbitMq {
 
             return factory;
         }
+
     }
+
 }

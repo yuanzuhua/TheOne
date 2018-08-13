@@ -36,6 +36,9 @@ namespace TheOne.RabbitMq.InMemoryMq {
                 this._parent._transientMessageService.MessageQueueFactory
                     .PublishMessage(queueName, message.ToJsonBytes());
             }
+
         }
+
     }
+
 }

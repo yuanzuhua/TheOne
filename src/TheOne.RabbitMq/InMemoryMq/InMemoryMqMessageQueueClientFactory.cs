@@ -60,5 +60,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
 
             this.InvokeMessageReceived(new EventArgs());
         }
+
     }
+
 }

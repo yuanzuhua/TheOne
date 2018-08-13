@@ -355,5 +355,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                 Console.WriteLine(mqServer.GetStats());
             }
         }
+
     }
+
 }

@@ -5,6 +5,7 @@ using TheOne.RabbitMq.Models;
 using TheOne.RabbitMq.Tests.Messaging.Models;
 
 namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
+
     internal abstract class MqTransientServiceMessagingTestBase : MqMessagingHostTestBase {
 
         [Test]
@@ -90,5 +91,7 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
                 }
             }
         }
+
     }
+
 }

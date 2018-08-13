@@ -64,5 +64,7 @@ namespace TheOne.RabbitMq.Interfaces {
         ///     Stop the MQ Host if not already stopped.
         /// </summary>
         void Stop();
+
     }
+
 }

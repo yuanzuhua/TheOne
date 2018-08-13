@@ -283,5 +283,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                 Assert.That(basicGetMsg, Is.Not.Null);
             });
         }
+
     }
+
 }

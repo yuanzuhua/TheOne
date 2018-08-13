@@ -17,5 +17,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
             IMqMessage<Incr> typedMessage = MqMessageExtensions.FromJsonBytes<MqMessage<Incr>>(jsonBytes);
             Assert.That(typedMessage.GetBody().Value, Is.EqualTo(dto.Value));
         }
+
     }
+
 }

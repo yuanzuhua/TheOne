@@ -156,5 +156,7 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
                 }
             }
         }
+
     }
+
 }

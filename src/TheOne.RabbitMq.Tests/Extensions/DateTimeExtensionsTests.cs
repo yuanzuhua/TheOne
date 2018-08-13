@@ -14,5 +14,7 @@ namespace TheOne.RabbitMq.Tests.Extensions {
             Console.WriteLine(maxDate);
             Console.WriteLine(minDate);
         }
+
     }
+
 }

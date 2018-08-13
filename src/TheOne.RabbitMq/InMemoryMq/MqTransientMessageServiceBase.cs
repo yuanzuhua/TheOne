@@ -157,5 +157,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
                 RetryCount = this.RetryCount
             };
         }
+
     }
+
 }

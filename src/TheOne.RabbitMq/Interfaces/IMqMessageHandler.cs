@@ -40,20 +40,26 @@ namespace TheOne.RabbitMq.Interfaces {
         ///     Get Current Stats for this Message Handler
         /// </summary>
         IMqMessageHandlerStats GetStats();
+
     }
 
     /// <summary>
     ///     Encapsulates creating a new message handler
     /// </summary>
     public interface IMqMessageHandlerFactory {
+
         IMqMessageHandler CreateMessageHandler();
+
     }
 
     public interface IMqMessageHandlerDisposer {
+
         void DisposeMessageHandler(IMqMessageHandler messageHandler);
+
     }
 
     public interface IMqMessageHandlerStats {
+
         string Name { get; }
         int TotalMessagesProcessed { get; }
         int TotalMessagesFailed { get; }
@@ -61,5 +67,7 @@ namespace TheOne.RabbitMq.Interfaces {
         int TotalNormalMessagesReceived { get; }
         DateTime? LastMessageProcessed { get; }
         void Add(IMqMessageHandlerStats stats);
+
     }
+
 }

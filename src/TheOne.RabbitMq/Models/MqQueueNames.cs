@@ -20,6 +20,7 @@ namespace TheOne.RabbitMq.Models {
         public static string Dlq => MqQueueNames.ResolveQueueNameFn(typeof(T).Name, MqQueueNames.PostfixDlq);
 
         public static string[] AllQueueNames => new[] { Direct, Topic, Dlq };
+
     }
 
     /// <summary>
@@ -80,5 +81,7 @@ namespace TheOne.RabbitMq.Models {
         public static string GetTempQueueName() {
             return TempMqPrefix + Guid.NewGuid().ToString("n");
         }
+
     }
+
 }

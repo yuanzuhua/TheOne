@@ -46,6 +46,7 @@ namespace TheOne.RabbitMq.Messaging {
 
             return factoryFn(response);
         }
+
     }
 
 }

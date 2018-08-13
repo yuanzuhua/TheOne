@@ -4,11 +4,15 @@ using TheOne.RabbitMq.Models;
 namespace TheOne.RabbitMq.Tests.Messaging.Models {
 
     internal class UnRetryableFail {
+
         public string Name { get; set; }
+
     }
 
     internal class UnRetryableFailResponse {
+
         public string Result { get; set; }
+
     }
 
     internal class UnRetryableFailService {
@@ -23,5 +27,7 @@ namespace TheOne.RabbitMq.Tests.Messaging.Models {
                 "This request should not get retried",
                 new NotSupportedException("This service always fails"));
         }
+
     }
+
 }

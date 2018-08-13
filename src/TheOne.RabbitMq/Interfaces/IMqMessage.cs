@@ -30,9 +30,13 @@ namespace TheOne.RabbitMq.Interfaces {
         object Body { get; set; }
 
         Dictionary<string, string> Meta { get; set; }
+
     }
 
     public interface IMqMessage<out T> : IMqMessage {
+
         T GetBody();
+
     }
+
 }

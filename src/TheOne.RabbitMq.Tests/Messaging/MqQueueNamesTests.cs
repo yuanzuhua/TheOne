@@ -74,5 +74,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
             const string expected = "theone:mq.Greet.direct";
             Assert.That(MqQueueNames<Greet>.Direct, Is.EqualTo(expected));
         }
+
     }
+
 }

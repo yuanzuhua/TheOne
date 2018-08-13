@@ -8,5 +8,7 @@ namespace TheOne.RabbitMq.Models {
         public const int Stop = 1;
         public const int Reset = 2;
         public const int Restart = 3;
+
     }
+
 }

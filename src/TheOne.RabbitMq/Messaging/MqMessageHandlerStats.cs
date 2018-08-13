@@ -61,5 +61,7 @@ namespace TheOne.RabbitMq.Messaging {
             sb.AppendLine($"  LastMessageProcessed:           {this.LastMessageProcessed?.ToString() ?? ""}");
             return sb.ToString();
         }
+
     }
+
 }

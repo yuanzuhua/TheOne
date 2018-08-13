@@ -17,5 +17,7 @@ namespace TheOne.RabbitMq.Models {
 
         /// <inheritdoc />
         public UnRetryableMqMessagingException(string message, Exception innerException) : base(message, innerException) { }
+
     }
+
 }

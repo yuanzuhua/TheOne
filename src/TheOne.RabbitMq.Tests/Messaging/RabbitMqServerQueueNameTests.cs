@@ -27,5 +27,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
             MqQueueNames.SetQueuePrefix("");
         }
+
     }
+
 }

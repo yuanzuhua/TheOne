@@ -6,6 +6,7 @@ namespace TheOne.RabbitMq.Models {
     /// <summary>
     /// </summary>
     public class MqErrorStatus {
+
         /// <summary>
         ///     A status without an errorcode == success
         /// </summary>
@@ -55,5 +56,7 @@ namespace TheOne.RabbitMq.Models {
         ///     For additional custom metadata about the error
         /// </summary>
         public Dictionary<string, string> Meta { get; set; } = new Dictionary<string, string>();
+
     }
+
 }

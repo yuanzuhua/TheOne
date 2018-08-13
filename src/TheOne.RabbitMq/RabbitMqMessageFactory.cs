@@ -71,5 +71,7 @@ namespace TheOne.RabbitMq {
 
         /// <inheritdoc />
         public virtual void Dispose() { }
+
     }
+
 }

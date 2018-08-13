@@ -153,5 +153,7 @@ namespace TheOne.RabbitMq.Extensions {
             var retries = Math.Min(retriesAttempted, MaxRetries);
             return (int)Math.Min((1L << retries) * baseDelay, maxBackOffMs);
         }
+
     }
+
 }

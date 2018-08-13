@@ -175,5 +175,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                 Assert.That(nothingHereCalled, Is.EqualTo(1 + 1));
             }
         }
+
     }
+
 }

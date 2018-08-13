@@ -33,5 +33,7 @@ namespace TheOne.RabbitMq {
 
             this.Queue.Enqueue(msgResult);
         }
+
     }
+
 }

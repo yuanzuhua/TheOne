@@ -105,14 +105,18 @@ namespace TheOne.RabbitMq.Messaging {
         public static IMqMessageProducer CreateMessageProducer(this IMqMessageService mqServer) {
             return mqServer.MessageFactory.CreateMessageProducer();
         }
+
     }
 
     internal delegate IMqMessage ToMessageDelegate(object param);
 
     internal static class MqMessageExtensions<T> {
+
         public static IMqMessage ConvertToMessage(object oBytes) {
             var bytes = (byte[])oBytes;
             return MqMessageExtensions.ToMessage<T>(bytes);
         }
+
     }
+
 }

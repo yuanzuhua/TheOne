@@ -24,5 +24,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                 channel.DeleteQueues(ReplyToMq);
             });
         }
+
     }
+
 }

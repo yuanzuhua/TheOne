@@ -307,5 +307,7 @@ namespace TheOne.RabbitMq {
                 this.LastMsgProcessed
             );
         }
+
     }
+
 }

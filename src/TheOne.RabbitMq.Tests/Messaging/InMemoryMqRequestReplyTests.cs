@@ -9,5 +9,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         protected override IMqMessageService CreateMqServer(int retryCount = 1) {
             return new InMemoryMqTransientMessageService { RetryCount = retryCount };
         }
+
     }
+
 }

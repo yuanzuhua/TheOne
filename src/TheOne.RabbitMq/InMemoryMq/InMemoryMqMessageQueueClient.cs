@@ -84,5 +84,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
 
         /// <inheritdoc />
         public void Dispose() { }
+
     }
+
 }

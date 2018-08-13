@@ -20,5 +20,7 @@ namespace TheOne.RabbitMq.Extensions {
         public static T FromJson<T>(this string json) {
             return JsonConvert.DeserializeObject<T>(json);
         }
+
     }
+
 }

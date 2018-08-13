@@ -153,5 +153,7 @@ namespace TheOne.RabbitMq {
                 throw;
             }
         }
+
     }
+
 }

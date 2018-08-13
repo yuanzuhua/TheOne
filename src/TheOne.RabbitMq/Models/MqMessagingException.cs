@@ -11,5 +11,7 @@ namespace TheOne.RabbitMq.Models {
         public MqMessagingException(string message, Exception innerException) : base(message, innerException) { }
 
         public object ResponseDto { get; set; }
+
     }
+
 }

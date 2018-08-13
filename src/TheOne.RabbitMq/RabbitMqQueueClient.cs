@@ -83,5 +83,7 @@ namespace TheOne.RabbitMq {
         public virtual void Notify<T>(T body) {
             this.Notify((IMqMessage)new MqMessage { Body = body });
         }
+
     }
+
 }

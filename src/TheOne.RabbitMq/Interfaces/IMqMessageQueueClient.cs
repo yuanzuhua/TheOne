@@ -6,6 +6,7 @@ namespace TheOne.RabbitMq.Interfaces {
 
         void Publish<T>(T messageBody);
         void Publish<T>(IMqMessage<T> message);
+
     }
 
     public interface IMqMessageQueueClient : IMqMessageProducer {
@@ -49,5 +50,7 @@ namespace TheOne.RabbitMq.Interfaces {
         ///     Create a temporary Queue for Request / Reply
         /// </summary>
         string GetTempQueueName();
+
     }
+
 }

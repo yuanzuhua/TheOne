@@ -10,6 +10,7 @@ namespace TheOne.RabbitMq.Models {
     /// </summary>
     /// <inheritdoc cref="MqMessage" />
     public class MqMessage<T> : MqMessage, IMqMessage<T> {
+
         private object _body;
 
         /// <inheritdoc />
@@ -50,6 +51,7 @@ namespace TheOne.RabbitMq.Models {
         public override string ToString() {
             return $"CreatedDate={this.CreatedDate}, Id={this.Id:N}, Type={typeof(T).Name}, Retry={this.RetryAttempts}";
         }
+
     }
 
     /// <inheritdoc />
@@ -84,5 +86,7 @@ namespace TheOne.RabbitMq.Models {
 
         /// <inheritdoc />
         public virtual object Body { get; set; }
+
     }
+
 }

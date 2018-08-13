@@ -502,5 +502,7 @@ namespace TheOne.RabbitMq {
                 this._bgThread = null;
             }
         }
+
     }
+
 }

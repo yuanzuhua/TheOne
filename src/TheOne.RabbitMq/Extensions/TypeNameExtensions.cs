@@ -4,6 +4,7 @@ using System.Text;
 namespace TheOne.RabbitMq.Extensions {
 
     internal static class TypeNameExtensions {
+
         public static string ExpandTypeName(this Type type) {
             if (type.IsGenericType) {
                 return GetGenericTypeName(type);
@@ -62,5 +63,7 @@ namespace TheOne.RabbitMq.Extensions {
             var fullName = $"{nameOnly}<{sb}>";
             return fullName;
         }
+
     }
+
 }

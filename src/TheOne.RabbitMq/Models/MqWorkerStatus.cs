@@ -24,5 +24,7 @@ namespace TheOne.RabbitMq.Models {
 
             return "Unknown";
         }
+
     }
+
 }

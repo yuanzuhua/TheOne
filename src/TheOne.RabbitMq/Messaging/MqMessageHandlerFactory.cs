@@ -55,5 +55,7 @@ namespace TheOne.RabbitMq.Messaging {
 
             return new MqMessageHandler<T>(this._messageService, ProcessMessageFn, this._processExceptionFn, this.RetryCount);
         }
+
     }
+
 }

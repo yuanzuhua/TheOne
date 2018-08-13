@@ -12,7 +12,9 @@ namespace TheOne.RabbitMq.Tests.Extensions {
         private sealed class Poco { }
 
         private sealed class Root {
+
             public sealed class Nested { }
+
         }
 
         #endregion
@@ -41,5 +43,7 @@ namespace TheOne.RabbitMq.Tests.Extensions {
             Assert.That(typeof(Root).ExpandTypeName(), Is.EqualTo("TypeNameExtensionsTests.Root"));
             Assert.That(typeof(Root.Nested).ExpandTypeName(), Is.EqualTo("TypeNameExtensionsTests.Root.Nested"));
         }
+
     }
+
 }

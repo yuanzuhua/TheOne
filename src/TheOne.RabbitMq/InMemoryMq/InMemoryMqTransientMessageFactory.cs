@@ -32,5 +32,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
         public IMqMessageService CreateMessageService() {
             return this._transientMessageService;
         }
+
     }
+
 }

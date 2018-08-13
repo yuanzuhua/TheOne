@@ -7,5 +7,7 @@ namespace TheOne.RabbitMq.Tests {
 
         [Test]
         public void TestMethod1() { }
+
     }
+
 }

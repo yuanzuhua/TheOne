@@ -185,5 +185,7 @@ namespace TheOne.RabbitMq.Messaging {
             message.Error = new MqErrorStatus(ex);
             mqHandler.MqClient.Nak(message, requeue, ex);
         }
+
     }
+
 }
