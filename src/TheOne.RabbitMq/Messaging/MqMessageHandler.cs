@@ -119,6 +119,10 @@ namespace TheOne.RabbitMq.Messaging {
                         return;
                     }
 
+                    if (responseEx is AggregateException) {
+                        responseEx = responseEx.UnwrapIfSingleException();
+                    }
+
                     msgHandled = true;
                     this._processInExceptionFn(this, message, responseEx);
                     return;
@@ -147,6 +151,10 @@ namespace TheOne.RabbitMq.Messaging {
                 }
             } catch (Exception ex) {
                 try {
+                    if (ex is AggregateException) {
+                        ex = ex.UnwrapIfSingleException();
+                    }
+
                     this.TotalMessagesFailed++;
                     msgHandled = true;
                     this._processInExceptionFn(this, message, ex);
