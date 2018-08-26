@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheOne.RabbitMq", "TheOne.R
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheOne.RabbitMq.Tests", "TheOne.RabbitMq.Tests\TheOne.RabbitMq.Tests.csproj", "{A8B84BF6-9FA3-4DE2-AA45-4E09DA565CC5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheOne.Redis", "TheOne.Redis\TheOne.Redis.csproj", "{48EDBD45-9C09-43F2-ABB7-9421E3CDB733}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheOne.Redis.Tests", "TheOne.Redis.Tests\TheOne.Redis.Tests.csproj", "{65D7BB5F-B078-430E-BE49-0938EF880148}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF616406-FF4F-48F5-B1C6-0D7F203BAE0C}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -29,6 +33,14 @@ Global
 		{A8B84BF6-9FA3-4DE2-AA45-4E09DA565CC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8B84BF6-9FA3-4DE2-AA45-4E09DA565CC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8B84BF6-9FA3-4DE2-AA45-4E09DA565CC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48EDBD45-9C09-43F2-ABB7-9421E3CDB733}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48EDBD45-9C09-43F2-ABB7-9421E3CDB733}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48EDBD45-9C09-43F2-ABB7-9421E3CDB733}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48EDBD45-9C09-43F2-ABB7-9421E3CDB733}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65D7BB5F-B078-430E-BE49-0938EF880148}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65D7BB5F-B078-430E-BE49-0938EF880148}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65D7BB5F-B078-430E-BE49-0938EF880148}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65D7BB5F-B078-430E-BE49-0938EF880148}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
