@@ -1,7 +1,3 @@
-# TheOne
-
-* * *
-
 # TheOne.RabbitMq
 
 ## Getting Started
@@ -14,9 +10,7 @@ install via NuGet:
 
 RabbitMqServer is basically a high-level POCO-based Mq server.
 
-By default, RabbitMqServer looks for a Rabbit Mq Server instance
-
-on **localhost** at Rabbit Mq's default port **5672**:
+By default, RabbitMqServer looks for a Rabbit Mq Server instance on **localhost** at Rabbit Mq's default port **5672**:
 
 ```csharp
 var mqServer = new RabbitMqServer();
@@ -26,7 +20,7 @@ or
 var mqServer = new RabbitMqServer("localhost");
 ```
 
-> Run-able examples of these code-samples are available in the [RabbitMqServerIntroTests](src/TheOne.RabbitMq.Tests/Messaging/RabbitMqServerTests.cs).
+See [RabbitMqServerIntroTests](../src/TheOne.RabbitMq.Tests/Messaging/RabbitMqServerTests.cs) for examples.
 
 #### Message Filters
 
@@ -67,7 +61,7 @@ RabbitMqExtensions.CreateQueueFilter = (s, args) => {
 
 ### POCO Messages
 
-you can use any POCO for your messages (aka Request DTOs) which are serialized with JSON and embedded as the body payload, a simple example is just:
+You can use any POCO for your messages (aka Request DTOs) which are serialized with JSON and embedded as the body payload, a simple example is just:
 
 ```csharp
 public class Hello {
@@ -88,7 +82,7 @@ mqServer.RegisterHandler<Hello>(m => {
 });
 ```
 
-Each handler receives an [IMqMessage<T>](src/TheOne.RabbitMq/Interfaces/IMqMessage.cs)
+Each handler receives an [IMqMessage<T>](../src/TheOne.RabbitMq/Interfaces/IMqMessage.cs)
 which is just the body of the message that was sent (i.e. `T`) wrapped inside an `IMqMessage` container containing the metadata of the received message.
 Inside your handler you can use `IMqMessage.GetBody()` to extract the typed body, and in this case there is no response and simply returning `null`.
 
@@ -113,7 +107,7 @@ mqServer.RegisterHandler<Hello>(m => { .. }, noOfThreads:4);
 
 ### Publishing messages
 
-With the mqServer started, you're now ready to start publishing messages, 
+With the mqServer started, you're now ready to start publishing messages,
 you can do with a message queue client that you can get from a new **RabbitMqMessageFactory** or the mqServer directly, e.g:
 
 ```csharp
@@ -122,11 +116,11 @@ using (var mqClient = mqServer.CreateMessageQueueClient()) {
 }
 ```
 
-The above shows the most common usage where you can publish POCO's directly, 
-behind the scenes this gets serialized as JSON and embedded as the payload of a new persistent message 
-that's sent using a **routing key** of the same name as the destination queue which by convention is mapped 1:1 to a queue of the same name, 
-i.e: **theone:mq.Hello.direct**. In effect, 
-publishing messages are sent to a distinct direct queue that's reserved for each message type, 
+The above shows the most common usage where you can publish POCO's directly,
+behind the scenes this gets serialized as JSON and embedded as the payload of a new persistent message
+that's sent using a **routing key** of the same name as the destination queue which by convention is mapped 1:1 to a queue of the same name,
+i.e: **theone:mq.Hello.direct**. In effect,
+publishing messages are sent to a distinct direct queue that's reserved for each message type,
 essentially behaving as a work queue.
 
 ## Message Workflow
@@ -137,7 +131,7 @@ By default, `.direct` queues has `x-max-priority` header with value `10` set. yo
 
 ### Notification messages
 
-`MqQueueNames<...>.Topic` is non-durable topic, designed to be transient, 
+`MqQueueNames<...>.Topic` is non-durable topic, designed to be transient,
 and only used for notification purposes,
 it's not meant to be relied on as a durable queue for persisting all Request DTO's processed.
 
@@ -175,8 +169,8 @@ responseMsg.GetBody().Result // = Hello, World!
 
 ### Responses from Handlers with ReplyTo are published to that address
 
-Whilst for the most part you'll only need to publish POCO messages, 
-you can also alter the default behavior by providing a customized `IMqMessage<T>` wrapper which `RabbitMqServer` will send instead, 
+Whilst for the most part you'll only need to publish POCO messages,
+you can also alter the default behavior by providing a customized `IMqMessage<T>` wrapper which `RabbitMqServer` will send instead,
 e.g. you can specify your own **ReplyTo** address to change the queue where the response gets published, e.g:
 
 ```csharp
@@ -192,7 +186,7 @@ responseMsg.GetBody().Result // = Hello, World!
 
 ### Messages that generate exceptions can be retried, then published to the dead-letter-queue (.dlq)
 
-By default Rabbit Mq Server lets you specify whether or not you want messages that cause an exception to be retried by specifying a RetryCount of 1 (default), 
+By default Rabbit Mq Server lets you specify whether or not you want messages that cause an exception to be retried by specifying a RetryCount of 1 (default),
 or if you don't want any messages retried, specify a value of 0, e.g:
 
 ```csharp
@@ -209,7 +203,7 @@ mqServer.RegisterHandler<Hello>(m => {
 });
 ```
 
-Now when we publish a message the response instead gets published to the messages **.dlq**, after it's first transparently retried. 
+Now when we publish a message the response instead gets published to the messages **.dlq**, after it's first transparently retried.
 We can verify this behavior by checking `called=2`:
 
 ```csharp
@@ -237,15 +231,11 @@ mqClient.Publish(dlqMsg.GetBody());
 mqClient.Ack(dlqMsg);
 ```
 
-This is useful for recovering failed messages after identifying and fixing bugs that were previously causing exceptions, 
+This is useful for recovering failed messages after identifying and fixing bugs that were previously causing exceptions,
 where you can replay and re-process `.dlq` messages and continue processing them as normal.
 
 ## Mq Queue Name convention
 
 Queue name is simply the POCO's name combine with customizable prefix and postfix.
 
-see [MqQueueNames.cs](src/TheOne.RabbitMq/Models/MqQueueNames.cs) and [MqQueueNamesTests](src/TheOne.RabbitMq.Tests/Messaging/MqQueueNamesTests.cs) for example.
-
-## Logging
-
-see [LibLog](https://github.com/damianh/LibLog/wiki#transparent-logging-support)
+see [MqQueueNames.cs](../src/TheOne.RabbitMq/Models/MqQueueNames.cs) and [MqQueueNamesTests](../src/TheOne.RabbitMq.Tests/Messaging/MqQueueNamesTests.cs) for example.
