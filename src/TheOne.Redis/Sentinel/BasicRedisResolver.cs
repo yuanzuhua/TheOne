@@ -7,10 +7,12 @@ using TheOne.Redis.ClientManager;
 
 namespace TheOne.Redis.Sentinel {
 
+    /// <inheritdoc />
     public class BasicRedisResolver : IRedisResolverExtended {
 
         private static readonly ILog _logger = LogProvider.GetLogger(typeof(BasicRedisResolver));
 
+        /// <inheritdoc />
         public BasicRedisResolver(IEnumerable<RedisEndpoint> masters, IEnumerable<RedisEndpoint> slaves) {
             this.ResetMasters(masters.ToList());
             this.ResetSlaves(slaves.ToList());
@@ -21,35 +23,45 @@ namespace TheOne.Redis.Sentinel {
 
         public RedisEndpoint[] Slaves { get; private set; }
 
+        /// <inheritdoc />
         public Func<RedisEndpoint, RedisClient> ClientFactory { get; set; }
 
+        /// <inheritdoc />
         public int ReadWriteHostsCount { get; private set; }
+        /// <inheritdoc />
         public int ReadOnlyHostsCount { get; private set; }
 
+        /// <inheritdoc />
         public virtual void ResetMasters(IEnumerable<string> hosts) {
             this.ResetMasters(RedisEndpoint.Create(hosts));
         }
 
+        /// <inheritdoc />
         public virtual void ResetSlaves(IEnumerable<string> hosts) {
             this.ResetSlaves(RedisEndpoint.Create(hosts));
         }
 
+        /// <inheritdoc />
         public RedisClient CreateMasterClient(int desiredIndex) {
             return this.CreateRedisClient(this.GetReadWriteHost(desiredIndex), true);
         }
 
+        /// <inheritdoc />
         public RedisClient CreateSlaveClient(int desiredIndex) {
             return this.CreateRedisClient(this.GetReadOnlyHost(desiredIndex), false);
         }
 
+        /// <inheritdoc />
         public RedisClient CreateRedisClient(RedisEndpoint config, bool master) {
             return this.ClientFactory(config);
         }
 
+        /// <inheritdoc />
         public RedisEndpoint GetReadWriteHost(int desiredIndex) {
             return this.Masters[desiredIndex % this.Masters.Length];
         }
 
+        /// <inheritdoc />
         public RedisEndpoint GetReadOnlyHost(int desiredIndex) {
             return this.ReadOnlyHostsCount > 0
                 ? this.Slaves[desiredIndex % this.Slaves.Length]

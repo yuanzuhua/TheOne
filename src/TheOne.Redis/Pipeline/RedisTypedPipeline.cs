@@ -13,6 +13,7 @@ namespace TheOne.Redis.Pipeline {
             this.Init();
         }
 
+        /// <inheritdoc />
         public void Flush() {
             try {
 
@@ -31,6 +32,7 @@ namespace TheOne.Redis.Pipeline {
             }
         }
 
+        /// <inheritdoc />
         public virtual bool Replay() {
             this.RedisClient.Pipeline = this;
             this.Execute();
@@ -38,6 +40,7 @@ namespace TheOne.Redis.Pipeline {
             return true;
         }
 
+        /// <inheritdoc />
         public virtual void Dispose() {
             this.ClosePipeline();
         }

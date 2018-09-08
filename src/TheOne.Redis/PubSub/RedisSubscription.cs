@@ -24,12 +24,20 @@ namespace TheOne.Redis.PubSub {
         }
 
         public bool IsPSubscription { get; private set; }
+
+        /// <inheritdoc />
         public long SubscriptionCount { get; private set; }
 
+        /// <inheritdoc />
         public Action<string> OnSubscribe { get; set; }
+
+        /// <inheritdoc />
         public Action<string, string> OnMessage { get; set; }
+
+        /// <inheritdoc />
         public Action<string> OnUnSubscribe { get; set; }
 
+        /// <inheritdoc />
         public void SubscribeToChannels(params string[] channels) {
             byte[][] multiBytes = this._redisClient.Subscribe(channels);
             this.ParseSubscriptionResults(multiBytes);
@@ -40,6 +48,7 @@ namespace TheOne.Redis.PubSub {
             }
         }
 
+        /// <inheritdoc />
         public void SubscribeToChannelsMatching(params string[] patterns) {
             byte[][] multiBytes = this._redisClient.PSubscribe(patterns);
             this.ParseSubscriptionResults(multiBytes);
@@ -50,6 +59,7 @@ namespace TheOne.Redis.PubSub {
             }
         }
 
+        /// <inheritdoc />
         public void UnSubscribeFromAllChannels() {
             if (this._activeChannels.Count == 0) {
                 return;
@@ -61,16 +71,19 @@ namespace TheOne.Redis.PubSub {
             this._activeChannels = new List<string>();
         }
 
+        /// <inheritdoc />
         public void UnSubscribeFromChannels(params string[] channels) {
             byte[][] multiBytes = this._redisClient.UnSubscribe(channels);
             this.ParseSubscriptionResults(multiBytes);
         }
 
+        /// <inheritdoc />
         public void UnSubscribeFromChannelsMatching(params string[] patterns) {
             byte[][] multiBytes = this._redisClient.PUnSubscribe(patterns);
             this.ParseSubscriptionResults(multiBytes);
         }
 
+        /// <inheritdoc />
         public void Dispose() {
             if (this.IsPSubscription) {
                 this.UnSubscribeFromAllChannelsMatchingAnyPatterns();

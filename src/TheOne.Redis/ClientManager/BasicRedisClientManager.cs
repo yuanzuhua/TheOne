@@ -27,10 +27,13 @@ namespace TheOne.Redis.ClientManager {
         private int _readWriteHostsIndex;
         protected int RedisClientCounter;
 
+        /// <inheritdoc />
         public BasicRedisClientManager() : this(RedisConfig.DefaultHost) { }
 
+        /// <inheritdoc />
         public BasicRedisClientManager(params string[] readWriteHosts) : this(readWriteHosts, readWriteHosts) { }
 
+        /// <inheritdoc />
         public BasicRedisClientManager(int initialDb, params string[] readWriteHosts) : this(readWriteHosts, readWriteHosts, initialDb) { }
 
         /// <summary>
@@ -47,6 +50,7 @@ namespace TheOne.Redis.ClientManager {
             long? initalDb = null)
             : this(RedisEndpoint.Create(readWriteHosts), RedisEndpoint.Create(readOnlyHosts), initalDb) { }
 
+        /// <inheritdoc />
         public BasicRedisClientManager(
             IEnumerable<RedisEndpoint> readWriteHosts,
             IEnumerable<RedisEndpoint> readOnlyHosts,
@@ -77,14 +81,17 @@ namespace TheOne.Redis.ClientManager {
 
         public Action<IRedisNativeClient> ConnectionFilter { get; set; }
 
+        /// <inheritdoc />
         public void SetAll<T>(IDictionary<string, T> values) {
             foreach (KeyValuePair<string, T> entry in values) {
                 this.Set(entry.Key, entry.Value);
             }
         }
 
+        /// <inheritdoc />
         public void Dispose() { }
 
+        /// <inheritdoc />
         public IRedisResolver RedisResolver { get; set; }
 
         /// <summary>
@@ -103,12 +110,15 @@ namespace TheOne.Redis.ClientManager {
             return client;
         }
 
+        /// <inheritdoc />
         public List<Action<IRedisClientManager>> OnFailover { get; }
 
+        /// <inheritdoc />
         public void FailoverTo(params string[] readWriteHosts) {
             this.FailoverTo(readWriteHosts, readWriteHosts);
         }
 
+        /// <inheritdoc />
         public void FailoverTo(IEnumerable<string> readWriteHosts, IEnumerable<string> readOnlyHosts) {
             Interlocked.Increment(ref RedisState.TotalFailovers);
 

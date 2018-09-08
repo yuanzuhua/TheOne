@@ -440,6 +440,7 @@ namespace TheOne.Redis.Client {
                     : end;
         }
 
+        /// <inheritdoc />
         internal class RedisClientSortedSets : IHasNamed<IRedisSortedSet> {
 
             private readonly RedisClient _client;
@@ -448,7 +449,7 @@ namespace TheOne.Redis.Client {
                 this._client = client;
             }
 
-        /// <inheritdoc />
+            /// <inheritdoc />
             public IRedisSortedSet this[string setId] {
                 get => new RedisClientSortedSet(this._client, setId);
                 set {

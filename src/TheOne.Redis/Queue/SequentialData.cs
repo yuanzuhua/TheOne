@@ -2,19 +2,23 @@ using System.Collections.Generic;
 
 namespace TheOne.Redis.Queue {
 
+    /// <inheritdoc />
     public class SequentialData<T> : ISequentialData<T> where T : class {
 
         private readonly RedisSequentialWorkQueue<T>.DequeueManager _dequeueManager;
         private int _processedCount;
 
+        /// <inheritdoc />
         public SequentialData(string dequeueId, IList<T> dequeueItems, RedisSequentialWorkQueue<T>.DequeueManager dequeueManager) {
             this.DequeueId = dequeueId;
             this.DequeueItems = dequeueItems;
             this._dequeueManager = dequeueManager;
         }
 
+        /// <inheritdoc />
         public IList<T> DequeueItems { get; private set; }
 
+        /// <inheritdoc />
         public string DequeueId { get; }
 
         /// <summary>

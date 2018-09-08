@@ -23,6 +23,7 @@ namespace TheOne.Redis.Pipeline {
         public Func<IRedisClient, RedisText> RedisTextReturnCommand { get; set; }
         public Func<IRedisClient, double> DoubleReturnCommand { get; set; }
 
+        /// <inheritdoc />
         public override void Execute(IRedisClient client) {
             try {
                 if (this.VoidReturnCommand != null) {

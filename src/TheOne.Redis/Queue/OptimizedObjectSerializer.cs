@@ -12,11 +12,13 @@ namespace TheOne.Redis.Queue {
 
         internal const ushort RawDataFlag = 0xfa52;
 
+        /// <inheritdoc />
         public override byte[] Serialize(object value) {
             SerializedObjectWrapper temp = this.SerializeToWrapper(value);
             return base.Serialize(temp);
         }
 
+        /// <inheritdoc />
         public override object Deserialize(byte[] someBytes) {
             var temp = (SerializedObjectWrapper)base.Deserialize(someBytes);
             return this.Unwrap(temp);

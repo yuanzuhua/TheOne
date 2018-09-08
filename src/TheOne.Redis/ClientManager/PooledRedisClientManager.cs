@@ -30,14 +30,18 @@ namespace TheOne.Redis.ClientManager {
         protected int RedisClientCounter;
         protected int WritePoolIndex;
 
+        /// <inheritdoc />
         public PooledRedisClientManager() : this(RedisConfig.DefaultHost) { }
 
+        /// <inheritdoc />
         public PooledRedisClientManager(int poolSize, int poolTimeOutSeconds, params string[] readWriteHosts)
             : this(readWriteHosts, readWriteHosts, null, null, poolSize, poolTimeOutSeconds) { }
 
+        /// <inheritdoc />
         public PooledRedisClientManager(long initialDb, params string[] readWriteHosts)
             : this(readWriteHosts, readWriteHosts, initialDb) { }
 
+        /// <inheritdoc />
         public PooledRedisClientManager(params string[] readWriteHosts)
             : this(readWriteHosts, readWriteHosts) { }
 
@@ -55,12 +59,14 @@ namespace TheOne.Redis.ClientManager {
             RedisClientManagerConfig config = null)
             : this(readWriteHosts, readOnlyHosts, config, null, null, null) { }
 
+        /// <inheritdoc />
         public PooledRedisClientManager(
             IEnumerable<string> readWriteHosts,
             IEnumerable<string> readOnlyHosts,
             long initalDb)
             : this(readWriteHosts, readOnlyHosts, null, initalDb, null, null) { }
 
+        /// <inheritdoc />
         public PooledRedisClientManager(
             IEnumerable<string> readWriteHosts,
             IEnumerable<string> readOnlyHosts,
@@ -116,6 +122,7 @@ namespace TheOne.Redis.ClientManager {
 
         public Action<IRedisNativeClient> ConnectionFilter { get; set; }
 
+        /// <inheritdoc />
         public void DisposeClient(RedisNativeClient client) {
             lock (this._readClients) {
                 for (var i = 0; i < this._readClients.Length; i++) {
@@ -165,11 +172,13 @@ namespace TheOne.Redis.ClientManager {
             }
         }
 
+        /// <inheritdoc />
         public IRedisResolver RedisResolver { get; set; }
 
         /// <summary>
         ///     Returns a Read/Write client (The default) using the hosts defined in ReadWriteHosts
         /// </summary>
+        /// <inheritdoc />
         public IRedisClient GetClient() {
             try {
                 var poolTimedOut = false;
@@ -331,25 +340,31 @@ namespace TheOne.Redis.ClientManager {
             }
         }
 
+        /// <inheritdoc />
         public void Dispose() {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <inheritdoc cref="IRedisClientManager.GetCacheClient" />
         public ICacheClient GetCacheClient() {
             return new RedisClientManagerCacheClient(this);
         }
 
+        /// <inheritdoc cref="IRedisClientManager.GetReadOnlyCacheClient" />
         public ICacheClient GetReadOnlyCacheClient() {
             return new RedisClientManagerCacheClient(this) { ReadOnly = true };
         }
 
+        /// <inheritdoc />
         public List<Action<IRedisClientManager>> OnFailover { get; }
 
+        /// <inheritdoc />
         public void FailoverTo(params string[] readWriteHosts) {
             this.FailoverTo(readWriteHosts, readWriteHosts);
         }
 
+        /// <inheritdoc />
         public void FailoverTo(IEnumerable<string> readWriteHosts, IEnumerable<string> readOnlyHosts) {
             Interlocked.Increment(ref RedisState.TotalFailovers);
 

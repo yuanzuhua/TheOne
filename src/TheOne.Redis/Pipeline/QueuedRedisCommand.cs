@@ -9,6 +9,7 @@ namespace TheOne.Redis.Pipeline {
     /// </summary>
     internal class QueuedRedisCommand : RedisCommand {
 
+        /// <inheritdoc />
         public override void Execute(IRedisClient client) {
             try {
                 if (this.VoidReturnCommand != null) {

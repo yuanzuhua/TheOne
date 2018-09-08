@@ -31,27 +31,33 @@ namespace TheOne.Redis.Client {
                         .ToDictionary(pair => pair.Key, pair => pair.Value);
             };
 
+        /// <inheritdoc />
         public RedisClient() {
             this.Init();
         }
 
+        /// <inheritdoc />
         public RedisClient(string host) : base(host) {
             this.Init();
         }
 
+        /// <inheritdoc />
         public RedisClient(RedisEndpoint config) : base(config) {
             this.Init();
         }
 
+        /// <inheritdoc />
         public RedisClient(string host, int port) : base(host, port) {
             this.Init();
         }
 
+        /// <inheritdoc />
         public RedisClient(string host, int port, string password = null, long db = RedisConfig.DefaultDb) :
             base(host, port, password, db) {
             this.Init();
         }
 
+        /// <inheritdoc />
         public RedisClient(Uri uri)
             : base(uri.Host, uri.Port) {
             var password = !string.IsNullOrEmpty(uri.UserInfo) ? uri.UserInfo.Split(':').Last() : null;

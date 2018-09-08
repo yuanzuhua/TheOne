@@ -3,6 +3,7 @@ using System.Threading;
 
 namespace TheOne.Redis.Queue.Locking {
 
+    /// <inheritdoc />
     public class WriteLock : IDisposable {
 
         private readonly ReaderWriterLockSlim _lockObject;

@@ -31,9 +31,11 @@ namespace TheOne.Redis.Sentinel {
         private int _sentinelIndex = -1;
         private RedisSentinelWorker _worker;
 
+        /// <inheritdoc />
         public RedisSentinel(string sentinelHost = null, string masterName = null)
             : this(new[] { sentinelHost ?? DefaultAddress }, masterName ?? DefaultMasterName) { }
 
+        /// <inheritdoc />
         public RedisSentinel(IEnumerable<string> sentinelHosts, string masterName = null) {
             this.SentinelHosts = sentinelHosts?.ToList();
 

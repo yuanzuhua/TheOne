@@ -8,6 +8,7 @@ namespace TheOne.Redis.Client {
 
     public partial class RedisTypedClient<T> {
 
+        /// <inheritdoc />
         public void StoreRelatedEntities<TChild>(object parentId, List<TChild> children) {
             var childRefKey = this.GetChildReferenceSetKey<TChild>(parentId);
             List<string> childKeys = children.ConvertAll(x => this._client.UrnKey(x));
@@ -21,21 +22,25 @@ namespace TheOne.Redis.Client {
             }
         }
 
+        /// <inheritdoc />
         public void StoreRelatedEntities<TChild>(object parentId, params TChild[] children) {
             this.StoreRelatedEntities(parentId, new List<TChild>(children));
         }
 
+        /// <inheritdoc />
         public void DeleteRelatedEntity<TChild>(object parentId, object childId) {
             var childRefKey = this.GetChildReferenceSetKey<TChild>(parentId);
 
             this._client.RemoveItemFromSet(childRefKey, childId.ToJson());
         }
 
+        /// <inheritdoc />
         public void DeleteRelatedEntities<TChild>(object parentId) {
             var childRefKey = this.GetChildReferenceSetKey<TChild>(parentId);
             this._client.Remove(childRefKey);
         }
 
+        /// <inheritdoc />
         public List<TChild> GetRelatedEntities<TChild>(object parentId) {
             var childRefKey = this.GetChildReferenceSetKey<TChild>(parentId);
             List<string> childKeys = this._client.GetAllItemsFromSet(childRefKey).ToList();
@@ -43,17 +48,20 @@ namespace TheOne.Redis.Client {
             return this._client.As<TChild>().GetValues(childKeys);
         }
 
+        /// <inheritdoc />
         public long GetRelatedEntitiesCount<TChild>(object parentId) {
             var childRefKey = this.GetChildReferenceSetKey<TChild>(parentId);
             return this._client.GetSetCount(childRefKey);
         }
 
+        /// <inheritdoc />
         public void AddToRecentsList(T value) {
             var key = this._client.UrnKey(value);
             var nowScore = DateTime.UtcNow.ToUnixTime();
             this._client.AddItemToSortedSet(this._recentSortedSetKey, key, nowScore);
         }
 
+        /// <inheritdoc />
         public List<T> GetLatestFromRecentsList(int skip, int take) {
             var toRank = take - 1;
             List<string> keys = this._client.GetRangeFromSortedSetDesc(this._recentSortedSetKey, skip, toRank);
@@ -61,6 +69,7 @@ namespace TheOne.Redis.Client {
             return values;
         }
 
+        /// <inheritdoc />
         public List<T> GetEarliestFromRecentsList(int skip, int take) {
             var toRank = take - 1;
             List<string> keys = this._client.GetRangeFromSortedSet(this._recentSortedSetKey, skip, toRank);

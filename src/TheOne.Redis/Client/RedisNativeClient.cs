@@ -57,13 +57,15 @@ namespace TheOne.Redis.Client {
         protected Socket Socket;
         protected SslStream SslStream;
 
-        public RedisNativeClient(string connectionString)
-            : this(RedisEndpoint.Create(connectionString)) { }
+        /// <inheritdoc />
+        public RedisNativeClient(string connectionString) : this(RedisEndpoint.Create(connectionString)) { }
 
+        /// <inheritdoc />
         public RedisNativeClient(RedisEndpoint config) {
             this.Init(config);
         }
 
+        /// <inheritdoc />
         public RedisNativeClient(string host, int port, string password = null, long db = RedisConfig.DefaultDb) {
             if (host == null) {
                 throw new ArgumentNullException(nameof(host));
@@ -72,6 +74,7 @@ namespace TheOne.Redis.Client {
             this.Init(new RedisEndpoint(host, port, password, db));
         }
 
+        /// <inheritdoc />
         public RedisNativeClient() : this(RedisConfig.DefaultHost, RedisConfig.DefaultPort) { }
 
         public DateTime? DeactivatedAt {
@@ -241,6 +244,7 @@ namespace TheOne.Redis.Client {
 
         private long _db;
 
+        /// <inheritdoc />
         public long Db {
             get => this._db;
 
@@ -258,8 +262,10 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(Commands.Select, db.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long DbSize => this.SendExpectLong(Commands.DbSize);
 
+        /// <inheritdoc />
         public DateTime LastSave {
             get {
                 var t = this.SendExpectLong(Commands.LastSave);
@@ -267,6 +273,7 @@ namespace TheOne.Redis.Client {
             }
         }
 
+        /// <inheritdoc />
         public Dictionary<string, string> Info {
             get {
                 var lines = this.SendExpectString(Commands.Info);
@@ -293,6 +300,7 @@ namespace TheOne.Redis.Client {
             }
         }
 
+        /// <inheritdoc />
         public RedisData RawCommand(params object[] cmdWithArgs) {
             var byteArgs = new List<byte[]>();
 
@@ -317,54 +325,67 @@ namespace TheOne.Redis.Client {
             return data;
         }
 
+        /// <inheritdoc />
         public RedisData RawCommand(params byte[][] cmdWithBinaryArgs) {
             return this.SendExpectComplexResponse(cmdWithBinaryArgs);
         }
 
+        /// <inheritdoc />
         public bool Ping() {
             return this.SendExpectCode(Commands.Ping) == "PONG";
         }
 
+        /// <inheritdoc />
         public string Echo(string text) {
             return this.SendExpectData(Commands.Echo, text.ToUtf8Bytes()).FromUtf8Bytes();
         }
 
+        /// <inheritdoc />
         public void SlaveOf(string hostname, int port) {
             this.SendExpectSuccess(Commands.SlaveOf, hostname.ToUtf8Bytes(), port.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public void SlaveOfNoOne() {
             this.SendExpectSuccess(Commands.SlaveOf, Commands.No, Commands.One);
         }
 
+        /// <inheritdoc />
         public byte[][] ConfigGet(string pattern) {
             return this.SendExpectMultiData(Commands.Config, Commands.Get, pattern.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public void ConfigSet(string item, byte[] value) {
             this.SendExpectSuccess(Commands.Config, Commands.Set, item.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public void ConfigResetStat() {
             this.SendExpectSuccess(Commands.Config, Commands.ResetStat);
         }
 
+        /// <inheritdoc />
         public void ConfigRewrite() {
             this.SendExpectSuccess(Commands.Config, Commands.Rewrite);
         }
 
+        /// <inheritdoc />
         public byte[][] Time() {
             return this.SendExpectMultiData(Commands.Time);
         }
 
+        /// <inheritdoc />
         public void DebugSegfault() {
             this.SendExpectSuccess(Commands.Debug, Commands.Segfault);
         }
 
+        /// <inheritdoc />
         public void DebugSleep(double durationSecs) {
             this.SendExpectSuccess(Commands.Debug, Commands.Sleep, durationSecs.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[] Dump(string key) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -373,6 +394,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(Commands.Dump, key.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[] Restore(string key, long expireMs, byte[] dumpValue) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -381,6 +403,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(Commands.Restore, key.ToUtf8Bytes(), expireMs.ToUtf8Bytes(), dumpValue);
         }
 
+        /// <inheritdoc />
         public void Migrate(string host, int port, string key, int destinationDb, long timeoutMs) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -394,6 +417,7 @@ namespace TheOne.Redis.Client {
                 timeoutMs.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public bool Move(string key, int db) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -402,6 +426,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.Move, key.ToUtf8Bytes(), db.ToUtf8Bytes()) == Success;
         }
 
+        /// <inheritdoc />
         public long ObjectIdleTime(string key) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -410,6 +435,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.Object, Commands.IdleTime, key.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public string Type(string key) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -438,6 +464,7 @@ namespace TheOne.Redis.Client {
             throw this.CreateResponseError($"Invalid Type '{type}'");
         }
 
+        /// <inheritdoc />
         public long StrLen(string key) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -446,6 +473,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.StrLen, key.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public void Set(string key, byte[] value) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -504,6 +532,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectString(Commands.Set, key.ToUtf8Bytes(), value, entryExists) == _ok;
         }
 
+        /// <inheritdoc />
         public void SetEx(string key, int expireInSeconds, byte[] value) {
             this.SetEx(key.ToUtf8Bytes(), expireInSeconds, value);
         }
@@ -522,6 +551,7 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(Commands.SetEx, key, expireInSeconds.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public bool Persist(string key) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -530,6 +560,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.Persist, key.ToUtf8Bytes()) == Success;
         }
 
+        /// <inheritdoc />
         public void PSetEx(string key, long expireInMs, byte[] value) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -538,6 +569,7 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(Commands.PSetEx, key.ToUtf8Bytes(), expireInMs.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public long SetNX(string key, byte[] value) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -552,26 +584,31 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.SetNx, key.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public void MSet(byte[][] keys, byte[][] values) {
             byte[][] keysAndValues = MergeCommandWithKeysAndValues(Commands.MSet, keys, values);
 
             this.SendExpectSuccess(keysAndValues);
         }
 
+        /// <inheritdoc />
         public void MSet(string[] keys, byte[][] values) {
             this.MSet(keys.ToMultiByteArray(), values);
         }
 
+        /// <inheritdoc />
         public bool MSetNx(byte[][] keys, byte[][] values) {
             byte[][] keysAndValues = MergeCommandWithKeysAndValues(Commands.MSet, keys, values);
 
             return this.SendExpectLong(keysAndValues) == Success;
         }
 
+        /// <inheritdoc />
         public bool MSetNx(string[] keys, byte[][] values) {
             return this.MSetNx(keys.ToMultiByteArray(), values);
         }
 
+        /// <inheritdoc />
         public byte[] Get(string key) {
             return this.GetBytes(key);
         }
@@ -604,6 +641,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(Commands.Get, key.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[] GetSet(string key, byte[] value) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -618,6 +656,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(Commands.GetSet, key.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public long Exists(string key) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -626,6 +665,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.Exists, key.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long Del(string key) {
             return this.Del(key.ToUtf8Bytes());
         }
@@ -638,6 +678,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.Del, key);
         }
 
+        /// <inheritdoc />
         public long Del(params string[] keys) {
             if (keys == null) {
                 throw new ArgumentNullException(nameof(keys));
@@ -647,6 +688,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public long Incr(string key) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -655,6 +697,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.Incr, key.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long IncrBy(string key, int count) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -671,6 +714,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.IncrBy, key.ToUtf8Bytes(), count.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public double IncrByFloat(string key, double incrBy) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -687,6 +731,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.Decr, key.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long DecrBy(string key, int count) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -695,6 +740,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.DecrBy, key.ToUtf8Bytes(), count.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long Append(string key, byte[] value) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -703,6 +749,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.Append, key.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public byte[] GetRange(string key, int fromIndex, int toIndex) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -711,6 +758,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(Commands.GetRange, key.ToUtf8Bytes(), fromIndex.ToUtf8Bytes(), toIndex.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long SetRange(string key, int offset, byte[] value) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -719,6 +767,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.SetRange, key.ToUtf8Bytes(), offset.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public long GetBit(string key, int offset) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -727,6 +776,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.GetBit, key.ToUtf8Bytes(), offset.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long SetBit(string key, int offset, int value) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -747,10 +797,12 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.BitCount, key.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public string RandomKey() {
             return this.SendExpectData(Commands.RandomKey).FromUtf8Bytes();
         }
 
+        /// <inheritdoc />
         public void Rename(string oldKeyname, string newKeyname) {
             if (oldKeyname == null) {
                 throw new ArgumentNullException(nameof(oldKeyname));
@@ -763,6 +815,7 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(Commands.Rename, oldKeyname.ToUtf8Bytes(), newKeyname.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public bool RenameNx(string oldKeyname, string newKeyname) {
             if (oldKeyname == null) {
                 throw new ArgumentNullException(nameof(oldKeyname));
@@ -775,6 +828,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.RenameNx, oldKeyname.ToUtf8Bytes(), newKeyname.ToUtf8Bytes()) == Success;
         }
 
+        /// <inheritdoc />
         public bool Expire(string key, int seconds) {
             return this.Expire(key.ToUtf8Bytes(), seconds);
         }
@@ -787,6 +841,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.Expire, key, seconds.ToUtf8Bytes()) == Success;
         }
 
+        /// <inheritdoc />
         public bool PExpire(string key, long ttlMs) {
             return this.PExpire(key.ToUtf8Bytes(), ttlMs);
         }
@@ -799,6 +854,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.PExpire, key, ttlMs.ToUtf8Bytes()) == Success;
         }
 
+        /// <inheritdoc />
         public bool ExpireAt(string key, long unixTime) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -807,6 +863,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.ExpireAt, key.ToUtf8Bytes(), unixTime.ToUtf8Bytes()) == Success;
         }
 
+        /// <inheritdoc />
         public bool PExpireAt(string key, long unixTimeMs) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -815,6 +872,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.PExpireAt, key.ToUtf8Bytes(), unixTimeMs.ToUtf8Bytes()) == Success;
         }
 
+        /// <inheritdoc />
         public long Ttl(string key) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -823,6 +881,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.Ttl, key.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long PTtl(string key) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -831,6 +890,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.PTtl, key.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public void Save() {
             this.SendExpectSuccess(Commands.Save);
         }
@@ -839,10 +899,12 @@ namespace TheOne.Redis.Client {
             this.BgSave();
         }
 
+        /// <inheritdoc />
         public void BgSave() {
             this.SendExpectSuccess(Commands.BgSave);
         }
 
+        /// <inheritdoc />
         public void Shutdown() {
             this.SendWithoutRead(Commands.Shutdown);
         }
@@ -851,18 +913,22 @@ namespace TheOne.Redis.Client {
             this.SendWithoutRead(Commands.Shutdown, Commands.NoSave);
         }
 
+        /// <inheritdoc />
         public void BgRewriteAof() {
             this.SendExpectSuccess(Commands.BgRewriteAof);
         }
 
+        /// <inheritdoc />
         public void Quit() {
             this.SendWithoutRead(Commands.Quit);
         }
 
+        /// <inheritdoc />
         public void FlushDb() {
             this.SendExpectSuccess(Commands.FlushDb);
         }
 
+        /// <inheritdoc />
         public void FlushAll() {
             this.SendExpectSuccess(Commands.FlushAll);
         }
@@ -871,10 +937,12 @@ namespace TheOne.Redis.Client {
             return this.SendExpectComplexResponse(Commands.Role).ToRedisText();
         }
 
+        /// <inheritdoc />
         public string ClientGetName() {
             return this.SendExpectString(Commands.Client, Commands.GetName);
         }
 
+        /// <inheritdoc />
         public void ClientSetName(string name) {
             if (string.IsNullOrEmpty(name)) {
                 throw new ArgumentException("Name cannot be null or empty");
@@ -887,18 +955,22 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(Commands.Client, Commands.SetName, name.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public void ClientPause(int timeoutMs) {
             this.SendExpectSuccess(Commands.Client, Commands.Pause, timeoutMs.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[] ClientList() {
             return this.SendExpectData(Commands.Client, Commands.List);
         }
 
+        /// <inheritdoc />
         public void ClientKill(string clientAddr) {
             this.SendExpectSuccess(Commands.Client, Commands.Kill, clientAddr.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long ClientKill(string addr = null, string id = null, string type = null, string skipMe = null) {
             var cmdWithArgs = new List<byte[]> {
                 Commands.Client,
@@ -928,6 +1000,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdWithArgs.ToArray());
         }
 
+        /// <inheritdoc />
         public byte[][] Keys(string pattern) {
             if (pattern == null) {
                 throw new ArgumentNullException(nameof(pattern));
@@ -936,6 +1009,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(Commands.Keys, pattern.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[][] MGet(params byte[][] keys) {
             if (keys == null || keys.Length == 0) {
                 throw new ArgumentNullException(nameof(keys));
@@ -946,6 +1020,8 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
+        /// <inheritdoc />
+        /// <inheritdoc />
         public byte[][] MGet(params string[] keys) {
             if (keys == null || keys.Length == 0) {
                 throw new ArgumentNullException(nameof(keys));
@@ -967,6 +1043,7 @@ namespace TheOne.Redis.Client {
 
         }
 
+        /// <inheritdoc />
         public void UnWatch() {
             this.SendExpectCode(Commands.UnWatch);
         }
@@ -990,6 +1067,7 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(Commands.Discard);
         }
 
+        /// <inheritdoc />
         public ScanResult Scan(ulong cursor, int count = 10, string match = null) {
             if (match == null) {
                 return this.SendExpectScanResult(Commands.Scan,
@@ -1006,6 +1084,7 @@ namespace TheOne.Redis.Client {
                 count.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public ScanResult SScan(string setId, ulong cursor, int count = 10, string match = null) {
             if (match == null) {
                 return this.SendExpectScanResult(Commands.SScan,
@@ -1024,6 +1103,7 @@ namespace TheOne.Redis.Client {
                 count.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public ScanResult ZScan(string setId, ulong cursor, int count = 10, string match = null) {
             if (match == null) {
                 return this.SendExpectScanResult(Commands.ZScan,
@@ -1042,6 +1122,7 @@ namespace TheOne.Redis.Client {
                 count.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public ScanResult HScan(string hashId, ulong cursor, int count = 10, string match = null) {
             if (match == null) {
                 return this.SendExpectScanResult(Commands.HScan,
@@ -1059,7 +1140,6 @@ namespace TheOne.Redis.Client {
                 Commands.Count,
                 count.ToUtf8Bytes());
         }
-
 
         internal ScanResult SendExpectScanResult(byte[] cmd, params byte[][] args) {
             byte[][] cmdWithArgs = MergeCommandWithArgs(cmd, args);
@@ -1079,16 +1159,19 @@ namespace TheOne.Redis.Client {
             return ret;
         }
 
+        /// <inheritdoc />
         public bool PfAdd(string key, params byte[][] elements) {
             byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.PfAdd, key.ToUtf8Bytes(), elements);
             return this.SendExpectLong(cmdWithArgs) == 1;
         }
 
+        /// <inheritdoc />
         public long PfCount(string key) {
             byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.PfCount, key.ToUtf8Bytes());
             return this.SendExpectLong(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public void PfMerge(string toKeyId, params string[] fromKeys) {
             byte[][] fromKeyBytes = fromKeys.Select(x => x.ToUtf8Bytes()).ToArray();
             byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.PfMerge, toKeyId.ToUtf8Bytes(), fromKeyBytes);
@@ -1125,6 +1208,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public long SRem(string setId, byte[] value) {
             AssertSetIdAndValue(setId, value);
 
@@ -1144,6 +1228,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public byte[] SPop(string setId) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1152,6 +1237,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(Commands.SPop, setId.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[][] SPop(string setId, int count) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1160,6 +1246,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(Commands.SPop, setId.ToUtf8Bytes(), count.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public void SMove(string fromSetId, string toSetId, byte[] value) {
             if (fromSetId == null) {
                 throw new ArgumentNullException(nameof(fromSetId));
@@ -1172,6 +1259,7 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(Commands.SMove, fromSetId.ToUtf8Bytes(), toSetId.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public long SCard(string setId) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1180,6 +1268,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.SCard, setId.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long SIsMember(string setId, byte[] value) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1188,6 +1277,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.SIsMember, setId.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public byte[][] SInter(params string[] setIds) {
             byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.SInter, setIds);
             return this.SendExpectMultiData(cmdWithArgs);
@@ -1217,6 +1307,7 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public byte[][] SDiff(string fromSetId, params string[] withSetIds) {
             var setIdsList = new List<string>(withSetIds);
             setIdsList.Insert(0, fromSetId);
@@ -1225,6 +1316,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public void SDiffStore(string intoSetId, string fromSetId, params string[] withSetIds) {
             var setIdsList = new List<string>(withSetIds);
             setIdsList.Insert(0, fromSetId);
@@ -1234,6 +1326,7 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public byte[] SRandMember(string setId) {
             return this.SendExpectData(Commands.SRandMember, setId.ToUtf8Bytes());
         }
@@ -1246,6 +1339,7 @@ namespace TheOne.Redis.Client {
 
         #region List Operations
 
+        /// <inheritdoc />
         public byte[][] LRange(string listId, int startingFrom, int endingAt) {
             if (listId == null) {
                 throw new ArgumentNullException(nameof(listId));
@@ -1254,6 +1348,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(Commands.LRange, listId.ToUtf8Bytes(), startingFrom.ToUtf8Bytes(), endingAt.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[][] Sort(string listOrSetId, SortOptions sortOptions) {
             var cmdWithArgs = new List<byte[]> {
                 Commands.Sort,
@@ -1292,6 +1387,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdWithArgs.ToArray());
         }
 
+        /// <inheritdoc />
         public long RPush(string listId, byte[] value) {
             AssertListIdAndValue(listId, value);
 
@@ -1338,12 +1434,14 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public long LPushX(string listId, byte[] value) {
             AssertListIdAndValue(listId, value);
 
             return this.SendExpectLong(Commands.LPushX, listId.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public void LTrim(string listId, int keepStartingFrom, int keepEndingAt) {
             if (listId == null) {
                 throw new ArgumentNullException(nameof(listId));
@@ -1352,6 +1450,7 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(Commands.LTrim, listId.ToUtf8Bytes(), keepStartingFrom.ToUtf8Bytes(), keepEndingAt.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long LRem(string listId, int removeNoOfMatches, byte[] value) {
             if (listId == null) {
                 throw new ArgumentNullException(nameof(listId));
@@ -1360,6 +1459,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.LRem, listId.ToUtf8Bytes(), removeNoOfMatches.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public long LLen(string listId) {
             if (listId == null) {
                 throw new ArgumentNullException(nameof(listId));
@@ -1368,6 +1468,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.LLen, listId.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[] LIndex(string listId, int listIndex) {
             if (listId == null) {
                 throw new ArgumentNullException(nameof(listId));
@@ -1376,6 +1477,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(Commands.LIndex, listId.ToUtf8Bytes(), listIndex.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public void LInsert(string listId, bool insertBefore, byte[] pivot, byte[] value) {
             if (listId == null) {
                 throw new ArgumentNullException(nameof(listId));
@@ -1386,6 +1488,7 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(Commands.LInsert, listId.ToUtf8Bytes(), position, pivot, value);
         }
 
+        /// <inheritdoc />
         public void LSet(string listId, int listIndex, byte[] value) {
             if (listId == null) {
                 throw new ArgumentNullException(nameof(listId));
@@ -1394,6 +1497,7 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(Commands.LSet, listId.ToUtf8Bytes(), listIndex.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public byte[] LPop(string listId) {
             if (listId == null) {
                 throw new ArgumentNullException(nameof(listId));
@@ -1402,6 +1506,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(Commands.LPop, listId.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[] RPop(string listId) {
             if (listId == null) {
                 throw new ArgumentNullException(nameof(listId));
@@ -1410,6 +1515,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(Commands.RPop, listId.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[][] BLPop(string listId, int timeoutSecs) {
             if (listId == null) {
                 throw new ArgumentNullException(nameof(listId));
@@ -1418,6 +1524,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(Commands.BLPop, listId.ToUtf8Bytes(), timeoutSecs.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[][] BLPop(string[] listIds, int timeoutSecs) {
             if (listIds == null) {
                 throw new ArgumentNullException(nameof(listIds));
@@ -1429,6 +1536,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(args.ToArray());
         }
 
+        /// <inheritdoc />
         public byte[] BLPopValue(string listId, int timeoutSecs) {
             byte[][] blockingResponse = this.BLPop(new[] { listId }, timeoutSecs);
             return blockingResponse.Length == 0
@@ -1436,6 +1544,7 @@ namespace TheOne.Redis.Client {
                 : blockingResponse[1];
         }
 
+        /// <inheritdoc />
         public byte[][] BLPopValue(string[] listIds, int timeoutSecs) {
             byte[][] blockingResponse = this.BLPop(listIds, timeoutSecs);
             return blockingResponse.Length == 0
@@ -1443,6 +1552,7 @@ namespace TheOne.Redis.Client {
                 : blockingResponse;
         }
 
+        /// <inheritdoc />
         public byte[][] BRPop(string listId, int timeoutSecs) {
             if (listId == null) {
                 throw new ArgumentNullException(nameof(listId));
@@ -1451,6 +1561,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(Commands.BRPop, listId.ToUtf8Bytes(), timeoutSecs.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[][] BRPop(string[] listIds, int timeoutSecs) {
             if (listIds == null) {
                 throw new ArgumentNullException(nameof(listIds));
@@ -1462,6 +1573,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(args.ToArray());
         }
 
+        /// <inheritdoc />
         public byte[] BRPopValue(string listId, int timeoutSecs) {
             byte[][] blockingResponse = this.BRPop(new[] { listId }, timeoutSecs);
             return blockingResponse.Length == 0
@@ -1469,6 +1581,7 @@ namespace TheOne.Redis.Client {
                 : blockingResponse[1];
         }
 
+        /// <inheritdoc />
         public byte[][] BRPopValue(string[] listIds, int timeoutSecs) {
             byte[][] blockingResponse = this.BRPop(listIds, timeoutSecs);
             return blockingResponse.Length == 0
@@ -1476,6 +1589,7 @@ namespace TheOne.Redis.Client {
                 : blockingResponse;
         }
 
+        /// <inheritdoc />
         public byte[] RPopLPush(string fromListId, string toListId) {
             if (fromListId == null) {
                 throw new ArgumentNullException(nameof(fromListId));
@@ -1488,6 +1602,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(Commands.RPopLPush, fromListId.ToUtf8Bytes(), toListId.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[] BRPopLPush(string fromListId, string toListId, int timeoutSecs) {
             if (fromListId == null) {
                 throw new ArgumentNullException(nameof(fromListId));
@@ -1577,12 +1692,14 @@ namespace TheOne.Redis.Client {
             }
         }
 
+        /// <inheritdoc />
         public long ZAdd(string setId, double score, byte[] value) {
             AssertSetIdAndValue(setId, value);
 
             return this.SendExpectLong(Commands.ZAdd, setId.ToUtf8Bytes(), score.ToFastUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public long ZAdd(string setId, long score, byte[] value) {
             AssertSetIdAndValue(setId, value);
 
@@ -1637,12 +1754,14 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(mergedBytes);
         }
 
+        /// <inheritdoc />
         public long ZRem(string setId, byte[] value) {
             AssertSetIdAndValue(setId, value);
 
             return this.SendExpectLong(Commands.ZRem, setId.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public long ZRem(string setId, byte[][] values) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1656,24 +1775,28 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public double ZIncrBy(string setId, double incrBy, byte[] value) {
             AssertSetIdAndValue(setId, value);
 
             return this.SendExpectDouble(Commands.ZIncrBy, setId.ToUtf8Bytes(), incrBy.ToFastUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public double ZIncrBy(string setId, long incrBy, byte[] value) {
             AssertSetIdAndValue(setId, value);
 
             return this.SendExpectDouble(Commands.ZIncrBy, setId.ToUtf8Bytes(), incrBy.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public long ZRank(string setId, byte[] value) {
             AssertSetIdAndValue(setId, value);
 
             return this.SendExpectLong(Commands.ZRank, setId.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public long ZRevRank(string setId, byte[] value) {
             AssertSetIdAndValue(setId, value);
 
@@ -1699,18 +1822,22 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdWithArgs.ToArray());
         }
 
+        /// <inheritdoc />
         public byte[][] ZRange(string setId, int min, int max) {
             return this.SendExpectMultiData(Commands.ZRange, setId.ToUtf8Bytes(), min.ToUtf8Bytes(), max.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[][] ZRangeWithScores(string setId, int min, int max) {
             return this.GetRange(Commands.ZRange, setId, min, max, true);
         }
 
+        /// <inheritdoc />
         public byte[][] ZRevRange(string setId, int min, int max) {
             return this.GetRange(Commands.ZRevRange, setId, min, max, false);
         }
 
+        /// <inheritdoc />
         public byte[][] ZRevRangeWithScores(string setId, int min, int max) {
             return this.GetRange(Commands.ZRevRange, setId, min, max, true);
         }
@@ -1767,42 +1894,51 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdWithArgs.ToArray());
         }
 
+        /// <inheritdoc />
         public byte[][] ZRangeByScore(string setId, double min, double max, int? skip, int? take) {
             return this.GetRangeByScore(Commands.ZRangeByScore, setId, min, max, skip, take, false);
         }
 
+        /// <inheritdoc />
         public byte[][] ZRangeByScore(string setId, long min, long max, int? skip, int? take) {
             return this.GetRangeByScore(Commands.ZRangeByScore, setId, min, max, skip, take, false);
         }
 
+        /// <inheritdoc />
         public byte[][] ZRangeByScoreWithScores(string setId, double min, double max, int? skip, int? take) {
             return this.GetRangeByScore(Commands.ZRangeByScore, setId, min, max, skip, take, true);
         }
 
+        /// <inheritdoc />
         public byte[][] ZRangeByScoreWithScores(string setId, long min, long max, int? skip, int? take) {
             return this.GetRangeByScore(Commands.ZRangeByScore, setId, min, max, skip, take, true);
         }
 
+        /// <inheritdoc />
         public byte[][] ZRevRangeByScore(string setId, double min, double max, int? skip, int? take) {
             // Note: http://redis.io/commands/zrevrangebyscore has max, min in the wrong other
             return this.GetRangeByScore(Commands.ZRevRangeByScore, setId, max, min, skip, take, false);
         }
 
+        /// <inheritdoc />
         public byte[][] ZRevRangeByScore(string setId, long min, long max, int? skip, int? take) {
             // Note: http://redis.io/commands/zrevrangebyscore has max, min in the wrong other
             return this.GetRangeByScore(Commands.ZRevRangeByScore, setId, max, min, skip, take, false);
         }
 
+        /// <inheritdoc />
         public byte[][] ZRevRangeByScoreWithScores(string setId, double min, double max, int? skip, int? take) {
             // Note: http://redis.io/commands/zrevrangebyscore has max, min in the wrong other
             return this.GetRangeByScore(Commands.ZRevRangeByScore, setId, max, min, skip, take, true);
         }
 
+        /// <inheritdoc />
         public byte[][] ZRevRangeByScoreWithScores(string setId, long min, long max, int? skip, int? take) {
             // Note: http://redis.io/commands/zrevrangebyscore has max, min in the wrong other
             return this.GetRangeByScore(Commands.ZRevRangeByScore, setId, max, min, skip, take, true);
         }
 
+        /// <inheritdoc />
         public long ZRemRangeByRank(string setId, int min, int max) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1814,6 +1950,7 @@ namespace TheOne.Redis.Client {
                 max.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long ZRemRangeByScore(string setId, double fromScore, double toScore) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1825,6 +1962,7 @@ namespace TheOne.Redis.Client {
                 toScore.ToFastUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long ZRemRangeByScore(string setId, long fromScore, long toScore) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1836,6 +1974,7 @@ namespace TheOne.Redis.Client {
                 toScore.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long ZCard(string setId) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1860,6 +1999,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.ZCount, setId.ToUtf8Bytes(), min.ToUtf8Bytes(), max.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public double ZScore(string setId, byte[] value) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1868,6 +2008,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectDouble(Commands.ZScore, setId.ToUtf8Bytes(), value);
         }
 
+        /// <inheritdoc />
         public long ZUnionStore(string intoSetId, params string[] setIds) {
             var setIdsList = new List<string>(setIds);
             setIdsList.Insert(0, setIds.Length.ToString());
@@ -1887,6 +2028,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public long ZInterStore(string intoSetId, params string[] setIds) {
             var setIdsList = new List<string>(setIds);
             setIdsList.Insert(0, setIds.Length.ToString());
@@ -1906,6 +2048,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public byte[][] ZRangeByLex(string setId, string min, string max, int? skip = null, int? take = null) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1927,6 +2070,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdWithArgs.ToArray());
         }
 
+        /// <inheritdoc />
         public long ZLexCount(string setId, string min, string max) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1939,6 +2083,7 @@ namespace TheOne.Redis.Client {
                 max.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long ZRemRangeByLex(string setId, string min, string max) {
             if (setId == null) {
                 throw new ArgumentNullException(nameof(setId));
@@ -1965,6 +2110,7 @@ namespace TheOne.Redis.Client {
             }
         }
 
+        /// <inheritdoc />
         public long HSet(string hashId, byte[] key, byte[] value) {
             return this.HSet(hashId.ToUtf8Bytes(), key, value);
         }
@@ -1975,12 +2121,14 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.HSet, hashId, key, value);
         }
 
+        /// <inheritdoc />
         public long HSetNX(string hashId, byte[] key, byte[] value) {
             AssertHashIdAndKey(hashId, key);
 
             return this.SendExpectLong(Commands.HSetNx, hashId.ToUtf8Bytes(), key, value);
         }
 
+        /// <inheritdoc />
         public void HMSet(string hashId, byte[][] keys, byte[][] values) {
             if (hashId == null) {
                 throw new ArgumentNullException(nameof(hashId));
@@ -1991,6 +2139,7 @@ namespace TheOne.Redis.Client {
             this.SendExpectSuccess(cmdArgs);
         }
 
+        /// <inheritdoc />
         public long HIncrby(string hashId, byte[] key, int incrementBy) {
             AssertHashIdAndKey(hashId, key);
 
@@ -2003,6 +2152,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.HIncrBy, hashId.ToUtf8Bytes(), key, incrementBy.ToString().ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public double HIncrbyFloat(string hashId, byte[] key, double incrementBy) {
             AssertHashIdAndKey(hashId, key);
 
@@ -2012,6 +2162,7 @@ namespace TheOne.Redis.Client {
                 incrementBy.ToString(CultureInfo.InvariantCulture).ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[] HGet(string hashId, byte[] key) {
             return this.HGet(hashId.ToUtf8Bytes(), key);
         }
@@ -2022,6 +2173,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(Commands.HGet, hashId, key);
         }
 
+        /// <inheritdoc />
         public byte[][] HMGet(string hashId, params byte[][] keys) {
             if (hashId == null) {
                 throw new ArgumentNullException(nameof(hashId));
@@ -2036,6 +2188,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdArgs);
         }
 
+        /// <inheritdoc />
         public long HDel(string hashId, byte[] key) {
             return this.HDel(hashId.ToUtf8Bytes(), key);
         }
@@ -2059,12 +2212,14 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public long HExists(string hashId, byte[] key) {
             AssertHashIdAndKey(hashId, key);
 
             return this.SendExpectLong(Commands.HExists, hashId.ToUtf8Bytes(), key);
         }
 
+        /// <inheritdoc />
         public long HLen(string hashId) {
             if (string.IsNullOrEmpty(hashId)) {
                 throw new ArgumentNullException(nameof(hashId));
@@ -2073,6 +2228,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(Commands.HLen, hashId.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[][] HKeys(string hashId) {
             if (hashId == null) {
                 throw new ArgumentNullException(nameof(hashId));
@@ -2081,6 +2237,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(Commands.HKeys, hashId.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[][] HVals(string hashId) {
             if (hashId == null) {
                 throw new ArgumentNullException(nameof(hashId));
@@ -2089,6 +2246,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(Commands.HVals, hashId.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public byte[][] HGetAll(string hashId) {
             if (hashId == null) {
                 throw new ArgumentNullException(nameof(hashId));
@@ -2097,18 +2255,22 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(Commands.HGetAll, hashId.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long Publish(string toChannel, byte[] message) {
             return this.SendExpectLong(Commands.Publish, toChannel.ToUtf8Bytes(), message);
         }
 
+        /// <inheritdoc />
         public byte[][] ReceiveMessages() {
             return this.ReadMultiData();
         }
 
+        /// <inheritdoc />
         public virtual IRedisSubscription CreateSubscription() {
             return new RedisSubscription(this);
         }
 
+        /// <inheritdoc />
         public byte[][] Subscribe(params string[] toChannels) {
             if (toChannels.Length == 0) {
                 throw new ArgumentNullException(nameof(toChannels));
@@ -2118,11 +2280,13 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public byte[][] UnSubscribe(params string[] fromChannels) {
             byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.UnSubscribe, fromChannels);
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public byte[][] PSubscribe(params string[] toChannelsMatchingPatterns) {
             if (toChannelsMatchingPatterns.Length == 0) {
                 throw new ArgumentNullException(nameof(toChannelsMatchingPatterns));
@@ -2132,6 +2296,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public byte[][] PUnSubscribe(params string[] fromChannelsMatchingPatterns) {
             byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.PUnSubscribe, fromChannelsMatchingPatterns);
             return this.SendExpectMultiData(cmdWithArgs);
@@ -2146,6 +2311,7 @@ namespace TheOne.Redis.Client {
 
         #region GEO Operations
 
+        /// <inheritdoc />
         public long GeoAdd(string key, double longitude, double latitude, string member) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -2162,6 +2328,7 @@ namespace TheOne.Redis.Client {
                 member.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public long GeoAdd(string key, params RedisGeo[] geoPoints) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -2179,6 +2346,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdWithArgs);
         }
 
+        /// <inheritdoc />
         public double GeoDist(string key, string fromMember, string toMember, string unit = null) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -2193,6 +2361,7 @@ namespace TheOne.Redis.Client {
                     unit.ToUtf8Bytes());
         }
 
+        /// <inheritdoc />
         public string[] GeoHash(string key, params string[] members) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -2203,6 +2372,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdWithArgs).ToStringArray();
         }
 
+        /// <inheritdoc />
         public List<RedisGeo> GeoPos(string key, params string[] members) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -2234,6 +2404,7 @@ namespace TheOne.Redis.Client {
             return to;
         }
 
+        /// <inheritdoc />
         public List<RedisGeoResult> GeoRadius(string key, double longitude, double latitude, double radius, string unit,
             bool withCoords = false, bool withDist = false, bool withHash = false, int? count = null, bool? asc = null) {
             if (key == null) {
@@ -2307,6 +2478,7 @@ namespace TheOne.Redis.Client {
             return to;
         }
 
+        /// <inheritdoc />
         public List<RedisGeoResult> GeoRadiusByMember(string key, string member, double radius, string unit,
             bool withCoords = false, bool withDist = false, bool withHash = false, int? count = null, bool? asc = null) {
             if (key == null) {

@@ -4,11 +4,6 @@ using TheOne.Redis.Queue.Locking;
 
 namespace TheOne.Redis.Queue {
 
-    /// <summary>
-    ///     distributed work item queue. Each message must have an associated
-    ///     work item  id. For a given id, all work items are guaranteed to be processed
-    ///     in the order in which they are received.
-    /// </summary>
     public partial class RedisSequentialWorkQueue<T> {
 
         public class DequeueManager {

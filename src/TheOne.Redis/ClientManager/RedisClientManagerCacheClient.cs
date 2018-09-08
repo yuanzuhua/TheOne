@@ -16,6 +16,7 @@ namespace TheOne.Redis.ClientManager {
 
         private readonly IRedisClientManager _redisManager;
 
+        /// <inheritdoc />
         public RedisClientManagerCacheClient(IRedisClientManager redisManager) {
             this._redisManager = redisManager;
         }

@@ -12,6 +12,7 @@ namespace TheOne.Redis.Pipeline {
 
         internal RedisTypedTransaction(RedisTypedClient<T> redisClient) : base(redisClient) { }
 
+        /// <inheritdoc />
         public override bool Replay() {
             var rc = true;
             try {
@@ -34,6 +35,7 @@ namespace TheOne.Redis.Pipeline {
             return rc;
         }
 
+        /// <inheritdoc />
         public bool Commit() {
             var rc = true;
             try {
@@ -79,6 +81,7 @@ namespace TheOne.Redis.Pipeline {
             return rc;
         }
 
+        /// <inheritdoc />
         public void Rollback() {
             if (this.RedisClient.Transaction == null) {
                 throw new InvalidOperationException("There is no current transaction to Rollback");
@@ -88,6 +91,7 @@ namespace TheOne.Redis.Pipeline {
             this.RedisClient.ClearTypeIdsRegisteredDuringPipeline();
         }
 
+        /// <inheritdoc />
         public override void Dispose() {
             base.Dispose();
             if (this.RedisClient.Transaction == null) {
@@ -97,6 +101,7 @@ namespace TheOne.Redis.Pipeline {
             this.Rollback();
         }
 
+        /// <inheritdoc />
         protected override void Init() {
             // start pipelining
             base.Init();
@@ -115,7 +120,6 @@ namespace TheOne.Redis.Pipeline {
                     VoidReadCommand = this.RedisClient.ExpectQueued
                 });
         }
-
 
         /// <summary>
         ///     Issue exec command (not queued)

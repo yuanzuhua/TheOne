@@ -10,6 +10,7 @@ using TheOne.Redis.ClientManager;
 
 namespace TheOne.Redis.Sentinel {
 
+        /// <inheritdoc />
     public class RedisSentinelResolver : IRedisResolverExtended {
 
         private static readonly ILog _logger = LogProvider.GetLogger(typeof(RedisSentinelResolver));
@@ -19,12 +20,15 @@ namespace TheOne.Redis.Sentinel {
         private string _lastInvalidMasterHost;
         private long _lastValidMasterTicks = DateTime.UtcNow.Ticks;
 
+        /// <inheritdoc />
         public RedisSentinelResolver(RedisSentinel sentinel)
             : this(sentinel, Array.Empty<RedisEndpoint>(), Array.Empty<RedisEndpoint>()) { }
 
+        /// <inheritdoc />
         public RedisSentinelResolver(RedisSentinel sentinel, IEnumerable<string> masters, IEnumerable<string> slaves)
             : this(sentinel, RedisEndpoint.Create(masters), RedisEndpoint.Create(slaves)) { }
 
+        /// <inheritdoc />
         public RedisSentinelResolver(RedisSentinel sentinel, IEnumerable<RedisEndpoint> masters, IEnumerable<RedisEndpoint> slaves) {
             this._sentinel = sentinel;
             this.ResetMasters(masters.ToList());
@@ -41,31 +45,40 @@ namespace TheOne.Redis.Sentinel {
             set => Interlocked.Exchange(ref this._lastValidMasterTicks, value.Ticks);
         }
 
+        /// <inheritdoc />
         public Func<RedisEndpoint, RedisClient> ClientFactory { get; set; }
 
+        /// <inheritdoc />
         public int ReadWriteHostsCount { get; private set; }
+        /// <inheritdoc />
         public int ReadOnlyHostsCount { get; private set; }
 
+        /// <inheritdoc />
         public virtual void ResetMasters(IEnumerable<string> hosts) {
             this.ResetMasters(RedisEndpoint.Create(hosts));
         }
 
+        /// <inheritdoc />
         public virtual void ResetSlaves(IEnumerable<string> hosts) {
             this.ResetSlaves(RedisEndpoint.Create(hosts));
         }
 
+        /// <inheritdoc />
         public RedisClient CreateMasterClient(int desiredIndex) {
             return this.CreateRedisClient(this.GetReadWriteHost(desiredIndex), true);
         }
 
+        /// <inheritdoc />
         public RedisClient CreateSlaveClient(int desiredIndex) {
             return this.CreateRedisClient(this.GetReadOnlyHost(desiredIndex), false);
         }
 
+        /// <inheritdoc />
         public RedisEndpoint GetReadWriteHost(int desiredIndex) {
             return this._sentinel.GetMaster() ?? this.Masters[desiredIndex % this.Masters.Length];
         }
 
+        /// <inheritdoc />
         public RedisEndpoint GetReadOnlyHost(int desiredIndex) {
             List<RedisEndpoint> slavesEndpoints = this._sentinel.GetSlaves();
             if (slavesEndpoints.Count > 0) {
@@ -77,6 +90,7 @@ namespace TheOne.Redis.Sentinel {
                 : this.GetReadWriteHost(desiredIndex);
         }
 
+        /// <inheritdoc />
         public virtual RedisClient CreateRedisClient(RedisEndpoint config, bool master) {
             RedisClient client = this.ClientFactory(config);
             if (master) {

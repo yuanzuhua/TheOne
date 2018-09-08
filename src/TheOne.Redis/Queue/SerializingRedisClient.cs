@@ -4,18 +4,19 @@ using TheOne.Redis.Client;
 
 namespace TheOne.Redis.Queue {
 
+    /// <inheritdoc />
     public class SerializingRedisClient : RedisClient {
 
         private ISerializer _serializer = new ObjectSerializer();
 
-        public SerializingRedisClient(string host)
-            : base(host) { }
+        /// <inheritdoc />
+        public SerializingRedisClient(string host) : base(host) { }
 
-        public SerializingRedisClient(RedisEndpoint config)
-            : base(config) { }
+        /// <inheritdoc />
+        public SerializingRedisClient(RedisEndpoint config) : base(config) { }
 
-        public SerializingRedisClient(string host, int port)
-            : base(host, port) { }
+        /// <inheritdoc />
+        public SerializingRedisClient(string host, int port) : base(host, port) { }
 
         /// <summary>
         ///     customize the client serializer

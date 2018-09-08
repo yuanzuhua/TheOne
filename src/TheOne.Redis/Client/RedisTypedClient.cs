@@ -23,7 +23,6 @@ namespace TheOne.Redis.Client {
         /// <summary>
         ///     Use this to share the same redis connection with another
         /// </summary>
-        /// <param name="client" >The client.</param>
         public RedisTypedClient(RedisClient client) {
             this._client = client;
             this.Lists = new RedisClientLists(this);
@@ -51,39 +50,50 @@ namespace TheOne.Redis.Client {
             set => this._client.Pipeline = value;
         }
 
+        /// <inheritdoc />
         public IRedisClient RedisClient => this._client;
 
+        /// <inheritdoc />
         public IRedisTypedTransaction<T> CreateTransaction() {
             return new RedisTypedTransaction<T>(this);
         }
 
+        /// <inheritdoc />
         public IRedisTypedPipeline<T> CreatePipeline() {
             return new RedisTypedPipeline<T>(this);
         }
 
+        /// <inheritdoc />
+        /// <inheritdoc />
         public IDisposable AcquireLock() {
             return this._client.AcquireLock(this.TypeLockKey);
         }
 
+        /// <inheritdoc />
         public IDisposable AcquireLock(TimeSpan timeout) {
             return this._client.AcquireLock(this.TypeLockKey, timeout);
         }
 
+        /// <inheritdoc />
         public List<string> GetAllKeys() {
             return this._client.GetAllKeys();
         }
 
+        /// <inheritdoc />
         public string UrnKey(T entity) {
             return this._client.UrnKey(entity);
         }
 
+        /// <inheritdoc />
         public IRedisSet TypeIdsSet => new RedisClientSet(this._client, this._client.GetTypeIdsSetKey<T>());
 
+        /// <inheritdoc />
         public T this[string key] {
             get => this.GetValue(key);
             set => this.SetValue(key, value);
         }
 
+        /// <inheritdoc />
         public void SetValue(string key, T entity) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -93,6 +103,7 @@ namespace TheOne.Redis.Client {
             this._client.RegisterTypeId(entity);
         }
 
+        /// <inheritdoc />
         public void SetValue(string key, T entity, TimeSpan expireIn) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
@@ -102,6 +113,7 @@ namespace TheOne.Redis.Client {
             this._client.RegisterTypeId(entity);
         }
 
+        /// <inheritdoc />
         public bool SetValueIfNotExists(string key, T entity) {
             var success = this._client.SetNX(key, this.SerializeValue(entity)) == RedisNativeClient.Success;
             if (success) {
@@ -111,6 +123,7 @@ namespace TheOne.Redis.Client {
             return success;
         }
 
+        /// <inheritdoc />
         public bool SetValueIfExists(string key, T entity) {
             var success = this._client.Set(key, this.SerializeValue(entity), true);
             if (success) {
@@ -120,26 +133,32 @@ namespace TheOne.Redis.Client {
             return success;
         }
 
+        /// <inheritdoc />
         public T GetValue(string key) {
             return this.DeserializeValue(this._client.Get(key));
         }
 
+        /// <inheritdoc />
         public T GetAndSetValue(string key, T value) {
             return this.DeserializeValue(this._client.GetSet(key, this.SerializeValue(value)));
         }
 
+        /// <inheritdoc />
         public bool ContainsKey(string key) {
             return this._client.Exists(key) == RedisNativeClient.Success;
         }
 
+        /// <inheritdoc />
         public bool RemoveEntry(string key) {
             return this._client.Del(key) == RedisNativeClient.Success;
         }
 
+        /// <inheritdoc />
         public bool RemoveEntry(params string[] keys) {
             return this._client.Del(keys) == RedisNativeClient.Success;
         }
 
+        /// <inheritdoc />
         public bool RemoveEntry(params IHasRedisStringId[] entities) {
             List<string> ids = entities.Select(x => x.Id).ToList();
             var success = this._client.Del(ids.ToArray()) == RedisNativeClient.Success;
@@ -150,82 +169,102 @@ namespace TheOne.Redis.Client {
             return success;
         }
 
+        /// <inheritdoc />
         public long IncrementValue(string key) {
             return this._client.Incr(key);
         }
 
+        /// <inheritdoc />
         public long IncrementValueBy(string key, int count) {
             return this._client.IncrBy(key, count);
         }
 
+        /// <inheritdoc />
         public long DecrementValue(string key) {
             return this._client.Decr(key);
         }
 
+        /// <inheritdoc />
         public long DecrementValueBy(string key, int count) {
             return this._client.DecrBy(key, count);
         }
 
+        /// <inheritdoc />
         public string SequenceKey { get; set; }
 
+        /// <inheritdoc />
         public void SetSequence(int value) {
             this._client.GetSet(this.SequenceKey, Encoding.UTF8.GetBytes(value.ToString()));
         }
 
+        /// <inheritdoc />
         public long GetNextSequence() {
             return this.IncrementValue(this.SequenceKey);
         }
 
+        /// <inheritdoc />
         public long GetNextSequence(int incrBy) {
             return this.IncrementValueBy(this.SequenceKey, incrBy);
         }
 
+        /// <inheritdoc />
         public RedisKeyType GetEntryType(string key) {
             return this._client.GetEntryType(key);
         }
 
+        /// <inheritdoc />
         public string GetRandomKey() {
             return this._client.RandomKey();
         }
 
+        /// <inheritdoc />
         public bool ExpireEntryIn(string key, TimeSpan expireIn) {
             return this._client.ExpireEntryIn(key, expireIn);
         }
 
+        /// <inheritdoc />
         public bool ExpireEntryAt(string key, DateTime expireAt) {
             return this._client.ExpireEntryAt(key, expireAt);
         }
 
+        /// <inheritdoc />
         public bool ExpireIn(object id, TimeSpan expireIn) {
             var key = this._client.UrnKey<T>(id);
             return this._client.ExpireEntryIn(key, expireIn);
         }
 
+        /// <inheritdoc />
         public bool ExpireAt(object id, DateTime expireAt) {
             var key = this._client.UrnKey<T>(id);
             return this._client.ExpireEntryAt(key, expireAt);
         }
 
+        /// <inheritdoc />
         public TimeSpan GetTimeToLive(string key) {
             return TimeSpan.FromSeconds(this._client.Ttl(key));
         }
 
+        /// <inheritdoc />
         public void Save() {
             this._client.Save();
         }
 
+        /// <inheritdoc />
         public void SaveAsync() {
             this._client.SaveAsync();
         }
 
+        /// <inheritdoc />
         public void FlushDb() {
             this._client.FlushDb();
         }
 
+        /// <inheritdoc />
         public void FlushAll() {
             this._client.FlushAll();
         }
 
+        /// <inheritdoc />
         public T[] SearchKeys(string pattern) {
             List<string> strKeys = this._client.SearchKeys(pattern);
             var keysCount = strKeys.Count;
@@ -238,6 +277,7 @@ namespace TheOne.Redis.Client {
             return keys;
         }
 
+        /// <inheritdoc />
         public List<T> GetValues(List<string> keys) {
             if (keys == null || keys.Count == 0) {
                 return new List<T>();
@@ -258,10 +298,12 @@ namespace TheOne.Redis.Client {
             return results;
         }
 
+        /// <inheritdoc />
         public void StoreAsHash(T entity) {
             this._client.StoreAsHash(entity);
         }
 
+        /// <inheritdoc />
         public T GetFromHash(object id) {
             return this._client.GetFromHash<T>(id);
         }

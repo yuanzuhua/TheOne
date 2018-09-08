@@ -25,6 +25,7 @@ namespace TheOne.Redis.ClientManager {
             this.Weight = weight;
         }
 
+        /// <inheritdoc />
         public override int GetHashCode() {
             // generate hashcode based on logial name
             // server alias/ip can change without 

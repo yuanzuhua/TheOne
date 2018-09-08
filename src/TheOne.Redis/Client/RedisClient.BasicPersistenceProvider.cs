@@ -11,6 +11,7 @@ namespace TheOne.Redis.Client {
 
         private Dictionary<string, HashSet<string>> _registeredTypeIdsWithinPipelineMap = new Dictionary<string, HashSet<string>>();
 
+        /// <inheritdoc />
         public T GetById<T>(object id) {
             var key = this.UrnKey<T>(id);
             var valueString = this.GetValue(key);
@@ -18,6 +19,7 @@ namespace TheOne.Redis.Client {
             return value;
         }
 
+        /// <inheritdoc />
         public IList<T> GetByIds<T>(ICollection ids) {
             if (ids == null || ids.Count == 0) {
                 return new List<T>();
@@ -27,6 +29,7 @@ namespace TheOne.Redis.Client {
             return this.GetValues<T>(urnKeys);
         }
 
+        /// <inheritdoc />
         public T Store<T>(T entity) {
             var urnKey = this.UrnKey(entity);
             var valueString = entity.ToJson();
@@ -37,6 +40,7 @@ namespace TheOne.Redis.Client {
             return entity;
         }
 
+        /// <inheritdoc />
         public object StoreObject(object entity) {
             if (entity == null) {
                 throw new ArgumentNullException(nameof(entity));
@@ -54,10 +58,12 @@ namespace TheOne.Redis.Client {
             return entity;
         }
 
+        /// <inheritdoc />
         public void StoreAll<TEntity>(IEnumerable<TEntity> entities) {
             this._StoreAll(entities);
         }
 
+        /// <inheritdoc />
         public T GetFromHash<T>(object id) {
             var key = this.UrnKey<T>(id);
             return this.GetAllEntriesFromHash(key).ToJson().FromJson<T>();
@@ -74,6 +80,7 @@ namespace TheOne.Redis.Client {
             this.RegisterTypeId(entity);
         }
 
+        /// <inheritdoc />
         public void WriteAll<TEntity>(IEnumerable<TEntity> entities) {
             if (entities == null) {
                 return;
@@ -93,18 +100,21 @@ namespace TheOne.Redis.Client {
             this.MSet(keys, values);
         }
 
+        /// <inheritdoc />
         public void Delete<T>(T entity) {
             var urnKey = this.UrnKey(entity);
             this.Remove(urnKey);
             this.RemoveTypeIds(entity);
         }
 
+        /// <inheritdoc />
         public void DeleteById<T>(object id) {
             var urnKey = this.UrnKey<T>(id);
             this.Remove(urnKey);
             this.RemoveTypeIds<T>(id.ToString());
         }
 
+        /// <inheritdoc />
         public void DeleteByIds<T>(ICollection ids) {
             if (ids == null || ids.Count == 0) {
                 return;
@@ -116,6 +126,7 @@ namespace TheOne.Redis.Client {
             this.RemoveTypeIds<T>(idsList.Select(x => x.ToString()).ToArray());
         }
 
+        /// <inheritdoc />
         public void DeleteAll<T>() {
             var typeIdsSetKey = this.GetTypeIdsSetKey<T>();
             HashSet<string> ids = this.GetAllItemsFromSet(typeIdsSetKey);

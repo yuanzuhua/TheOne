@@ -32,6 +32,7 @@ namespace TheOne.Redis.Client {
         public bool HasConnected => this.Socket != null;
         public Action OnBeforeFlush { get; set; }
 
+        /// <inheritdoc />
         public long EvalInt(string luaBody, int numberKeysInArgs, params byte[][] keys) {
             if (luaBody == null) {
                 throw new ArgumentNullException(nameof(luaBody));
@@ -41,6 +42,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdArgs);
         }
 
+        /// <inheritdoc />
         public long EvalShaInt(string sha1, int numberKeysInArgs, params byte[][] keys) {
             if (sha1 == null) {
                 throw new ArgumentNullException(nameof(sha1));
@@ -50,6 +52,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectLong(cmdArgs);
         }
 
+        /// <inheritdoc />
         public string EvalStr(string luaBody, int numberKeysInArgs, params byte[][] keys) {
             if (luaBody == null) {
                 throw new ArgumentNullException(nameof(luaBody));
@@ -59,6 +62,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(cmdArgs).FromUtf8Bytes();
         }
 
+        /// <inheritdoc />
         public string EvalShaStr(string sha1, int numberKeysInArgs, params byte[][] keys) {
             if (sha1 == null) {
                 throw new ArgumentNullException(nameof(sha1));
@@ -68,6 +72,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(cmdArgs).FromUtf8Bytes();
         }
 
+        /// <inheritdoc />
         public byte[][] Eval(string luaBody, int numberKeysInArgs, params byte[][] keys) {
             if (luaBody == null) {
                 throw new ArgumentNullException(nameof(luaBody));
@@ -77,6 +82,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdArgs);
         }
 
+        /// <inheritdoc />
         public byte[][] EvalSha(string sha1, int numberKeysInArgs, params byte[][] keys) {
             if (sha1 == null) {
                 throw new ArgumentNullException(nameof(sha1));
@@ -86,6 +92,7 @@ namespace TheOne.Redis.Client {
             return this.SendExpectMultiData(cmdArgs);
         }
 
+        /// <inheritdoc />
         public RedisData EvalShaCommand(string sha1, int numberKeysInArgs, params byte[][] keys) {
             if (sha1 == null) {
                 throw new ArgumentNullException(nameof(sha1));
@@ -95,6 +102,7 @@ namespace TheOne.Redis.Client {
             return this.RawCommand(cmdArgs);
         }
 
+        /// <inheritdoc />
         public string CalculateSha1(string luaBody) {
             if (luaBody == null) {
                 throw new ArgumentNullException(nameof(luaBody));
@@ -110,6 +118,7 @@ namespace TheOne.Redis.Client {
             return BitConverter.ToString(sha1Hash).Replace("-", "");
         }
 
+        /// <inheritdoc />
         public byte[] ScriptLoad(string luaBody) {
             if (luaBody == null) {
                 throw new ArgumentNullException(nameof(luaBody));
@@ -119,15 +128,18 @@ namespace TheOne.Redis.Client {
             return this.SendExpectData(cmdArgs);
         }
 
+        /// <inheritdoc />
         public byte[][] ScriptExists(params byte[][] sha1Refs) {
             byte[][] keysAndValues = MergeCommandWithArgs(Commands.Script, Commands.Exists, sha1Refs);
             return this.SendExpectMultiData(keysAndValues);
         }
 
+        /// <inheritdoc />
         public void ScriptFlush() {
             this.SendExpectSuccess(Commands.Script, Commands.Flush);
         }
 
+        /// <inheritdoc />
         public void ScriptKill() {
             this.SendExpectSuccess(Commands.Script, Commands.Kill);
         }

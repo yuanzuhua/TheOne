@@ -10,6 +10,7 @@ namespace TheOne.Redis.Queue {
     /// </summary>
     public class RedisChronologicalWorkQueue<T> : RedisWorkQueue<T>, IChronologicalWorkQueue<T> where T : class {
 
+        /// <inheritdoc />
         public RedisChronologicalWorkQueue(int maxReadPoolSize, int maxWritePoolSize, string host, int port, string queueName = null)
             : base(maxReadPoolSize, maxWritePoolSize, host, port, queueName) { }
 

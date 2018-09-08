@@ -8,11 +8,13 @@ namespace TheOne.Redis.Client {
 
     public partial class RedisTypedClient<T> {
 
+        /// <inheritdoc />
         public T GetById(object id) {
             var key = this._client.UrnKey<T>(id);
             return this.GetValue(key);
         }
 
+        /// <inheritdoc />
         public IList<T> GetByIds(IEnumerable ids) {
             if (ids != null) {
                 List<string> urnKeys = ids.Cast<object>().Select(x => this._client.UrnKey<T>(x)).ToList();
@@ -24,23 +26,27 @@ namespace TheOne.Redis.Client {
             return new List<T>();
         }
 
+        /// <inheritdoc />
         public IList<T> GetAll() {
             HashSet<string> allKeys = this._client.GetAllItemsFromSet(this.TypeIdsSetKey);
             return this.GetByIds(allKeys.ToArray());
         }
 
+        /// <inheritdoc />
         public T Store(T entity) {
             var urnKey = this._client.UrnKey(entity);
             this.SetValue(urnKey, entity);
             return entity;
         }
 
+        /// <inheritdoc />
         public T Store(T entity, TimeSpan expireIn) {
             var urnKey = this._client.UrnKey(entity);
             this.SetValue(urnKey, entity, expireIn);
             return entity;
         }
 
+        /// <inheritdoc />
         public void StoreAll(IEnumerable<T> entities) {
             if (entities == null) {
                 return;
@@ -61,12 +67,14 @@ namespace TheOne.Redis.Client {
             this._client.RegisterTypeIds(entitiesList);
         }
 
+        /// <inheritdoc />
         public void Delete(T entity) {
             var urnKey = this._client.UrnKey(entity);
             this.RemoveEntry(urnKey);
             this._client.RemoveTypeIds(entity);
         }
 
+        /// <inheritdoc />
         public void DeleteById(object id) {
             var urnKey = this._client.UrnKey<T>(id);
 
@@ -74,6 +82,7 @@ namespace TheOne.Redis.Client {
             this._client.RemoveTypeIds<T>(id.ToString());
         }
 
+        /// <inheritdoc />
         public void DeleteByIds(IEnumerable ids) {
             List<object> cast = ids?.Cast<object>().ToList() ?? new List<object>();
             List<string> urnKeys = cast.Select(t => this._client.UrnKey<T>(t)).ToList();
@@ -83,6 +92,7 @@ namespace TheOne.Redis.Client {
             }
         }
 
+        /// <inheritdoc />
         public void DeleteAll() {
             HashSet<string> ids = this._client.GetAllItemsFromSet(this.TypeIdsSetKey);
             List<string> urnKeys = ids.Select(t => this._client.UrnKey<T>(t)).ToList();

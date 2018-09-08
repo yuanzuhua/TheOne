@@ -14,8 +14,10 @@ namespace TheOne.Redis.Client {
 
     }
 
+    /// <inheritdoc />
     public class InvalidAccessException : RedisException {
 
+        /// <inheritdoc />
         public InvalidAccessException(int threadId, string stackTrace)
             : base(
                 $"The Current Thread #{Thread.CurrentThread.ManagedThreadId} is different to the original Thread #{threadId} that resolved this pooled client at: \n{stackTrace}") { }

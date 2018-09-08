@@ -21,10 +21,14 @@ namespace TheOne.Redis.ClientManager {
         protected int PoolIndex;
         protected int RedisClientCounter;
 
+        /// <inheritdoc />
         public RedisManagerPool() : this(RedisConfig.DefaultHost) { }
+        /// <inheritdoc />
         public RedisManagerPool(string host) : this(new[] { host }) { }
+        /// <inheritdoc />
         public RedisManagerPool(string host, RedisPoolConfig config) : this(new[] { host }, config) { }
 
+        /// <inheritdoc />
         public RedisManagerPool(IEnumerable<string> hosts, RedisPoolConfig config = null) {
             if (hosts == null) {
                 throw new ArgumentNullException(nameof(hosts));
@@ -53,6 +57,7 @@ namespace TheOne.Redis.ClientManager {
 
         public bool AssertAccessOnlyOnSameThread { get; set; }
 
+        /// <inheritdoc />
         public void DisposeClient(RedisNativeClient client) {
             lock (this._clients) {
                 for (var i = 0; i < this._clients.Length; i++) {
@@ -156,25 +161,31 @@ namespace TheOne.Redis.ClientManager {
             }
         }
 
+        /// <inheritdoc cref="IRedisClientManager.GetReadOnlyClient" />
         public IRedisClient GetReadOnlyClient() {
             return this.GetClient();
         }
 
+        /// <inheritdoc />
         public void Dispose() {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <inheritdoc cref="IRedisClientManager.GetCacheClient" />
         public ICacheClient GetCacheClient() {
             return new RedisClientManagerCacheClient(this);
         }
 
+        /// <inheritdoc cref="IRedisClientManager.GetReadOnlyCacheClient" />
         public ICacheClient GetReadOnlyCacheClient() {
             return new RedisClientManagerCacheClient(this) { ReadOnly = true };
         }
 
+        /// <inheritdoc />
         public List<Action<IRedisClientManager>> OnFailover { get; }
 
+        /// <inheritdoc />
         public void FailoverTo(params string[] readWriteHosts) {
             Interlocked.Increment(ref RedisState.TotalFailovers);
 
@@ -202,6 +213,7 @@ namespace TheOne.Redis.ClientManager {
             }
         }
 
+        /// <inheritdoc />
         public void FailoverTo(IEnumerable<string> readWriteHosts, IEnumerable<string> readOnlyHosts) {
             this.FailoverTo(readWriteHosts.ToArray()); // only use readWriteHosts
         }

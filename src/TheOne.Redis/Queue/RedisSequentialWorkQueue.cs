@@ -23,9 +23,11 @@ namespace TheOne.Redis.Queue {
         private readonly string _workItemIdPriorityQueue;
         private DateTime _harvestTime = DateTime.UtcNow;
 
+        /// <inheritdoc />
         public RedisSequentialWorkQueue(int maxReadPoolSize, int maxWritePoolSize, string host, int port, int dequeueLockTimeout = 300)
             : this(maxReadPoolSize, maxWritePoolSize, host, port, null, dequeueLockTimeout) { }
 
+        /// <inheritdoc />
         public RedisSequentialWorkQueue(int maxReadPoolSize, int maxWritePoolSize, string host, int port, string queueName,
             int dequeueLockTimeout = 300)
             : base(maxReadPoolSize, maxWritePoolSize, host, port, queueName) {
@@ -112,6 +114,7 @@ namespace TheOne.Redis.Queue {
             return true;
         }
 
+        /// <inheritdoc />
         public ISequentialData<T> Dequeue(int maxBatchSize) {
 
             using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =

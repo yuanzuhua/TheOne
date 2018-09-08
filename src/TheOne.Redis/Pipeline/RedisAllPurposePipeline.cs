@@ -10,7 +10,6 @@ namespace TheOne.Redis.Pipeline {
         /// </summary>
         public RedisAllPurposePipeline(RedisClient redisClient) : base(redisClient) {
             this.Init();
-
         }
 
         /// <summary>
@@ -37,6 +36,7 @@ namespace TheOne.Redis.Pipeline {
             this.ClosePipeline();
         }
 
+        /// <inheritdoc />
         public virtual bool Replay() {
             this.Init();
             this.Execute();
@@ -44,6 +44,7 @@ namespace TheOne.Redis.Pipeline {
             return true;
         }
 
+        /// <inheritdoc />
         public virtual void Dispose() {
             this.ClosePipeline();
         }

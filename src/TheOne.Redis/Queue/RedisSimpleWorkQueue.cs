@@ -10,9 +10,11 @@ namespace TheOne.Redis.Queue {
     /// </summary>
     public class RedisSimpleWorkQueue<T> : RedisWorkQueue<T>, ISimpleWorkQueue<T> where T : class {
 
+        /// <inheritdoc />
         public RedisSimpleWorkQueue(int maxReadPoolSize, int maxWritePoolSize, string host, int port)
             : base(maxReadPoolSize, maxWritePoolSize, host, port) { }
 
+        /// <inheritdoc />
         public RedisSimpleWorkQueue(int maxReadPoolSize, int maxWritePoolSize, string host, int port, string queueName)
             : base(maxReadPoolSize, maxWritePoolSize, host, port, queueName) { }
 
