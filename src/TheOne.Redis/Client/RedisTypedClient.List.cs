@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TheOne.Redis.Client.Internal;
+using TheOne.Redis.Common;
 
 namespace TheOne.Redis.Client {
 
@@ -34,17 +35,17 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void AddItemToList(IRedisList<T> fromList, T value) {
-            this._client.RPush(fromList.Id, this.SerializeValue(value));
+            this._client.RPush(fromList.Id, value.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
         public void PrependItemToList(IRedisList<T> fromList, T value) {
-            this._client.LPush(fromList.Id, this.SerializeValue(value));
+            this._client.LPush(fromList.Id, value.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
         public T RemoveStartFromList(IRedisList<T> fromList) {
-            return this.DeserializeValue(this._client.LPop(fromList.Id));
+            return this._client.LPop(fromList.Id).FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
@@ -52,12 +53,12 @@ namespace TheOne.Redis.Client {
             byte[][] unblockingKeyAndValue = this._client.BLPop(fromList.Id, (int)timeout.GetValueOrDefault().TotalSeconds);
             return unblockingKeyAndValue.Length == 0
                 ? default
-                : this.DeserializeValue(unblockingKeyAndValue[1]);
+                : unblockingKeyAndValue[1].FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
         public T RemoveEndFromList(IRedisList<T> fromList) {
-            return this.DeserializeValue(this._client.RPop(fromList.Id));
+            return this._client.RPop(fromList.Id).FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
@@ -73,12 +74,12 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public long RemoveItemFromList(IRedisList<T> fromList, T value) {
             const int removeAll = 0;
-            return this._client.LRem(fromList.Id, removeAll, this.SerializeValue(value));
+            return this._client.LRem(fromList.Id, removeAll, value.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
         public long RemoveItemFromList(IRedisList<T> fromList, T value, int noOfMatches) {
-            return this._client.LRem(fromList.Id, noOfMatches, this.SerializeValue(value));
+            return this._client.LRem(fromList.Id, noOfMatches, value.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
@@ -88,32 +89,32 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public T GetItemFromList(IRedisList<T> fromList, int listIndex) {
-            return this.DeserializeValue(this._client.LIndex(fromList.Id, listIndex));
+            return this._client.LIndex(fromList.Id, listIndex).FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
         public void SetItemInList(IRedisList<T> toList, int listIndex, T value) {
-            this._client.LSet(toList.Id, listIndex, this.SerializeValue(value));
+            this._client.LSet(toList.Id, listIndex, value.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
         public void InsertBeforeItemInList(IRedisList<T> toList, T pivot, T value) {
-            this._client.LInsert(toList.Id, true, this.SerializeValue(pivot), this.SerializeValue(value));
+            this._client.LInsert(toList.Id, true, pivot.ToJsonUtf8Bytes(), value.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
         public void InsertAfterItemInList(IRedisList<T> toList, T pivot, T value) {
-            this._client.LInsert(toList.Id, false, this.SerializeValue(pivot), this.SerializeValue(value));
+            this._client.LInsert(toList.Id, false, pivot.ToJsonUtf8Bytes(), value.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
         public void EnqueueItemOnList(IRedisList<T> fromList, T item) {
-            this._client.LPush(fromList.Id, this.SerializeValue(item));
+            this._client.LPush(fromList.Id, item.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
         public T DequeueItemFromList(IRedisList<T> fromList) {
-            return this.DeserializeValue(this._client.RPop(fromList.Id));
+            return this._client.RPop(fromList.Id).FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
@@ -121,17 +122,17 @@ namespace TheOne.Redis.Client {
             byte[][] unblockingKeyAndValue = this._client.BRPop(fromList.Id, (int)timeout.GetValueOrDefault().TotalSeconds);
             return unblockingKeyAndValue.Length == 0
                 ? default
-                : this.DeserializeValue(unblockingKeyAndValue[1]);
+                : unblockingKeyAndValue[1].FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
         public void PushItemToList(IRedisList<T> fromList, T item) {
-            this._client.RPush(fromList.Id, this.SerializeValue(item));
+            this._client.RPush(fromList.Id, item.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
         public T PopItemFromList(IRedisList<T> fromList) {
-            return this.DeserializeValue(this._client.RPop(fromList.Id));
+            return this._client.RPop(fromList.Id).FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
@@ -139,17 +140,17 @@ namespace TheOne.Redis.Client {
             byte[][] unblockingKeyAndValue = this._client.BRPop(fromList.Id, (int)timeout.GetValueOrDefault().TotalSeconds);
             return unblockingKeyAndValue.Length == 0
                 ? default
-                : this.DeserializeValue(unblockingKeyAndValue[1]);
+                : unblockingKeyAndValue[1].FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
         public T PopAndPushItemBetweenLists(IRedisList<T> fromList, IRedisList<T> toList) {
-            return this.DeserializeValue(this._client.RPopLPush(fromList.Id, toList.Id));
+            return this._client.RPopLPush(fromList.Id, toList.Id).FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
         public T BlockingPopAndPushItemBetweenLists(IRedisList<T> fromList, IRedisList<T> toList, TimeSpan? timeout) {
-            return this.DeserializeValue(this._client.BRPopLPush(fromList.Id, toList.Id, (int)timeout.GetValueOrDefault().TotalSeconds));
+            return this._client.BRPopLPush(fromList.Id, toList.Id, (int)timeout.GetValueOrDefault().TotalSeconds).FromJsonUtf8Bytes<T>();
         }
 
         private List<T> CreateList(byte[][] multiDataList) {
@@ -159,7 +160,7 @@ namespace TheOne.Redis.Client {
 
             var results = new List<T>();
             foreach (byte[] multiData in multiDataList) {
-                results.Add(this.DeserializeValue(multiData));
+                results.Add(multiData.FromJsonUtf8Bytes<T>());
             }
 
             return results;

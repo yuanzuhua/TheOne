@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using TheOne.Redis.Common;
 
 namespace TheOne.Redis.ClientManager.Internal {
 
@@ -81,7 +82,7 @@ namespace TheOne.Redis.ClientManager.Internal {
         /// </summary>
         public static ulong Md5Hash(string key) {
             using (MD5 hash = MD5.Create()) {
-                byte[] data = hash.ComputeHash(Encoding.UTF8.GetBytes(key));
+                byte[] data = hash.ComputeHash(key.ToUtf8Bytes());
                 var a = BitConverter.ToUInt64(data, 0);
                 var b = BitConverter.ToUInt64(data, 8);
                 var hashCode = a ^ b;

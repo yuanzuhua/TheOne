@@ -108,7 +108,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(luaBody));
             }
 
-            byte[] buffer = Encoding.UTF8.GetBytes(luaBody);
+            byte[] buffer = luaBody.ToUtf8Bytes();
             byte[] sha1Hash;
 
             using (SHA1 sha1 = SHA1.Create()) {
@@ -891,7 +891,7 @@ namespace TheOne.Redis.Client {
         }
 
         public static double ParseDouble(byte[] doubleBytes) {
-            var doubleString = Encoding.UTF8.GetString(doubleBytes);
+            var doubleString = doubleBytes.FromUtf8Bytes();
             double.TryParse(doubleString, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var d);
             return d;
         }

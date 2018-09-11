@@ -99,7 +99,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            this._client.Set(key, this.SerializeValue(entity));
+            this._client.Set(key, entity.ToJsonUtf8Bytes());
             this._client.RegisterTypeId(entity);
         }
 
@@ -109,13 +109,13 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            this._client.Set(key, this.SerializeValue(entity), expireIn);
+            this._client.Set(key, entity.ToJsonUtf8Bytes(), expireIn);
             this._client.RegisterTypeId(entity);
         }
 
         /// <inheritdoc />
         public bool SetValueIfNotExists(string key, T entity) {
-            var success = this._client.SetNX(key, this.SerializeValue(entity)) == RedisNativeClient.Success;
+            var success = this._client.SetNX(key, entity.ToJsonUtf8Bytes()) == RedisNativeClient.Success;
             if (success) {
                 this._client.RegisterTypeId(entity);
             }
@@ -125,7 +125,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public bool SetValueIfExists(string key, T entity) {
-            var success = this._client.Set(key, this.SerializeValue(entity), true);
+            var success = this._client.Set(key, entity.ToJsonUtf8Bytes(), true);
             if (success) {
                 this._client.RegisterTypeId(entity);
             }
@@ -135,12 +135,12 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public T GetValue(string key) {
-            return this.DeserializeValue(this._client.Get(key));
+            return this._client.Get(key).FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
         public T GetAndSetValue(string key, T value) {
-            return this.DeserializeValue(this._client.GetSet(key, this.SerializeValue(value)));
+            return this._client.GetSet(key, value.ToJsonUtf8Bytes()).FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
@@ -194,7 +194,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void SetSequence(int value) {
-            this._client.GetSet(this.SequenceKey, Encoding.UTF8.GetBytes(value.ToString()));
+            this._client.GetSet(this.SequenceKey, value.ToUtf8Bytes());
         }
 
         /// <inheritdoc />
@@ -291,7 +291,7 @@ namespace TheOne.Redis.Client {
                     continue;
                 }
 
-                T result = this.DeserializeValue(resultBytes);
+                T result = resultBytes.FromJsonUtf8Bytes<T>();
                 results.Add(result);
             }
 
@@ -334,16 +334,6 @@ namespace TheOne.Redis.Client {
 
         internal void ClearTypeIdsRegisteredDuringPipeline() {
             this._client.ClearTypeIdsRegisteredDuringPipeline();
-        }
-
-        public byte[] SerializeValue(T value) {
-            var strValue = value.ToJson();
-            return Encoding.UTF8.GetBytes(strValue);
-        }
-
-        public T DeserializeValue(byte[] value) {
-            var strValue = value != null ? Encoding.UTF8.GetString(value) : null;
-            return strValue.FromJson<T>();
         }
 
         internal void ExpectQueued() {

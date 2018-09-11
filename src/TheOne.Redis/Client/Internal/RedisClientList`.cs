@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using TheOne.Redis.Common;
 
 namespace TheOne.Redis.Client.Internal {
 
@@ -99,10 +100,10 @@ namespace TheOne.Redis.Client.Internal {
         public void RemoveAt(int index) {
             // TODO replace with native implementation when one exists
             var markForDelete = Guid.NewGuid().ToString();
-            this._client.NativeClient.LSet(this.Id, index, Encoding.UTF8.GetBytes(markForDelete));
+            this._client.NativeClient.LSet(this.Id, index, markForDelete.ToUtf8Bytes());
 
             const int removeAll = 0;
-            this._client.NativeClient.LRem(this.Id, removeAll, Encoding.UTF8.GetBytes(markForDelete));
+            this._client.NativeClient.LRem(this.Id, removeAll, markForDelete.ToUtf8Bytes());
         }
 
         /// <inheritdoc />

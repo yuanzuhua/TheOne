@@ -10,28 +10,59 @@ namespace TheOne.Redis.Common {
 
         private static readonly char[] _systemTypeChars = { '<', '>', '+' };
 
+        /// <summary>
+        ///     Encoding.UTF8.GetString
+        /// </summary>
         public static string FromUtf8Bytes(this byte[] bytes) {
             return bytes == null
                 ? null
                 : Encoding.UTF8.GetString(bytes, 0, bytes.Length);
         }
 
+        /// <summary>
+        ///     Encoding.UTF8.GetBytes
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static byte[] ToUtf8Bytes(this string value) {
             return Encoding.UTF8.GetBytes(value);
         }
 
+        /// <summary>
+        ///     Encoding.UTF8.GetBytes(value.ToJson());
+        /// </summary>
+        public static byte[] ToJsonUtf8Bytes<T>(this T value) {
+            return Encoding.UTF8.GetBytes(value.ToJson());
+        }
+
+        public static T FromJsonUtf8Bytes<T>(this byte[] value) {
+            return value.FromUtf8Bytes().FromJson<T>();
+        }
+
+        /// <summary>
+        ///     GetBytes
+        /// </summary>
         public static byte[] ToUtf8Bytes(this int intVal) {
             return FastToUtf8Bytes(intVal.ToString());
         }
 
+        /// <summary>
+        ///     GetBytes
+        /// </summary>
         public static byte[] ToUtf8Bytes(this long longVal) {
             return FastToUtf8Bytes(longVal.ToString());
         }
 
+        /// <summary>
+        ///     GetBytes
+        /// </summary>
         public static byte[] ToUtf8Bytes(this ulong ulongVal) {
             return FastToUtf8Bytes(ulongVal.ToString());
         }
 
+        /// <summary>
+        ///     GetBytes
+        /// </summary>
         public static byte[] ToUtf8Bytes(this double doubleVal) {
             var doubleStr = doubleVal.ToString(CultureInfo.InvariantCulture.NumberFormat);
 

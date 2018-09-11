@@ -60,7 +60,7 @@ namespace TheOne.Redis.Client {
 
             for (var i = 0; i < len; i++) {
                 keys[i] = this._client.UrnKey(entitiesList[i]).ToUtf8Bytes();
-                values[i] = Client.RedisClient.SerializeToUtf8Bytes(entitiesList[i]);
+                values[i] = entitiesList[i].ToJsonUtf8Bytes();
             }
 
             this._client.MSet(keys, values);

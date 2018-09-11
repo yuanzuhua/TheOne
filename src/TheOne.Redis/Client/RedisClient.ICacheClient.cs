@@ -143,7 +143,7 @@ namespace TheOne.Redis.Client {
                     if (isBytes) {
                         results[key] = (T)(object)keyValue;
                     } else {
-                        var keyValueString = Encoding.UTF8.GetString(keyValue);
+                        var keyValueString = keyValue.FromUtf8Bytes();
                         results[key] = keyValueString.FromJson<T>();
                     }
                 }

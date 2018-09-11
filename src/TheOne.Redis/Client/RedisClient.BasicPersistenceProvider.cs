@@ -94,7 +94,7 @@ namespace TheOne.Redis.Client {
 
             for (var i = 0; i < len; i++) {
                 keys[i] = this.UrnKey(entitiesList[i]).ToUtf8Bytes();
-                values[i] = SerializeToUtf8Bytes(entitiesList[i]);
+                values[i] = entitiesList[i].ToJsonUtf8Bytes();
             }
 
             this.MSet(keys, values);
@@ -265,15 +265,11 @@ namespace TheOne.Redis.Client {
 
             for (var i = 0; i < len; i++) {
                 keys[i] = this.UrnKey(entitiesList[i]).ToUtf8Bytes();
-                values[i] = SerializeToUtf8Bytes(entitiesList[i]);
+                values[i] = entitiesList[i].ToJsonUtf8Bytes();
             }
 
             this.MSet(keys, values);
             this.RegisterTypeIds(entitiesList);
-        }
-
-        public static byte[] SerializeToUtf8Bytes<T>(T value) {
-            return Encoding.UTF8.GetBytes(value.ToJson());
         }
 
         public RedisClient CloneClient() {

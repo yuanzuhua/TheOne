@@ -4,6 +4,7 @@ using System.Text;
 using TheOne.Logging;
 using TheOne.Redis.Client;
 using TheOne.Redis.Client.Internal;
+using TheOne.Redis.Common;
 
 namespace TheOne.Redis.Pipeline {
 
@@ -82,10 +83,10 @@ namespace TheOne.Redis.Pipeline {
                     }
 
                     this.OnSuccessBytesCallback?.Invoke(result);
-                    this.OnSuccessStringCallback?.Invoke(result != null ? Encoding.UTF8.GetString(result) : null);
-                    this.OnSuccessTypeCallback?.Invoke(result != null ? Encoding.UTF8.GetString(result) : null);
-                    this.OnSuccessIntCallback?.Invoke(result != null ? int.Parse(Encoding.UTF8.GetString(result)) : 0);
-                    this.OnSuccessBoolCallback?.Invoke(result != null && Encoding.UTF8.GetString(result) == "OK");
+                    this.OnSuccessStringCallback?.Invoke(result?.FromUtf8Bytes());
+                    this.OnSuccessTypeCallback?.Invoke(result?.FromUtf8Bytes());
+                    this.OnSuccessIntCallback?.Invoke(result != null ? int.Parse(result.FromUtf8Bytes()) : 0);
+                    this.OnSuccessBoolCallback?.Invoke(result != null && result.FromUtf8Bytes() == "OK");
                 } else if (this.StringReadCommand != null) {
                     var result = this.StringReadCommand();
                     this.OnSuccessStringCallback?.Invoke(result);
@@ -93,9 +94,9 @@ namespace TheOne.Redis.Pipeline {
                 } else if (this.MultiBytesReadCommand != null) {
                     byte[][] result = this.MultiBytesReadCommand();
                     this.OnSuccessMultiBytesCallback?.Invoke(result);
-                    this.OnSuccessMultiStringCallback?.Invoke(result != null ? result.ToStringList() : null);
-                    this.OnSuccessMultiTypeCallback?.Invoke(result.ToStringList());
-                    this.OnSuccessDictionaryStringCallback?.Invoke(result.ToStringDictionary());
+                    this.OnSuccessMultiStringCallback?.Invoke(result?.ToStringList());
+                    this.OnSuccessMultiTypeCallback?.Invoke(result?.ToStringList());
+                    this.OnSuccessDictionaryStringCallback?.Invoke(result?.ToStringDictionary());
                 } else if (this.MultiStringReadCommand != null) {
                     List<string> result = this.MultiStringReadCommand();
                     this.OnSuccessMultiStringCallback?.Invoke(result);

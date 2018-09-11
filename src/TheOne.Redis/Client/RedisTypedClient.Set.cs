@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TheOne.Redis.Client.Internal;
+using TheOne.Redis.Common;
 
 namespace TheOne.Redis.Client {
 
@@ -30,22 +31,22 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void AddItemToSet(IRedisSet<T> toSet, T item) {
-            this._client.SAdd(toSet.Id, this.SerializeValue(item));
+            this._client.SAdd(toSet.Id, item.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
         public void RemoveItemFromSet(IRedisSet<T> fromSet, T item) {
-            this._client.SRem(fromSet.Id, this.SerializeValue(item));
+            this._client.SRem(fromSet.Id, item.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
         public T PopItemFromSet(IRedisSet<T> fromSet) {
-            return this.DeserializeValue(this._client.SPop(fromSet.Id));
+            return this._client.SPop(fromSet.Id).FromJsonUtf8Bytes<T>();
         }
 
         /// <inheritdoc />
         public void MoveBetweenSets(IRedisSet<T> fromSet, IRedisSet<T> toSet, T item) {
-            this._client.SMove(fromSet.Id, toSet.Id, this.SerializeValue(item));
+            this._client.SMove(fromSet.Id, toSet.Id, item.ToJsonUtf8Bytes());
         }
 
         /// <inheritdoc />
@@ -55,7 +56,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public bool SetContainsItem(IRedisSet<T> set, T item) {
-            return this._client.SIsMember(set.Id, this.SerializeValue(item)) == 1;
+            return this._client.SIsMember(set.Id, item.ToJsonUtf8Bytes()) == 1;
         }
 
         /// <inheritdoc />
@@ -93,13 +94,13 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public T GetRandomItemFromSet(IRedisSet<T> fromSet) {
-            return this.DeserializeValue(this._client.SRandMember(fromSet.Id));
+            return this._client.SRandMember(fromSet.Id).FromJsonUtf8Bytes<T>();
         }
 
         private HashSet<T> CreateHashSet(byte[][] multiDataList) {
             var results = new HashSet<T>();
             foreach (byte[] multiData in multiDataList) {
-                results.Add(this.DeserializeValue(multiData));
+                results.Add(multiData.FromJsonUtf8Bytes<T>());
             }
 
             return results;
