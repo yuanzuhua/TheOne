@@ -9,7 +9,7 @@
   <PropertyGroup>
     <AssemblyTitle>TheOne.Redis.Tests</AssemblyTitle>
     <Description>TheOne.Redis.Tests</Description>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheOne.Redis\TheOne.Redis.csproj" />
