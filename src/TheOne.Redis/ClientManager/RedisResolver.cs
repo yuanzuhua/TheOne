@@ -38,6 +38,7 @@ namespace TheOne.Redis.ClientManager {
 
         /// <inheritdoc />
         public int ReadWriteHostsCount { get; private set; }
+
         /// <inheritdoc />
         public int ReadOnlyHostsCount { get; private set; }
 

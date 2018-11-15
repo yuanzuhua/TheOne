@@ -63,7 +63,7 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public long KillClients(string fromAddress = null, string withId = null, RedisClientType? ofType = null, bool? skipMe = null) {
             var typeString = ofType != null ? ofType.ToString().ToLower() : null;
-            var skipMeString = skipMe != null ? (skipMe.Value ? "yes" : "no") : null;
+            var skipMeString = skipMe != null ? skipMe.Value ? "yes" : "no" : null;
             return this.ClientKill(fromAddress, withId, typeString, skipMeString);
         }
 

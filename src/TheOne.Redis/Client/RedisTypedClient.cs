@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using TheOne.Redis.Client.Internal;
 using TheOne.Redis.Common;
 using TheOne.Redis.Pipeline;
@@ -291,7 +290,7 @@ namespace TheOne.Redis.Client {
                     continue;
                 }
 
-                T result = resultBytes.FromJsonUtf8Bytes<T>();
+                var result = resultBytes.FromJsonUtf8Bytes<T>();
                 results.Add(result);
             }
 

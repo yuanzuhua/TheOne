@@ -23,8 +23,10 @@ namespace TheOne.Redis.ClientManager {
 
         /// <inheritdoc />
         public RedisManagerPool() : this(RedisConfig.DefaultHost) { }
+
         /// <inheritdoc />
         public RedisManagerPool(string host) : this(new[] { host }) { }
+
         /// <inheritdoc />
         public RedisManagerPool(string host, RedisPoolConfig config) : this(new[] { host }, config) { }
 

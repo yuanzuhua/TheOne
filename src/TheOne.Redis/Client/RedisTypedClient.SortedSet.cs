@@ -139,7 +139,8 @@ namespace TheOne.Redis.Client {
         }
 
         /// <inheritdoc />
-        public IDictionary<T, double> GetRangeWithScoresFromSortedSetByLowestScore(IRedisSortedSet<T> set, double fromScore, double toScore) {
+        public IDictionary<T, double>
+            GetRangeWithScoresFromSortedSetByLowestScore(IRedisSortedSet<T> set, double fromScore, double toScore) {
             IDictionary<string, double> map = this._client.GetRangeWithScoresFromSortedSetByLowestScore(set.Id, fromScore, toScore);
             return CreateGenericMap(map);
         }

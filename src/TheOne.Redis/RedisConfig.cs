@@ -104,6 +104,7 @@ namespace TheOne.Redis {
         ///     Example at: http://msdn.microsoft.com/en-us/library/office/dd633677(v=exchg.80).aspx
         /// </summary>
         public static LocalCertificateSelectionCallback CertificateSelectionCallback { get; set; }
+
         public static RemoteCertificateValidationCallback CertificateValidationCallback { get; set; }
 
         /// <summary>

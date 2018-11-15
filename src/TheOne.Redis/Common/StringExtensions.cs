@@ -22,8 +22,6 @@ namespace TheOne.Redis.Common {
         /// <summary>
         ///     Encoding.UTF8.GetBytes
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public static byte[] ToUtf8Bytes(this string value) {
             return Encoding.UTF8.GetBytes(value);
         }

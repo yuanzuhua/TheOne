@@ -660,10 +660,8 @@ namespace TheOne.Redis.Client {
         protected void SendExpectSuccess(params byte[][] cmdWithBinaryArgs) {
             // Turn Action into Func Hack
             Action<Func<long>> completePipelineFn = this.Pipeline != null
-                ? f => {
-                    this.Pipeline.CompleteVoidQueuedCommand(() => f());
-                }
-            : (Action<Func<long>>)null;
+                ? f => this.Pipeline.CompleteVoidQueuedCommand(() => f())
+                : (Action<Func<long>>)null;
 
             this.SendReceive(cmdWithBinaryArgs, this.ExpectSuccessFn, completePipelineFn);
         }

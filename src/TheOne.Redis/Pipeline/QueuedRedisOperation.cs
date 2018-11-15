@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using TheOne.Logging;
 using TheOne.Redis.Client;
 using TheOne.Redis.Client.Internal;

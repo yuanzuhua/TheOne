@@ -2,6 +2,7 @@ using System.Globalization;
 using NUnit.Framework;
 #if NET46
 using System.Threading;
+
 #endif
 
 namespace TheOne.Redis.Tests.Basic {

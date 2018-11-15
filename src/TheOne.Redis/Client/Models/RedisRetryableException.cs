@@ -1,6 +1,6 @@
 namespace TheOne.Redis.Client {
 
-        /// <inheritdoc />
+    /// <inheritdoc />
     public class RedisRetryableException : RedisException {
 
         /// <inheritdoc />

@@ -65,10 +65,13 @@ namespace TheOne.Redis.PubSub {
 
         /// <inheritdoc />
         public Action OnInit { get; set; }
+
         /// <inheritdoc />
         public Action OnStart { get; set; }
+
         /// <inheritdoc />
         public Action OnStop { get; set; }
+
         /// <inheritdoc />
         public Action OnDispose { get; set; }
 
@@ -77,17 +80,22 @@ namespace TheOne.Redis.PubSub {
 
         /// <inheritdoc />
         public Action<string> OnUnSubscribe { get; set; }
+
         /// <inheritdoc />
         public Action<Exception> OnError { get; set; }
+
         /// <inheritdoc />
         public Action<IRedisPubSubServer> OnFailover { get; set; }
 
         /// <inheritdoc />
         public DateTime CurrentServerTime => new DateTime(this._serverTimeAtStart.Ticks + this._startedAt.ElapsedTicks, DateTimeKind.Utc);
+
         /// <inheritdoc />
         public IRedisClientManager ClientsManager { get; set; }
+
         /// <inheritdoc />
         public string[] Channels { get; set; }
+
         /// <inheritdoc />
         public TimeSpan? WaitBeforeNextRestart { get; set; }
 

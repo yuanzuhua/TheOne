@@ -10,7 +10,7 @@ using TheOne.Redis.ClientManager;
 
 namespace TheOne.Redis.Sentinel {
 
-        /// <inheritdoc />
+    /// <inheritdoc />
     public class RedisSentinelResolver : IRedisResolverExtended {
 
         private static readonly ILog _logger = LogProvider.GetLogger(typeof(RedisSentinelResolver));
@@ -50,6 +50,7 @@ namespace TheOne.Redis.Sentinel {
 
         /// <inheritdoc />
         public int ReadWriteHostsCount { get; private set; }
+
         /// <inheritdoc />
         public int ReadOnlyHostsCount { get; private set; }
 
