@@ -49,7 +49,7 @@ Assert.That(receivedMsgType, Is.EqualTo(typeof(Hello).Name));
 
 #### CreateQueueFilter
 
-WARNING: if a queue already exists, you cannot change it, this action shoud be deterministic.
+WARNING: if a queue already exists, you cannot change it, this action should be deterministic.
 
 ```csharp
 RabbitMqExtensions.CreateQueueFilter = (s, args) => {

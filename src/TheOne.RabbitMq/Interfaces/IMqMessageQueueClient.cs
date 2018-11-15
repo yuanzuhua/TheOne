@@ -42,7 +42,7 @@ namespace TheOne.RabbitMq.Interfaces {
         void Nak(IMqMessage message, bool requeue, Exception exception = null);
 
         /// <summary>
-        ///     Create a typed message from a raw MQ Response artefact
+        ///     Create a typed message from a raw MQ Response
         /// </summary>
         IMqMessage<T> CreateMessage<T>(object mqResponse);
 

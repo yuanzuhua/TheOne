@@ -19,23 +19,23 @@ namespace TheOne.RabbitMq.Interfaces {
         List<Type> RegisteredTypes { get; }
 
         /// <summary>
-        ///     Register DTOs and hanlders the MQ Server will process
+        ///     Register DTOs and handlers the MQ Server will process
         /// </summary>
         void RegisterHandler<T>(Func<IMqMessage<T>, object> processMessageFn);
 
         /// <summary>
-        ///     Register DTOs and hanlders the MQ Server will process using specified number of threads
+        ///     Register DTOs and handlers the MQ Server will process using specified number of threads
         /// </summary>
         void RegisterHandler<T>(Func<IMqMessage<T>, object> processMessageFn, int noOfThreads);
 
         /// <summary>
-        ///     Register DTOs and hanlders the MQ Server will process
+        ///     Register DTOs and handlers the MQ Server will process
         /// </summary>
         void RegisterHandler<T>(Func<IMqMessage<T>, object> processMessageFn,
             Action<IMqMessageHandler, IMqMessage<T>, Exception> processExceptionEx);
 
         /// <summary>
-        ///     Register DTOs and hanlders the MQ Server will process using specified number of threads
+        ///     Register DTOs and handlers the MQ Server will process using specified number of threads
         /// </summary>
         void RegisterHandler<T>(Func<IMqMessage<T>, object> processMessageFn,
             Action<IMqMessageHandler, IMqMessage<T>, Exception> processExceptionEx, int noOfThreads);

@@ -17,7 +17,7 @@ namespace TheOne.RabbitMq {
 
         /// <summary>
         ///     queueName and args.
-        ///     WARNING: if a queue already exists, you cannot change it, this action shoud be deterministic.
+        ///     WARNING: if a queue already exists, you cannot change it, this action should be deterministic.
         /// </summary>
         public static Action<string, Dictionary<string, object>> CreateQueueFilter { get; set; }
 

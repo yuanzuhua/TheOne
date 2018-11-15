@@ -8,19 +8,19 @@ namespace TheOne.RabbitMq.Models {
     public class MqErrorStatus {
 
         /// <summary>
-        ///     A status without an errorcode == success
+        ///     A status without an errorCode == success
         /// </summary>
         public MqErrorStatus() { }
 
         /// <summary>
-        ///     A status with an errorcode == failure
+        ///     A status with an errorCode == failure
         /// </summary>
         public MqErrorStatus(string errorCode) {
             this.ErrorCode = errorCode;
         }
 
         /// <summary>
-        ///     A status with an errorcode == failure
+        ///     A status with an errorCode == failure
         /// </summary>
         public MqErrorStatus(string errorCode, string message) : this(errorCode) {
             this.Message = message;
@@ -31,10 +31,8 @@ namespace TheOne.RabbitMq.Models {
             this.Message = exception.Message;
             this.StackTrace = exception.ToString();
 
-            if (exception.Data != null) {
-                foreach (KeyValuePair<string, object> o in exception.Data) {
-                    this.Meta[o.Key] = o.Value?.ToString();
-                }
+            foreach (KeyValuePair<string, object> o in exception.Data) {
+                this.Meta[o.Key] = o.Value?.ToString();
             }
         }
 
