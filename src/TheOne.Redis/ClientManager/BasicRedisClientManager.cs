@@ -7,7 +7,7 @@ using TheOne.Redis.Client.Internal;
 namespace TheOne.Redis.ClientManager {
 
     /// <summary>
-    ///     Provides thread-safe retrievel of redis clients since each client is a new one.
+    ///     Provides thread-safe retrieve of redis clients since each client is a new one.
     ///     <para>
     ///         Allows the configuration of different ReadWrite and ReadOnly hosts
     ///     </para>
@@ -43,19 +43,19 @@ namespace TheOne.Redis.ClientManager {
         /// </summary>
         /// <param name="readWriteHosts" >The write hosts.</param>
         /// <param name="readOnlyHosts" >The read hosts.</param>
-        /// <param name="initalDb" >initalDb</param>
+        /// <param name="initialDb" >initialDb</param>
         public BasicRedisClientManager(
             IEnumerable<string> readWriteHosts,
             IEnumerable<string> readOnlyHosts,
-            long? initalDb = null)
-            : this(RedisEndpoint.Create(readWriteHosts), RedisEndpoint.Create(readOnlyHosts), initalDb) { }
+            long? initialDb = null)
+            : this(RedisEndpoint.Create(readWriteHosts), RedisEndpoint.Create(readOnlyHosts), initialDb) { }
 
         /// <inheritdoc />
         public BasicRedisClientManager(
             IEnumerable<RedisEndpoint> readWriteHosts,
             IEnumerable<RedisEndpoint> readOnlyHosts,
-            long? initalDb = null) {
-            this.Db = initalDb;
+            long? initialDb = null) {
+            this.Db = initialDb;
 
             this.RedisResolver = new RedisResolver(readWriteHosts, readOnlyHosts);
 

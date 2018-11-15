@@ -275,7 +275,7 @@ namespace TheOne.Redis.Tests.Examples {
             IList<BlogPost> newIncomingBlogPosts = redisBlogPosts.GetAll();
 
             foreach (BlogPost newBlogPost in newIncomingBlogPosts) {
-                // For each post add it's Id into each of it's 'Cateogry > Posts' index
+                // For each post add it's Id into each of it's 'Category > Posts' index
                 newBlogPost.Categories.ForEach(x => this._redis.AddItemToSet("urn:Category:" + x, newBlogPost.Id.ToString()));
             }
 

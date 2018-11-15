@@ -92,7 +92,7 @@ namespace TheOne.Redis.Tests.ClientManager {
             using (var manager = new RedisManagerPool(
                 writeHosts,
                 new RedisPoolConfig { MaxPoolSize = 4 })) {
-                // A poolsize of 4 will not block getting 4 clients
+                // A pool size of 4 will not block getting 4 clients
                 using (IRedisClient client1 = manager.GetClient()) {
                     using (IRedisClient client2 = manager.GetClient()) {
                         using (IRedisClient client3 = manager.GetClient()) {

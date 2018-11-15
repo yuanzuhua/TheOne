@@ -9,7 +9,7 @@ namespace TheOne.Redis.ClientManager.Internal {
 
     internal class ConsistentHash<T> {
 
-        // mutiple replicas of each node improves distribution
+        // multiple replicas of each node improves distribution
         private const int _replicas = 200;
         private readonly SortedDictionary<ulong, T> _circle = new SortedDictionary<ulong, T>();
 

@@ -234,7 +234,7 @@ namespace TheOne.Redis.Tests.Basic {
         }
 
         [Test]
-        public void Can_Subscribe_to_multiplechannel_pattern() {
+        public void Can_Subscribe_to_MultipleChannel_pattern() {
             string[] channels = { this.PrefixedKey("CHANNEL5:TITLE*"), this.PrefixedKey("CHANNEL5:BODY*") };
             var msgs = 0;
             using (IRedisSubscription subscription = this.Redis.CreateSubscription()) {

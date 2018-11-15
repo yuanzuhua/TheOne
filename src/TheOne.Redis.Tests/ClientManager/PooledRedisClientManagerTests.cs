@@ -170,7 +170,7 @@ namespace TheOne.Redis.Tests.ClientManager {
                     }
                 )
             ) {
-                // A poolsize of 4 will not block getting 4 clients
+                // A pool size of 4 will not block getting 4 clients
                 using (IRedisClient client1 = manager.GetClient()) {
                     using (IRedisClient client2 = manager.GetClient()) {
                         using (IRedisClient client3 = manager.GetClient()) {
@@ -184,7 +184,7 @@ namespace TheOne.Redis.Tests.ClientManager {
                     }
                 }
 
-                // A poolsize of 8 will not block getting 8 clients
+                // A pool size of 8 will not block getting 8 clients
                 using (IRedisClient client1 = manager.GetReadOnlyClient()) {
                     using (IRedisClient client2 = manager.GetReadOnlyClient()) {
                         using (IRedisClient client3 = manager.GetReadOnlyClient()) {

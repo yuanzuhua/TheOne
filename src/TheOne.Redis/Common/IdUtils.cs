@@ -12,7 +12,7 @@ namespace TheOne.Redis.Common {
 
             Type memberInfo = typeof(T);
             Type[] hasIdInterfaces =
-                memberInfo.FindInterfaces((t, critera) => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IHasRedisId<>), null);
+                memberInfo.FindInterfaces((t, criteria) => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IHasRedisId<>), null);
 
             if (hasIdInterfaces.Length > 0) {
                 CanGetId = HasId<T>.GetId;
@@ -79,7 +79,7 @@ namespace TheOne.Redis.Common {
         static HasId() {
             Type type = typeof(TEntity);
             Type[] hasIdInterfaces =
-                type.FindInterfaces((t, critera) => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IHasRedisId<>), null);
+                type.FindInterfaces((t, criteria) => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IHasRedisId<>), null);
             Type genericArg = hasIdInterfaces[0].GetGenericArguments()[0];
             Type genericType = typeof(HasIdGetter<,>).MakeGenericType(type, genericArg);
 

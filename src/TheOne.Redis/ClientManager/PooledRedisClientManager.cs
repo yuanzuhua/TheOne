@@ -63,20 +63,20 @@ namespace TheOne.Redis.ClientManager {
         public PooledRedisClientManager(
             IEnumerable<string> readWriteHosts,
             IEnumerable<string> readOnlyHosts,
-            long initalDb)
-            : this(readWriteHosts, readOnlyHosts, null, initalDb, null, null) { }
+            long initialDb)
+            : this(readWriteHosts, readOnlyHosts, null, initialDb, null, null) { }
 
         /// <inheritdoc />
         public PooledRedisClientManager(
             IEnumerable<string> readWriteHosts,
             IEnumerable<string> readOnlyHosts,
             RedisClientManagerConfig config,
-            long? initalDb,
+            long? initialDb,
             int? poolSizeMultiplier,
             int? poolTimeOutSeconds) {
             this.Db = config != null
-                ? config.DefaultDb ?? initalDb
-                : initalDb;
+                ? config.DefaultDb ?? initialDb
+                : initialDb;
 
             string[] masters = readWriteHosts?.ToArray() ?? Array.Empty<string>();
             string[] slaves = readOnlyHosts?.ToArray() ?? Array.Empty<string>();
@@ -414,7 +414,7 @@ namespace TheOne.Redis.ClientManager {
         /// </summary>
         private int GetInActiveWriteClient(out RedisClient inactiveClient) {
             // this will loop through all hosts in readClients once even though there are 2 for loops
-            // both loops are used to try to get the prefered host according to the round robin algorithm
+            // both loops are used to try to get the preferred host according to the round robin algorithm
             var readWriteTotal = this.RedisResolver.ReadWriteHostsCount;
             var desiredIndex = this.WritePoolIndex % this._writeClients.Length;
             for (var x = 0; x < readWriteTotal; x++) {
@@ -448,7 +448,7 @@ namespace TheOne.Redis.ClientManager {
         private int GetInActiveReadClient(out RedisClient inactiveClient) {
             var desiredIndex = this.ReadPoolIndex % this._readClients.Length;
             // this will loop through all hosts in readClients once even though there are 2 for loops
-            // both loops are used to try to get the prefered host according to the round robin algorithm
+            // both loops are used to try to get the preferred host according to the round robin algorithm
             var readOnlyTotal = this.RedisResolver.ReadOnlyHostsCount;
             for (var x = 0; x < readOnlyTotal; x++) {
                 var nextHostIndex = (desiredIndex + x) % readOnlyTotal;

@@ -114,7 +114,7 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         [Test]
-        public void Get_non_existant_generic_value_returns_null() {
+        public void Get_non_existent_generic_value_returns_null() {
             ModelWithIdAndName model = ModelWithIdAndName.Create(1);
             var cacheKey = model.CreateUrn();
             var existingModel = this._cacheClient.Get<ModelWithIdAndName>(cacheKey);
@@ -122,7 +122,7 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         [Test]
-        public void Get_non_existant_value_returns_null() {
+        public void Get_non_existent_value_returns_null() {
             ModelWithIdAndName model = ModelWithIdAndName.Create(1);
             var cacheKey = model.CreateUrn();
             var existingModel = this._cacheClient.Get<ModelWithIdAndName>(cacheKey);

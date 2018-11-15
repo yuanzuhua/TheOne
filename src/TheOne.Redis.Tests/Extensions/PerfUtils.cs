@@ -12,17 +12,17 @@ namespace TheOne.Redis.Tests.Extensions {
         /// <param name="runForMs" >Minimum ms to run for</param>
         /// <returns>time elapsed in micro seconds</returns>
         public static double MeasureFor(Action fn, int runForMs) {
-            var iter = 0;
+            var i = 0;
             var watch = new Stopwatch();
             watch.Start();
             long elapsed = 0;
             while (elapsed < runForMs) {
                 fn();
                 elapsed = watch.ElapsedMilliseconds;
-                iter++;
+                i++;
             }
 
-            return 1000.0 * elapsed / iter;
+            return 1000.0 * elapsed / i;
         }
 
         /// <summary>

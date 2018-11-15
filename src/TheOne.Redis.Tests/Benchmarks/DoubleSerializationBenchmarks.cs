@@ -30,7 +30,7 @@ namespace TheOne.Redis.Tests.Benchmarks {
 
         [Test]
         public void Compare_double_serializers() {
-            var initalVal = 0.3333333333333333d;
+            var initialVal = 0.3333333333333333d;
 
             var results = new string[_times];
 
@@ -38,7 +38,7 @@ namespace TheOne.Redis.Tests.Benchmarks {
             Stopwatch sw = Stopwatch.StartNew();
 
             for (var i = 0; i < _times; i++) {
-                results[i] = (initalVal + i).ToString();
+                results[i] = (initialVal + i).ToString();
             }
 
             Console.WriteLine("double.ToString(): Completed in ms: " + sw.ElapsedMilliseconds);
@@ -48,7 +48,7 @@ namespace TheOne.Redis.Tests.Benchmarks {
             sw = Stopwatch.StartNew();
 
             for (var i = 0; i < _times; i++) {
-                results[i] = (initalVal + i).ToString("r");
+                results[i] = (initialVal + i).ToString("r");
             }
 
             Console.WriteLine("double.ToString('r') completed in ms: " + sw.ElapsedMilliseconds);
@@ -59,7 +59,7 @@ namespace TheOne.Redis.Tests.Benchmarks {
             sw = Stopwatch.StartNew();
 
             for (var i = 0; i < _times; i++) {
-                results[i] = DoubleConverter.ToExactString(initalVal + i);
+                results[i] = DoubleConverter.ToExactString(initialVal + i);
             }
 
             Console.WriteLine("DoubleConverter.ToExactString(): Completed in ms: " + sw.ElapsedMilliseconds);
@@ -70,19 +70,19 @@ namespace TheOne.Redis.Tests.Benchmarks {
             sw = Stopwatch.StartNew();
 
             for (var i = 0; i < _times; i++) {
-                results[i] = BitConverter.ToString(BitConverter.GetBytes(initalVal + i));
+                results[i] = BitConverter.ToString(BitConverter.GetBytes(initialVal + i));
             }
 
             Console.WriteLine("BitConverter.ToString() completed in ms: " + sw.ElapsedMilliseconds);
             // PrintLastValues(results, 100); 
 
 
-            // What Booksleeve uses
+            // What Book Sleeve uses
             this.Reset();
             sw = Stopwatch.StartNew();
 
             for (var i = 0; i < _times; i++) {
-                results[i] = (initalVal + i).ToString("G", CultureInfo.InvariantCulture);
+                results[i] = (initialVal + i).ToString("G", CultureInfo.InvariantCulture);
             }
 
             Console.WriteLine("double.ToString('G') completed in ms: " + sw.ElapsedMilliseconds);

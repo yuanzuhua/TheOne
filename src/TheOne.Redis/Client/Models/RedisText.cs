@@ -77,10 +77,10 @@ namespace TheOne.Redis.Client {
         private static KeyValuePair<string, string>? ParseKeyValue(string source) {
             KeyValuePair<string, string>? result = null;
 
-            var devider = source.IndexOf(":", StringComparison.Ordinal);
-            if (devider > 0) {
-                var name = source.Substring(0, devider);
-                var value = source.Substring(devider + 1);
+            var divider = source.IndexOf(":", StringComparison.Ordinal);
+            if (divider > 0) {
+                var name = source.Substring(0, divider);
+                var value = source.Substring(divider + 1);
                 result = new KeyValuePair<string, string>(name.Trim(), value.Trim());
             }
 

@@ -157,7 +157,7 @@ namespace TheOne.Redis.Queue {
                 // this may help inter-client data management as well
                 //
                 // however we store 'null' as Empty + an empty array, 
-                // so this must special-cased for compatibilty with 
+                // so this must special-cased for compatibility with 
                 // earlier versions. we introduced DBNull as null marker in emc2.6
                 case TypeCode.Empty:
                     return data == null || count == 0

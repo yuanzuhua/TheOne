@@ -78,7 +78,7 @@ namespace TheOne.Redis.Tests.Basic {
         }
 
         [Test]
-        public void Can_ZScan_10_sortedsets() {
+        public void Can_ZScan_10_SortedSets() {
             List<string> items = Enumerable.Range(0, 10).Select(x => "item" + x).ToList();
             var i = 0;
             items.ForEach(x => this.Redis.AddItemToSortedSet("scanzset", x, i++));
@@ -133,7 +133,7 @@ namespace TheOne.Redis.Tests.Basic {
         }
 
         [Test]
-        public void Does_lazy_scan_all_sortedset_items() {
+        public void Does_lazy_scan_all_SortedSet_items() {
             List<string> items = Enumerable.Range(0, 100).Select(x => "item" + x).ToList();
             var i = 0;
             items.ForEach(x => this.Redis.AddItemToSortedSet("scanzset", x, i++));

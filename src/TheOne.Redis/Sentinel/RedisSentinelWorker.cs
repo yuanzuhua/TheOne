@@ -16,7 +16,7 @@ namespace TheOne.Redis.Sentinel {
         private readonly object _oLock = new object();
         private readonly RedisSentinel _sentinel;
         private readonly RedisClient _sentinelClient;
-        private RedisPubSubServer _sentinePubSub;
+        private RedisPubSubServer _sentinelPubSub;
         public Action<Exception> OnSentinelError;
 
         public RedisSentinelWorker(RedisSentinel sentinel, RedisEndpoint sentinelEndpoint) {
@@ -46,7 +46,7 @@ namespace TheOne.Redis.Sentinel {
             }
 
             LogAndDispose(this._sentinelClient);
-            LogAndDispose(this._sentinePubSub);
+            LogAndDispose(this._sentinelPubSub);
         }
 
         /// <summary>
@@ -171,12 +171,12 @@ namespace TheOne.Redis.Sentinel {
         public void BeginListeningForConfigurationChanges() {
             try {
                 lock (this._oLock) {
-                    if (this._sentinePubSub == null) {
+                    if (this._sentinelPubSub == null) {
                         var sentinelManager = new BasicRedisClientManager(this._sentinel.SentinelHosts, this._sentinel.SentinelHosts) {
                             // Use BasicRedisResolver which doesn't validate non-Master Sentinel instances
                             RedisResolver = new BasicRedisResolver(this._sentinel.SentinelEndpoints, this._sentinel.SentinelEndpoints)
                         };
-                        this._sentinePubSub = new RedisPubSubServer(sentinelManager) {
+                        this._sentinelPubSub = new RedisPubSubServer(sentinelManager) {
                             HeartbeatInterval = null,
                             IsSentinelSubscription = true,
                             ChannelsMatching = new[] { RedisPubSubServer.AllChannelsWildCard },
@@ -185,7 +185,7 @@ namespace TheOne.Redis.Sentinel {
                     }
                 }
 
-                this._sentinePubSub.Start();
+                this._sentinelPubSub.Start();
             } catch (Exception ex) {
                 _logger.Error($"Error Subscribing to Redis Channel on {this._sentinelClient.Host}:{this._sentinelClient.Port}", ex);
 

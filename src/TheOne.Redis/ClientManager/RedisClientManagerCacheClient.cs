@@ -6,7 +6,7 @@ using TheOne.Redis.Client;
 namespace TheOne.Redis.ClientManager {
 
     /// <summary>
-    ///     For interoperabilty GetCacheClient() and GetReadOnlyCacheClient()
+    ///     For interoperability GetCacheClient() and GetReadOnlyCacheClient()
     ///     return an ICacheClient wrapper around the redis manager which has the affect of calling
     ///     GetClient() for all write operations and GetReadOnlyClient() for the read ones.
     ///     This works well for master-slave replication scenarios where you have

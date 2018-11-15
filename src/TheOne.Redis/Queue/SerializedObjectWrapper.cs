@@ -19,7 +19,7 @@ namespace TheOne.Redis.Queue {
         }
 
         /// <summary>
-        ///     The data representing the item being stored/retireved.
+        ///     The data representing the item being stored/retrieved.
         /// </summary>
         public ArraySegment<byte> Data { get; set; }
 

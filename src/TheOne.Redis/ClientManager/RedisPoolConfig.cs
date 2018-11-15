@@ -18,7 +18,7 @@ namespace TheOne.Redis.ClientManager {
         }
 
         /// <summary>
-        ///     Maximum ammount of <see cref="ICacheClient" />s created by the <see cref="RedisManagerPool" />.
+        ///     Maximum amount of <see cref="ICacheClient" />s created by the <see cref="RedisManagerPool" />.
         /// </summary>
         public int MaxPoolSize { get; set; }
 

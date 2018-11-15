@@ -367,13 +367,13 @@ namespace TheOne.Redis.Tests.Client {
         public void RemoveAll_removes_all_items_from_Named_List() {
             IRedisTypedClient<Test> redis = this.Redis.As<Test>();
 
-            IRedisList<Test> clientesRepo = redis.Lists["repo:Client:Test"];
+            IRedisList<Test> clientRepos = redis.Lists["repo:Client:Test"];
 
-            Assert.IsTrue(clientesRepo.Count == 0, "Count 1 = " + clientesRepo.Count);
-            clientesRepo.Add(new Test { A = "Test" });
-            Assert.IsTrue(clientesRepo.Count == 1, "Count 2 = " + clientesRepo.Count);
-            clientesRepo.RemoveAll();
-            Assert.IsTrue(clientesRepo.Count == 0, "Count 3 = " + clientesRepo.Count);
+            Assert.IsTrue(clientRepos.Count == 0, "Count 1 = " + clientRepos.Count);
+            clientRepos.Add(new Test { A = "Test" });
+            Assert.IsTrue(clientRepos.Count == 1, "Count 2 = " + clientRepos.Count);
+            clientRepos.RemoveAll();
+            Assert.IsTrue(clientRepos.Count == 0, "Count 3 = " + clientRepos.Count);
         }
 
     }

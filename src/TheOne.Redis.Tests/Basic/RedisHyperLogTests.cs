@@ -8,7 +8,7 @@ namespace TheOne.Redis.Tests.Basic {
     internal sealed class RedisHyperLogTests : RedisClientTestsBase {
 
         [Test]
-        public void Can_Add_to_Hyperlog() {
+        public void Can_Add_to_HyperLog() {
             this.Redis.AddToHyperLog("hyperlog", "a", "b", "c");
             this.Redis.AddToHyperLog("hyperlog", "c", "d");
 
@@ -26,7 +26,7 @@ namespace TheOne.Redis.Tests.Basic {
         }
 
         [Test]
-        public void Test_on_old_redisserver() {
+        public void Test_on_old_RedisServer() {
 
             // Redis.ExpireEntryIn("key", TimeSpan.FromDays(14));
 

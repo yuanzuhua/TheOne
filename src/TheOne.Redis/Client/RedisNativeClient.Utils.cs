@@ -195,7 +195,7 @@ namespace TheOne.Redis.Client {
                     networkStream = this.SslStream;
                 }
 
-                this.Bstream = new BufferedStream(networkStream, 16 * 1024);
+                this.BStream = new BufferedStream(networkStream, 16 * 1024);
 
                 if (!string.IsNullOrEmpty(this.Password)) {
                     this.SendUnmanagedExpectSuccess(Commands.Auth, this.Password.ToUtf8Bytes());
@@ -254,7 +254,7 @@ namespace TheOne.Redis.Client {
             StringBuilder sb = StringBuilderCache.Acquire();
 
             int c;
-            while ((c = this.Bstream.ReadByte()) != -1) {
+            while ((c = this.BStream.ReadByte()) != -1) {
                 if (c == '\r') {
                     continue;
                 }
@@ -391,7 +391,7 @@ namespace TheOne.Redis.Client {
         }
 
         /// <summary>
-        ///     Command to set multuple binary safe arguments
+        ///     Command to set multiple binary safe arguments
         /// </summary>
         protected void WriteCommandToSendBuffer(params byte[][] cmdWithBinaryArgs) {
             if (this.Pipeline == null && this.Transaction == null) {
@@ -432,7 +432,7 @@ namespace TheOne.Redis.Client {
                 bytes = Combine(bytes, GetCmdBytes('$', safeBinaryValue.Length), safeBinaryValue, this._endData);
             }
 
-            this.Bstream.Write(bytes, 0, bytes.Length);
+            this.BStream.Write(bytes, 0, bytes.Length);
 
             this.ExpectSuccess();
         }
@@ -501,7 +501,7 @@ namespace TheOne.Redis.Client {
                     this.SslStream == null) {
                     this.Socket.Send(this._cmdBuffer); // Optimized for Windows
                 } else {
-                    // Sendling IList<ArraySegment> Throws 'Message to Large' SocketException in Mono
+                    // Sending IList<ArraySegment> Throws 'Message to Large' SocketException in Mono
                     foreach (ArraySegment<byte> segment in this._cmdBuffer) {
                         byte[] buffer = segment.Array;
 
@@ -532,7 +532,7 @@ namespace TheOne.Redis.Client {
         }
 
         private int SafeReadByte() {
-            return this.Bstream.ReadByte();
+            return this.BStream.ReadByte();
         }
 
         protected T SendReceive<T>(byte[][] cmdWithBinaryArgs,
@@ -925,7 +925,7 @@ namespace TheOne.Redis.Client {
 
                     var offset = 0;
                     while (count > 0) {
-                        var readCount = this.Bstream.Read(retbuf, offset, count);
+                        var readCount = this.BStream.Read(retbuf, offset, count);
                         if (readCount <= 0) {
                             throw this.CreateResponseError("Unexpected end of Stream");
                         }
@@ -934,7 +934,7 @@ namespace TheOne.Redis.Client {
                         count -= readCount;
                     }
 
-                    if (this.Bstream.ReadByte() != '\r' || this.Bstream.ReadByte() != '\n') {
+                    if (this.BStream.ReadByte() != '\r' || this.BStream.ReadByte() != '\n') {
                         throw this.CreateResponseError("Invalid termination");
                     }
 

@@ -66,7 +66,7 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         [Test]
-        public void Can_add_large_score_to_sortedset() {
+        public void Can_add_large_score_to_SortedSet() {
             this.Redis.AddItemToSortedSet(this.SetId, "value", 12345678901234567890d);
             var score = this.Redis.GetItemScoreInSortedSet(this.SetId, "value");
 

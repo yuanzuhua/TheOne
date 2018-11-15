@@ -41,7 +41,7 @@ namespace TheOne.Redis.Tests.Basic {
                 pubSub.OnStop = () => Console.WriteLine("stop #{0}", ++stopCount);
                 pubSub.OnHeartbeatReceived = () => Console.WriteLine("pulse #{0}", ++pulseCount);
 
-                // pause longer than heartbeat timeout so autoreconnects
+                // pause longer than heartbeat timeout so auto reconnects
                 pubSub.OnControlCommand = op => {
                     if (op == "PULSE" && stopCount < 2) {
                         Thread.Sleep(4000);

@@ -113,7 +113,7 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         // Operations that are not supported in older versions will look at server info to determine what to do.
-        // If server info is fetched each time, then it will interfer with pipeline
+        // If server info is fetched each time, then it will interfere with pipeline
         [Test]
         public void Can_call_operation_not_supported_on_older_servers_in_pipeline() {
             var temp = new byte[1];

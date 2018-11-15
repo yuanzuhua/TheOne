@@ -273,7 +273,7 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         [Test]
-        public void Can_get_showlog() {
+        public void Can_get_Slowlog() {
             IEnumerable<SlowlogItem> log = this.Redis.GetSlowlog(10);
 
             foreach (SlowlogItem t in log) {
@@ -366,10 +366,10 @@ namespace TheOne.Redis.Tests.Client {
 
             this.Redis.SetValue("UserLevel/1", val);
 
-            List<string> vals = this.Redis.GetValues(new List<string>(new[] { "UserLevel/1" }));
+            List<string> strList = this.Redis.GetValues(new List<string>(new[] { "UserLevel/1" }));
 
-            Assert.That(vals.Count, Is.EqualTo(1));
-            Assert.That(vals[0], Is.EqualTo(val));
+            Assert.That(strList.Count, Is.EqualTo(1));
+            Assert.That(strList[0], Is.EqualTo(val));
         }
 
         [Test]
@@ -455,7 +455,7 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         [Test]
-        public void Can_Set_Expire_MilliSeconds() {
+        public void Can_Set_Expire_Milliseconds() {
             this.Redis.SetValue("key", "val", TimeSpan.FromMilliseconds(1000));
             Assert.That(this.Redis.ContainsKey("key"), Is.True);
             Thread.Sleep(2000);

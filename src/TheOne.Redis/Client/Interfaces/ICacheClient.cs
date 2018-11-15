@@ -84,7 +84,7 @@ namespace TheOne.Redis.Client {
         bool Set<T>(string key, T value);
 
         /// <summary>
-        ///     Replaces the item at the cachekey specified only if an items exists at the location already.
+        ///     Replaces the item at the cacheKey specified only if an items exists at the location already.
         /// </summary>
         bool Replace<T>(string key, T value);
 

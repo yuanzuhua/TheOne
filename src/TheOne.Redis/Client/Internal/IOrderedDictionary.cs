@@ -49,7 +49,7 @@ namespace TheOne.Redis.Client.Internal {
         /// <exception cref="NotSupportedException" >
         ///     The <see cref="IOrderedDictionary{TKey,TValue}" >IOrderedDictionary&lt;TKey,TValue&gt;</see> is read-only.<br />
         ///     -or-<br />
-        ///     The <see cref="IOrderedDictionary{TKey,TValue}" >IOrderedDictionary&lt;TKey,TValue&gt;</see> has a fized size.
+        ///     The <see cref="IOrderedDictionary{TKey,TValue}" >IOrderedDictionary&lt;TKey,TValue&gt;</see> has a fixed size.
         /// </exception>
         new int Add(TKey key, TValue value);
 
@@ -75,7 +75,7 @@ namespace TheOne.Redis.Client.Internal {
         /// <exception cref="NotSupportedException" >
         ///     The <see cref="IOrderedDictionary{TKey,TValue}" >IOrderedDictionary&lt;TKey,TValue&gt;</see> is read-only.<br />
         ///     -or-<br />
-        ///     The <see cref="IOrderedDictionary{TKey,TValue}" >IOrderedDictionary&lt;TKey,TValue&gt;</see> has a fized size.
+        ///     The <see cref="IOrderedDictionary{TKey,TValue}" >IOrderedDictionary&lt;TKey,TValue&gt;</see> has a fixed size.
         /// </exception>
         void Insert(int index, TKey key, TValue value);
 

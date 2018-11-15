@@ -50,7 +50,7 @@ namespace TheOne.Redis.Client {
         private IRedisPipelineShared _pipeline;
         private TimeSpan _retryTimeout;
         private IRedisTransactionBase _transaction;
-        protected BufferedStream Bstream;
+        protected BufferedStream BStream;
 
         internal long DeactivatedAtTicks;
         internal long LastConnectedAtTimestamp;
@@ -218,7 +218,7 @@ namespace TheOne.Redis.Client {
         private void SafeConnectionClose() {
             try {
                 // workaround for a .net bug: http://support.microsoft.com/kb/821625
-                this.Bstream?.Close();
+                this.BStream?.Close();
             } catch {
                 //
             }
@@ -235,7 +235,7 @@ namespace TheOne.Redis.Client {
                 //
             }
 
-            this.Bstream = null;
+            this.BStream = null;
             this.SslStream = null;
             this.Socket = null;
         }

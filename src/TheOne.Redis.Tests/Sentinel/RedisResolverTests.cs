@@ -85,14 +85,14 @@ namespace TheOne.Redis.Tests.Sentinel {
                     }
                 }
 
-                using (ICacheClient cahce = redisManager.GetCacheClient()) {
-                    Assert.That(cahce.Get<string>("KEY"), Is.EqualTo("2"));
+                using (ICacheClient cache = redisManager.GetCacheClient()) {
+                    Assert.That(cache.Get<string>("KEY"), Is.EqualTo("2"));
                 }
             }
         }
 
         [Test]
-        public void Can_initalize_ClientManagers_with_no_hosts() {
+        public void Can_initialize_ClientManagers_with_no_hosts() {
             InitializeEmptyRedisManagers(new PooledRedisClientManager(), Config.MasterHosts, Config.SlaveHosts);
             InitializeEmptyRedisManagers(new RedisManagerPool(), Config.MasterHosts, Config.MasterHosts);
             InitializeEmptyRedisManagers(new BasicRedisClientManager(), Config.MasterHosts, Config.SlaveHosts);
@@ -118,8 +118,8 @@ namespace TheOne.Redis.Tests.Sentinel {
                     }
                 }
 
-                using (ICacheClient cahce = redisManager.GetCacheClient()) {
-                    Assert.That(cahce.Get<string>("KEY"), Is.EqualTo("2"));
+                using (ICacheClient cache = redisManager.GetCacheClient()) {
+                    Assert.That(cache.Get<string>("KEY"), Is.EqualTo("2"));
                 }
             }
         }
@@ -189,8 +189,8 @@ namespace TheOne.Redis.Tests.Sentinel {
                     }
                 }
 
-                using (ICacheClient cahce = redisManager.GetCacheClient()) {
-                    Assert.That(cahce.Get<string>("KEY"), Is.EqualTo("2"));
+                using (ICacheClient cache = redisManager.GetCacheClient()) {
+                    Assert.That(cache.Get<string>("KEY"), Is.EqualTo("2"));
                 }
             }
         }

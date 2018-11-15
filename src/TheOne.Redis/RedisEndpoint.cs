@@ -79,7 +79,7 @@ namespace TheOne.Redis {
         public bool RequiresAuth => !string.IsNullOrEmpty(this.Password);
 
         /// <summary>
-        ///     Use a custom prefix for ServiceStack.Redis internal index colletions
+        ///     Use a custom prefix for Redis internal index collections
         /// </summary>
         public string NamespacePrefix { get; set; }
 

@@ -620,7 +620,7 @@ namespace TheOne.Redis.Client {
         }
 
         private static Exception GetInnerMostException(Exception ex) {
-            // Extract true exception from static intializers (e.g. LicenseException)
+            // Extract true exception from static initializer
             while (ex.InnerException != null) {
                 ex = ex.InnerException;
             }

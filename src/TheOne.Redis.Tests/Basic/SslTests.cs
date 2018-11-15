@@ -180,9 +180,9 @@ namespace TheOne.Redis.Tests.Basic {
                 throw new Exception("Could not establish an encrypted connection to " + this._host);
             }
 
-            var bstream = new BufferedStream(sslStream, 16 * 1024);
+            var bStream = new BufferedStream(sslStream, 16 * 1024);
 
-            this.SendAuth(bstream);
+            this.SendAuth(bStream);
         }
 
         [Test]

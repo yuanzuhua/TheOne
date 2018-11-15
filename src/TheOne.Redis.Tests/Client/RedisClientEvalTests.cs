@@ -89,15 +89,15 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         [Test]
-        public void Can_Eval_multidata_with_args() {
-            List<string> strVals = this.Redis.ExecLuaAsList(@"return {ARGV[1],ARGV[2],ARGV[3]}", "at", "dot", "com");
-            Assert.That(strVals, Is.EquivalentTo(new List<string> { "at", "dot", "com" }));
+        public void Can_Eval_MultiData_with_args() {
+            List<string> strList = this.Redis.ExecLuaAsList(@"return {ARGV[1],ARGV[2],ARGV[3]}", "at", "dot", "com");
+            Assert.That(strList, Is.EquivalentTo(new List<string> { "at", "dot", "com" }));
         }
 
         [Test]
-        public void Can_Eval_multidata_with_keys_and_args() {
-            List<string> strVals = this.Redis.ExecLuaAsList(@"return {KEYS[1],ARGV[1],ARGV[2]}", new[] { "at" }, new[] { "dot", "com" });
-            Assert.That(strVals, Is.EquivalentTo(new List<string> { "at", "dot", "com" }));
+        public void Can_Eval_MultiData_with_keys_and_args() {
+            List<string> strList = this.Redis.ExecLuaAsList(@"return {KEYS[1],ARGV[1],ARGV[2]}", new[] { "at" }, new[] { "dot", "com" });
+            Assert.That(strList, Is.EquivalentTo(new List<string> { "at", "dot", "com" }));
         }
 
         [Test]

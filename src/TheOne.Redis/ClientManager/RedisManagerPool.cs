@@ -9,7 +9,7 @@ using TheOne.Redis.Client.Internal;
 namespace TheOne.Redis.ClientManager {
 
     /// <summary>
-    ///     Provides thread-safe pooling of redis client connections. All connections are treaded as read and write hosts.
+    ///     Provides thread-safe pooling of redis client connections. All connections are treated as read and write hosts.
     /// </summary>
     public class RedisManagerPool
         : IRedisClientManager, IRedisFailover, IHandleClientDispose, IHasRedisResolver, IRedisClientCacheManager {
@@ -120,16 +120,14 @@ namespace TheOne.Redis.ClientManager {
                     // Put all blocking I/O or potential Exceptions before lock
                     lock (this._clients) {
                         // Create new client outside of pool when max pool size exceeded
-                        // Reverting free-slot not needed when -1 since slwo wasn't reserved or 
-                        // when existingClient changed (failover) since no longer reserver
+                        // Reverting free-slot not needed when -1 since slot wasn't reserved or 
+                        // when existingClient changed (failover) since no longer reserved
                         var stillReserved = inactivePoolIndex >= 0 && inactivePoolIndex < this._clients.Length &&
                                             this._clients[inactivePoolIndex] == existingClient;
                         if (inactivePoolIndex == -1 || !stillReserved) {
                             if (_logger.IsDebugEnabled()) {
                                 _logger.Debug(string.Format("clients[inactivePoolIndex] != existingClient: {0}",
-                                    !stillReserved
-                                        ? "!stillReserved"
-                                        : "-1"));
+                                    !stillReserved ? "!stillReserved" : "-1"));
                             }
 
                             Interlocked.Increment(ref RedisState.TotalClientsCreatedOutsidePool);
@@ -224,7 +222,7 @@ namespace TheOne.Redis.ClientManager {
         /// </summary>
         private int GetInActiveClient(out RedisClient inactiveClient) {
             // this will loop through all hosts in readClients once even though there are 2 for loops
-            // both loops are used to try to get the prefered host according to the round robin algorithm
+            // both loops are used to try to get the preferred host according to the round robin algorithm
             var readWriteTotal = this.RedisResolver.ReadWriteHostsCount;
             var desiredIndex = this.PoolIndex % this._clients.Length;
             for (var x = 0; x < readWriteTotal; x++) {

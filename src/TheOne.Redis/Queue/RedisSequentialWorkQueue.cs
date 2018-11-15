@@ -248,7 +248,7 @@ namespace TheOne.Redis.Queue {
             var rc = false;
 
             var dequeueLockKey = this.GlobalDequeueLockKey(workItemId);
-            // handle possibliity of crashed client still holding the lock
+            // handle possibility of crashed client still holding the lock
             long lockValue = 0;
             using (IRedisPipeline pipe = client.CreatePipeline()) {
 

@@ -27,7 +27,7 @@ namespace TheOne.Redis.ClientManager {
 
         /// <inheritdoc />
         public override int GetHashCode() {
-            // generate hashcode based on logial name
+            // generate hashcode based on logical name
             // server alias/ip can change without 
             // affecting the consistent hash
             return this.Name.GetHashCode();

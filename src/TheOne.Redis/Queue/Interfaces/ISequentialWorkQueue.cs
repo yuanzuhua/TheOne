@@ -10,7 +10,7 @@ namespace TheOne.Redis.Queue {
         void Enqueue(string workItemId, T workItem);
 
         /// <summary>
-        ///     Preprare next work item id for dequeueing
+        ///     Prepare next work item id for dequeueing
         /// </summary>
         bool PrepareNextWorkItem();
 

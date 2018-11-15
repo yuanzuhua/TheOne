@@ -4,7 +4,7 @@ using TheOne.Redis.ClientManager;
 
 namespace TheOne.Redis.Tests.ClientManager {
 
-    internal sealed class BasicRediscClientManagerTests : RedisTestBase {
+    internal sealed class BasicRedisClientManagerTests : RedisTestBase {
 
         [Test]
         public void Can_select_db() {

@@ -66,7 +66,7 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
         public void Automatically_migrate_to_new_Schema() {
             var repository = new BlogRepository(this._redisClient);
 
-            // Populate the datastore with the old schema from the 'BlogPostBestPractice'
+            // Populate the DataStore with the old schema from the 'BlogPostBestPractice'
             BlogPostBestPractice.InsertTestData(repository);
 
             // Create a typed-client based on the new schema
@@ -83,7 +83,7 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
         public void Manually_migrate_to_new_Schema_using_a_custom_tranlation() {
             var repository = new BlogRepository(this._redisClient);
 
-            // Populate the datastore with the old schema from the 'BlogPostBestPractice'
+            // Populate the DataStore with the old schema from the 'BlogPostBestPractice'
             BlogPostBestPractice.InsertTestData(repository);
 
             // Create a typed-client based on the new schema
@@ -109,10 +109,10 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
                 NoOfComments = old.Comments.Count // populate using logic from old data
             }).ToList();
 
-            // Persist the new migrated blogposts 
+            // Persist the new migrated blog posts 
             redisNewBlogPosts.StoreAll(migratedBlogPosts);
 
-            // Read out the newly stored blogposts
+            // Read out the newly stored blog posts
             IList<New.BlogPost> refreshedNewBlogPosts = redisNewBlogPosts.GetAll();
             // Note: data renamed fields are successfully migrated to the new schema
             Console.WriteLine(refreshedNewBlogPosts.ToJson());

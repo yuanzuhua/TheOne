@@ -54,7 +54,7 @@ namespace TheOne.Redis.Queue.Locking {
                     break;
                 }
 
-                // handle possibliity of crashed client still holding the lock
+                // handle possibility of crashed client still holding the lock
                 using (IRedisPipeline pipe = localClient.CreatePipeline()) {
                     long lockValue = 0;
                     pipe.QueueCommand(r => ((RedisNativeClient)r).Watch(key));

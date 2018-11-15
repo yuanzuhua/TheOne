@@ -11,8 +11,8 @@ namespace TheOne.Redis.Common {
     /// </summary>
     internal class UrnId {
 
-        public const char FieldSeperator = ':';
-        public const char FieldPartsSeperator = '/';
+        public const char FieldSeparator = ':';
+        public const char FieldPartsSeparator = '/';
 
         public const int HasNoIdFieldName = 3;
         public const int HasIdFieldName = 4;
@@ -23,7 +23,7 @@ namespace TheOne.Redis.Common {
         public string IdFieldName { get; private set; }
 
         public static UrnId Parse(string urnId) {
-            string[] urnParts = urnId.Split(FieldSeperator);
+            string[] urnParts = urnId.Split(FieldSeparator);
             if (urnParts.Length == HasNoIdFieldName) {
                 return new UrnId { TypeName = urnParts[1], IdFieldValue = urnParts[2] };
             }
@@ -36,11 +36,11 @@ namespace TheOne.Redis.Common {
         }
 
         public static string Create(string objectTypeName, string idFieldValue) {
-            if (objectTypeName.Contains(FieldSeperator.ToString())) {
+            if (objectTypeName.Contains(FieldSeparator.ToString())) {
                 throw new ArgumentException("objectTypeName cannot have the illegal characters: ':'", "objectTypeName");
             }
 
-            if (idFieldValue.Contains(FieldSeperator.ToString())) {
+            if (idFieldValue.Contains(FieldSeparator.ToString())) {
                 throw new ArgumentException("idFieldValue cannot have the illegal characters: ':'", "idFieldValue");
             }
 
@@ -48,14 +48,14 @@ namespace TheOne.Redis.Common {
         }
 
         public static string CreateWithParts(string objectTypeName, params string[] keyParts) {
-            if (objectTypeName.Contains(FieldSeperator.ToString())) {
+            if (objectTypeName.Contains(FieldSeparator.ToString())) {
                 throw new ArgumentException("objectTypeName cannot have the illegal characters: ':'", "objectTypeName");
             }
 
             StringBuilder sb = StringBuilderCache.Acquire();
             foreach (var keyPart in keyParts) {
                 if (sb.Length > 0) {
-                    sb.Append(FieldPartsSeperator);
+                    sb.Append(FieldPartsSeparator);
                 }
 
                 sb.Append(keyPart);
@@ -77,7 +77,7 @@ namespace TheOne.Redis.Common {
         }
 
         public static string Create(Type objectType, string idFieldValue) {
-            if (idFieldValue.Contains(FieldSeperator.ToString())) {
+            if (idFieldValue.Contains(FieldSeparator.ToString())) {
                 throw new ArgumentException("idFieldValue cannot have the illegal characters: ':'", "idFieldValue");
             }
 
@@ -89,11 +89,11 @@ namespace TheOne.Redis.Common {
         }
 
         public static string Create(Type objectType, string idFieldName, string idFieldValue) {
-            if (idFieldValue.Contains(FieldSeperator.ToString())) {
+            if (idFieldValue.Contains(FieldSeparator.ToString())) {
                 throw new ArgumentException("idFieldValue cannot have the illegal characters: ':'", "idFieldValue");
             }
 
-            if (idFieldName.Contains(FieldSeperator.ToString())) {
+            if (idFieldName.Contains(FieldSeparator.ToString())) {
                 throw new ArgumentException("idFieldName cannot have the illegal characters: ':'", "idFieldName");
             }
 
