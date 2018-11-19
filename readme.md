@@ -9,7 +9,7 @@ This repo contains:
 
 ## TheOne.RabbitMq
 
-install via [NuGet](https://www.nuget.org/packages/TheOne.RabbitMq/):
+Install via [NuGet](https://www.nuget.org/packages/TheOne.RabbitMq/):
 
     PM> Install-Package TheOne.RabbitMq
 
@@ -17,7 +17,7 @@ doc can be found [here](docs/rabbitmq.md).
 
 ## TheOne.Redis
 
-install via [NuGet](https://www.nuget.org/packages/TheOne.Redis/):
+Install via [NuGet](https://www.nuget.org/packages/TheOne.Redis/):
 
     PM> Install-Package TheOne.Redis
 

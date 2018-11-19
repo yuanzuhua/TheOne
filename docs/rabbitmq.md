@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-install via NuGet:
+Install via NuGet:
 
     PM> Install-Package TheOne.RabbitMq
 
@@ -238,4 +238,4 @@ where you can replay and re-process `.dlq` messages and continue processing them
 
 Queue name is simply the POCO's name combine with customizable prefix and postfix.
 
-see [MqQueueNames.cs](../src/TheOne.RabbitMq/Models/MqQueueNames.cs) and [MqQueueNamesTests](../src/TheOne.RabbitMq.Tests/Messaging/MqQueueNamesTests.cs) for example.
+See [MqQueueNames.cs](../src/TheOne.RabbitMq/Models/MqQueueNames.cs) and [MqQueueNamesTests](../src/TheOne.RabbitMq.Tests/Messaging/MqQueueNamesTests.cs) for example.
