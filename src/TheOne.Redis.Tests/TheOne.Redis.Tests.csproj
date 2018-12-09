@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net46;netcoreapp2.2</TargetFrameworks>
     <NoWarn>$(NoWarn)</NoWarn>
@@ -8,7 +8,7 @@
   <PropertyGroup>
     <AssemblyTitle>TheOne.Redis.Tests</AssemblyTitle>
     <Description>TheOne.Redis.Tests</Description>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheOne.Redis\TheOne.Redis.csproj" />
