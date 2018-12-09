@@ -409,12 +409,14 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_WorkInSortedSetUnderDifferentCulture() {
-#if NETCOREAPP2_1
+#if NETCOREAPP2_2
             CultureInfo prevCulture = CultureInfo.CurrentCulture;
             CultureInfo.CurrentCulture = new CultureInfo("ru-RU");
-#else
+#elif NET46
             CultureInfo prevCulture = Thread.CurrentThread.CurrentCulture;
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("ru-RU");
+#else
+#error undefined TargetFramework
 #endif
             this.Redis.AddItemToSortedSet(this.SetId, "key", 123.22);
 
@@ -422,10 +424,12 @@ namespace TheOne.Redis.Tests.Client {
 
             Assert.AreEqual(123.22, map["key"]);
 
-#if NETCOREAPP2_1
+#if NETCOREAPP2_2
             CultureInfo.CurrentCulture = prevCulture;
-#else
+#elif NET46
             Thread.CurrentThread.CurrentCulture = prevCulture;
+#else
+#error undefined TargetFramework
 #endif
         }
 

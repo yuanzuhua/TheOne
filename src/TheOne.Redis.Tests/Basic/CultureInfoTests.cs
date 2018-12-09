@@ -14,22 +14,26 @@ namespace TheOne.Redis.Tests.Basic {
 
         [OneTimeSetUp]
         public void OneTimeSetUp() {
-#if NETCOREAPP2_1
+#if NETCOREAPP2_2
             this._previousCulture = CultureInfo.CurrentCulture;
             CultureInfo.CurrentCulture = new CultureInfo("fr-FR");
 #elif NET46
             this._previousCulture = Thread.CurrentThread.CurrentCulture;
             Thread.CurrentThread.CurrentCulture = new CultureInfo("fr-FR");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-FR");
+#else
+#error undefined TargetFramework
 #endif
         }
 
         [OneTimeTearDown]
         public void OneTimeTearDown() {
-#if NETCOREAPP2_1
+#if NETCOREAPP2_2
             CultureInfo.CurrentCulture = this._previousCulture;
 #elif NET46
             Thread.CurrentThread.CurrentCulture = this._previousCulture;
+#else
+#error undefined TargetFramework
 #endif
         }
 

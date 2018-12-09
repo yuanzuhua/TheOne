@@ -1,7 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net46;netcoreapp2.2</TargetFrameworks>
     <NoWarn>$(NoWarn)</NoWarn>
     <DefineConstants>$(DefineConstants)</DefineConstants>
     <IsPackable>false</IsPackable>
@@ -13,10 +12,10 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheOne.Redis\TheOne.Redis.csproj" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-    <PackageReference Include="NLog" Version="4.5.9" />
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="NLog" Version="4.5.11" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.11.2" />
   </ItemGroup>
   <ItemGroup>
     <None Update="nlog.config">
