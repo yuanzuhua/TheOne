@@ -19,7 +19,7 @@ namespace TheOne.Redis {
             this.SendTimeout = RedisConfig.DefaultSendTimeout;
             this.ReceiveTimeout = RedisConfig.DefaultReceiveTimeout;
             this.RetryTimeout = RedisConfig.DefaultRetryTimeout;
-            this.IdleTimeOutSecs = RedisConfig.DefaultIdleTimeOutSecs;
+            this.IdleTimeoutSecs = RedisConfig.DefaultIdleTimeoutSecs;
         }
 
         public RedisEndpoint(string host, int port, string password = null, long db = RedisConfig.DefaultDb)
@@ -52,14 +52,14 @@ namespace TheOne.Redis {
 
         /// <summary>
         ///     RedisClient will transparently retry failed Redis operations due to Socket and I/O Exceptions
-        ///     in an exponential backoff starting from 10ms up until the RetryTimeout of 10000ms
+        ///     in an exponential back-off starting from 10ms up until the RetryTimeout of 10000ms
         /// </summary>
         public int RetryTimeout { get; set; }
 
         /// <summary>
         ///     Timeout in Seconds for an Idle connection to be considered active
         /// </summary>
-        public int IdleTimeOutSecs { get; set; }
+        public int IdleTimeoutSecs { get; set; }
 
         /// <summary>
         ///     The Redis DB this connection should be set to
@@ -171,7 +171,7 @@ namespace TheOne.Redis {
                             break;
                         case "idletimeout":
                         case "idletimeoutsecs":
-                            endpoint.IdleTimeOutSecs = int.Parse(value);
+                            endpoint.IdleTimeoutSecs = int.Parse(value);
                             break;
                     }
                 }
@@ -219,8 +219,8 @@ namespace TheOne.Redis {
                 args.Add("RetryTimeout=" + this.RetryTimeout);
             }
 
-            if (this.IdleTimeOutSecs != RedisConfig.DefaultIdleTimeOutSecs) {
-                args.Add("IdleTimeOutSecs=" + this.IdleTimeOutSecs);
+            if (this.IdleTimeoutSecs != RedisConfig.DefaultIdleTimeoutSecs) {
+                args.Add("IdleTimeoutSecs=" + this.IdleTimeoutSecs);
             }
 
             if (this.NamespacePrefix != null) {
@@ -242,7 +242,7 @@ namespace TheOne.Redis {
                    && this.SendTimeout == other.SendTimeout
                    && this.ReceiveTimeout == other.ReceiveTimeout
                    && this.RetryTimeout == other.RetryTimeout
-                   && this.IdleTimeOutSecs == other.IdleTimeOutSecs
+                   && this.IdleTimeoutSecs == other.IdleTimeoutSecs
                    && this.Db == other.Db
                    && string.Equals(this.Client, other.Client)
                    && string.Equals(this.Password, other.Password)
@@ -275,7 +275,7 @@ namespace TheOne.Redis {
                 hashCode = (hashCode * 397) ^ this.SendTimeout;
                 hashCode = (hashCode * 397) ^ this.ReceiveTimeout;
                 hashCode = (hashCode * 397) ^ this.RetryTimeout;
-                hashCode = (hashCode * 397) ^ this.IdleTimeOutSecs;
+                hashCode = (hashCode * 397) ^ this.IdleTimeoutSecs;
                 hashCode = (hashCode * 397) ^ this.Db.GetHashCode();
                 hashCode = (hashCode * 397) ^ (this.Client != null ? this.Client.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (this.Password != null ? this.Password.GetHashCode() : 0);

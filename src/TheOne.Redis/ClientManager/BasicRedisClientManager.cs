@@ -68,7 +68,7 @@ namespace TheOne.Redis.ClientManager {
         public int? ConnectTimeout { get; set; }
         public int? SocketSendTimeout { get; set; }
         public int? SocketReceiveTimeout { get; set; }
-        public int? IdleTimeOutSecs { get; set; }
+        public int? IdleTimeoutSecs { get; set; }
 
         /// <summary>
         ///     Gets or sets object key prefix.
@@ -149,8 +149,8 @@ namespace TheOne.Redis.ClientManager {
                 client.ReceiveTimeout = this.SocketReceiveTimeout.Value;
             }
 
-            if (this.IdleTimeOutSecs.HasValue) {
-                client.IdleTimeOutSecs = this.IdleTimeOutSecs.Value;
+            if (this.IdleTimeoutSecs.HasValue) {
+                client.IdleTimeoutSecs = this.IdleTimeoutSecs.Value;
             }
 
             if (this.NamespacePrefix != null) {

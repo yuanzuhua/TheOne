@@ -100,12 +100,12 @@ namespace TheOne.Redis.Tests.Sentinel {
         [Test]
         public void Can_specify_Timeout_on_RedisManager() {
             using (var sentinel = new RedisSentinel(Config.SentinelHosts, Config.SentinelMasterName)) {
-                sentinel.RedisManagerFactory = (masters, slaves) => new PooledRedisClientManager(masters, slaves) { IdleTimeOutSecs = 20 };
+                sentinel.RedisManagerFactory = (masters, slaves) => new PooledRedisClientManager(masters, slaves) { IdleTimeoutSecs = 20 };
 
                 using (var clientsManager = (PooledRedisClientManager)sentinel.Start()) {
                     using (IRedisClient client = clientsManager.GetClient()) {
-                        Assert.That(clientsManager.IdleTimeOutSecs, Is.EqualTo(20));
-                        Assert.That(((RedisNativeClient)client).IdleTimeOutSecs, Is.EqualTo(20));
+                        Assert.That(clientsManager.IdleTimeoutSecs, Is.EqualTo(20));
+                        Assert.That(((RedisNativeClient)client).IdleTimeoutSecs, Is.EqualTo(20));
                     }
                 }
             }

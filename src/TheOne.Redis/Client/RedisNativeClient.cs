@@ -119,7 +119,7 @@ namespace TheOne.Redis.Client {
         public int ReceiveTimeout { get; set; }
         public string Password { get; set; }
         public string Client { get; set; }
-        public int IdleTimeOutSecs { get; set; }
+        public int IdleTimeoutSecs { get; set; }
 
         public Action<IRedisNativeClient> ConnectionFilter { get; set; }
 
@@ -175,7 +175,7 @@ namespace TheOne.Redis.Client {
             this.Client = config.Client;
             this.Db = config.Db;
             this.Ssl = config.Ssl;
-            this.IdleTimeOutSecs = config.IdleTimeOutSecs;
+            this.IdleTimeoutSecs = config.IdleTimeoutSecs;
             ServerVersionNumber = RedisConfig.AssumeServerVersion.GetValueOrDefault();
         }
 

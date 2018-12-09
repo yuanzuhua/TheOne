@@ -46,7 +46,7 @@ namespace TheOne.Redis.Tests.Basic {
             Assert.That(redis.SendTimeout, Is.EqualTo(expected.SendTimeout));
             Assert.That(redis.ReceiveTimeout, Is.EqualTo(expected.ReceiveTimeout));
             Assert.That(redis.RetryTimeout, Is.EqualTo(expected.RetryTimeout));
-            Assert.That(redis.IdleTimeOutSecs, Is.EqualTo(expected.IdleTimeOutSecs));
+            Assert.That(redis.IdleTimeoutSecs, Is.EqualTo(expected.IdleTimeoutSecs));
             Assert.That(redis.NamespacePrefix, Is.EqualTo(expected.NamespacePrefix));
         }
 
@@ -151,10 +151,10 @@ namespace TheOne.Redis.Tests.Basic {
         [TestCase("host?ssl=true", "host:6380?Ssl=true")]
         [TestCase("host:1?ssl=true", "host:1?Ssl=true")]
         [TestCase("host:1?connectTimeout=1&sendtimeout=2&receiveTimeout=3&idletimeoutsecs=4",
-            "host:1?ConnectTimeout=1&SendTimeout=2&ReceiveTimeout=3&IdleTimeOutSecs=4")]
+            "host:1?ConnectTimeout=1&SendTimeout=2&ReceiveTimeout=3&IdleTimeoutSecs=4")]
         [TestCase(
             "redis://nunit:pass@host:1?ssl=true&db=1&connectTimeout=2&sendtimeout=3&receiveTimeout=4&idletimeoutsecs=5&NamespacePrefix=prefix.",
-            "host:1?Client=nunit&Password=pass&Db=1&Ssl=true&ConnectTimeout=2&SendTimeout=3&ReceiveTimeout=4&IdleTimeOutSecs=5&NamespacePrefix=prefix.")]
+            "host:1?Client=nunit&Password=pass&Db=1&Ssl=true&ConnectTimeout=2&SendTimeout=3&ReceiveTimeout=4&IdleTimeoutSecs=5&NamespacePrefix=prefix.")]
         public void Does_Serialize_RedisEndpoint(string connString, string expectedString) {
             RedisEndpoint actual = RedisEndpoint.Create(connString);
             Assert.That(actual.ToString(), Is.EqualTo(expectedString));
@@ -174,7 +174,7 @@ namespace TheOne.Redis.Tests.Basic {
                 ConnectTimeout = 2,
                 SendTimeout = 3,
                 ReceiveTimeout = 4,
-                IdleTimeOutSecs = 5,
+                IdleTimeoutSecs = 5,
                 NamespacePrefix = "prefix."
             };
 

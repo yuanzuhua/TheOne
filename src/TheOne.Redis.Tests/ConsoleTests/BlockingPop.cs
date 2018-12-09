@@ -18,7 +18,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
             RedisConfig.DefaultRetryTimeout = 10 * 1000;
 
-            RedisConfig.DefaultIdleTimeOutSecs = 240;
+            RedisConfig.DefaultIdleTimeoutSecs = 240;
             RedisConfig.BackOffMultiplier = 10;
             RedisConfig.BufferPoolMaxSize = 500000;
             RedisConfig.VerifyMasterConnections = true;

@@ -70,9 +70,9 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         [Test]
-        public void Can_AcquireLock_TimeOut() {
-            var key = this.PrefixedKey("AcquireLockKeyTimeOut");
-            var lockKey = this.PrefixedKey("Can_AcquireLock_TimeOut");
+        public void Can_AcquireLock_Timeout() {
+            var key = this.PrefixedKey("AcquireLockKeyTimeout");
+            var lockKey = this.PrefixedKey("Can_AcquireLock_Timeout");
             this.Redis.IncrementValue(key); // 1
             using (IDisposable acquiredLock = this.Redis.AcquireLock(lockKey)) {
                 TimeSpan waitFor = TimeSpan.FromMilliseconds(1000);

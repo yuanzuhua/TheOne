@@ -39,9 +39,9 @@ namespace TheOne.Redis {
         public static int DefaultReceiveTimeout = -1;
 
         /// <summary>
-        ///     Default Idle TimeOut before a connection is considered to be stale (default 240 secs)
+        ///     Default Idle Timeout before a connection is considered to be stale (default 240 secs)
         /// </summary>
-        public static int DefaultIdleTimeOutSecs = 240;
+        public static int DefaultIdleTimeoutSecs = 240;
 
         /// <summary>
         ///     The default RetryTimeout for auto retry of failed operations (default 10,000ms)
@@ -117,7 +117,7 @@ namespace TheOne.Redis {
             DefaultSendTimeout = -1;
             DefaultReceiveTimeout = -1;
             DefaultRetryTimeout = 10 * 1000;
-            DefaultIdleTimeOutSecs = 240;
+            DefaultIdleTimeoutSecs = 240;
             DefaultMaxPoolSize = null;
             BackOffMultiplier = 10;
             BufferPoolMaxSize = 500000;

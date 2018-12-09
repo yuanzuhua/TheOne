@@ -304,7 +304,7 @@ namespace TheOne.Redis.Client {
                 var now = Stopwatch.GetTimestamp();
                 var elapsedSecs = (now - this.LastConnectedAtTimestamp) / Stopwatch.Frequency;
 
-                if (this.Socket == null || elapsedSecs > this.IdleTimeOutSecs && !this.Socket.IsConnected()) {
+                if (this.Socket == null || elapsedSecs > this.IdleTimeoutSecs && !this.Socket.IsConnected()) {
                     this.Reconnect();
                 }
 

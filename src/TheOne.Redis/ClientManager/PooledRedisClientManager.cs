@@ -34,8 +34,8 @@ namespace TheOne.Redis.ClientManager {
         public PooledRedisClientManager() : this(RedisConfig.DefaultHost) { }
 
         /// <inheritdoc />
-        public PooledRedisClientManager(int poolSize, int poolTimeOutSeconds, params string[] readWriteHosts)
-            : this(readWriteHosts, readWriteHosts, null, null, poolSize, poolTimeOutSeconds) { }
+        public PooledRedisClientManager(int poolSize, int poolTimeoutSeconds, params string[] readWriteHosts)
+            : this(readWriteHosts, readWriteHosts, null, null, poolSize, poolTimeoutSeconds) { }
 
         /// <inheritdoc />
         public PooledRedisClientManager(long initialDb, params string[] readWriteHosts)
@@ -73,7 +73,7 @@ namespace TheOne.Redis.ClientManager {
             RedisClientManagerConfig config,
             long? initialDb,
             int? poolSizeMultiplier,
-            int? poolTimeOutSeconds) {
+            int? poolTimeoutSeconds) {
             this.Db = config != null
                 ? config.DefaultDb ?? initialDb
                 : initialDb;
@@ -93,8 +93,8 @@ namespace TheOne.Redis.ClientManager {
             this.OnFailover = new List<Action<IRedisClientManager>>();
 
             // if timeout provided, convert into milliseconds
-            this.PoolTimeout = poolTimeOutSeconds != null
-                ? poolTimeOutSeconds * 1000
+            this.PoolTimeout = poolTimeoutSeconds != null
+                ? poolTimeoutSeconds * 1000
                 : 2000; // Default Timeout
 
             this.AssertAccessOnlyOnSameThread = RedisConfig.AssertAccessOnlyOnSameThread;
@@ -108,7 +108,7 @@ namespace TheOne.Redis.ClientManager {
         public int? ConnectTimeout { get; set; }
         public int? SocketSendTimeout { get; set; }
         public int? SocketReceiveTimeout { get; set; }
-        public int? IdleTimeOutSecs { get; set; }
+        public int? IdleTimeoutSecs { get; set; }
         public bool AssertAccessOnlyOnSameThread { get; set; }
 
         /// <summary>
@@ -500,8 +500,8 @@ namespace TheOne.Redis.ClientManager {
                 client.ReceiveTimeout = this.SocketReceiveTimeout.Value;
             }
 
-            if (this.IdleTimeOutSecs.HasValue) {
-                client.IdleTimeOutSecs = this.IdleTimeOutSecs.Value;
+            if (this.IdleTimeoutSecs.HasValue) {
+                client.IdleTimeoutSecs = this.IdleTimeoutSecs.Value;
             }
 
             if (this.NamespacePrefix != null) {

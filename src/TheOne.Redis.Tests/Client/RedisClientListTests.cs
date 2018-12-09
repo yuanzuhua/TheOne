@@ -35,13 +35,13 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         [Test]
-        public void BlockingDequeueFromList_Can_TimeOut() {
+        public void BlockingDequeueFromList_Can_Timeout() {
             var item1 = this.Redis.BlockingDequeueItemFromList(_listId, TimeSpan.FromSeconds(1));
             Assert.That(item1, Is.Null);
         }
 
         [Test]
-        public void BlockingPopFromList_Can_TimeOut() {
+        public void BlockingPopFromList_Can_Timeout() {
             var item1 = this.Redis.BlockingPopItemFromList(_listId, TimeSpan.FromSeconds(1));
             Assert.That(item1, Is.Null);
         }
