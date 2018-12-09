@@ -629,7 +629,9 @@ namespace TheOne.Redis.Client {
         }
 
         public void AssertNotInTransaction() {
-            if (this.Transaction != null) {
+            // don't allow composite ops in Pipelines
+            // composite ops throw NotSupportedException, eg with atomic ops
+            if (this.Transaction != null || this.Pipeline != null) {
                 throw new NotSupportedException("Only atomic redis-server operations are supported in a transaction");
             }
         }

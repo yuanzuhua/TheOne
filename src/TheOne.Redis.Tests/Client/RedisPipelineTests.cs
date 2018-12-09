@@ -211,6 +211,37 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         [Test]
+        public void Can_Set_with_DateTime_in_Pipeline() {
+            using (var clientManager = new RedisManagerPool(Config.MasterHost)) {
+                // ReSharper disable once NotAccessedVariable
+                bool result;
+                const int value = 111;
+                var key = $"key:{value}";
+
+                // Set key with pipeline (batching many requests)
+                using (IRedisClient redis = clientManager.GetClient()) {
+                    using (IRedisPipeline pipeline = redis.CreatePipeline()) {
+                        // Only atomic operations can be called within a Transaction or Pipeline
+                        Assert.Throws<NotSupportedException>(() =>
+                            pipeline.QueueCommand(r => r.Set(key, value, DateTime.Now.AddMinutes(1)), r => result = r));
+                    }
+
+                    using (IRedisPipeline pipeline = redis.CreatePipeline()) {
+                        pipeline.QueueCommand(r => r.Set(key, value), r => result = r);
+                        pipeline.QueueCommand(r => r.ExpireEntryAt(key, DateTime.Now.AddMinutes(1)));
+                        pipeline.Flush();
+                    }
+                }
+
+                // Get key
+                using (IRedisClient redis = clientManager.GetClient()) {
+                    var res = redis.Get<int>(key);
+                    Assert.That(res, Is.EqualTo(value));
+                }
+            }
+        }
+
+        [Test]
         public void Can_SetAll_and_Publish_in_atomic_transaction() {
             var messages = new Dictionary<string, string> { { "a", "a" }, { "b", "b" } };
             using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
