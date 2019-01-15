@@ -299,13 +299,15 @@ namespace TheOne.Redis.Client {
             }
         }
 
-        private void TryConnectIfNeeded() {
+        private bool TryConnectIfNeeded() {
+            var didConnect = false;
             if (this.LastConnectedAtTimestamp > 0) {
                 var now = Stopwatch.GetTimestamp();
                 var elapsedSecs = (now - this.LastConnectedAtTimestamp) / Stopwatch.Frequency;
 
                 if (this.Socket == null || elapsedSecs > this.IdleTimeoutSecs && !this.Socket.IsConnected()) {
                     this.Reconnect();
+                    didConnect = true;
                 }
 
                 this.LastConnectedAtTimestamp = now;
@@ -313,19 +315,15 @@ namespace TheOne.Redis.Client {
 
             if (this.Socket == null) {
                 this.Connect();
+                didConnect = true;
             }
+
+            return didConnect;
         }
 
         private bool Reconnect() {
-            var previousDb = this._db;
-
             this.SafeConnectionClose();
-            this.Connect(); // sets db to 0
-
-            if (previousDb != RedisConfig.DefaultDb) {
-                this.Db = previousDb;
-            }
-
+            this.Connect(); // sets db
             return this.Socket != null;
         }
 
