@@ -5,7 +5,6 @@ using System.Threading;
 using NUnit.Framework;
 using TheOne.Redis.Client;
 using TheOne.Redis.Common;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Tests.Client {
 
@@ -27,12 +26,12 @@ namespace TheOne.Redis.Tests.Client {
                 { "three", "c" },
                 { "four", "d" }
             };
-            foreach (KeyValuePair<string, string> value in stringMap) {
+            foreach (var value in stringMap) {
                 this.Redis.SetEntryInHash(_hashKey, value.Key, value.Value);
             }
 
             Dictionary<string, string> results = null;
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.GetAllEntriesFromHash(_hashKey), x => results = x);
 
                 trans.Commit();
@@ -47,7 +46,7 @@ namespace TheOne.Redis.Tests.Client {
             this.Redis.AddItemToSet("set", "ITEM 2");
             HashSet<string> result = null;
 
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.GetAllItemsFromSet("set"), values => result = values);
 
                 trans.Commit();
@@ -58,14 +57,14 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_call_LUA_Script_in_transaction() {
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.ExecLua("return {'myval', 'myotherval'}"));
 
                 trans.Commit();
             }
 
             RedisText result = null;
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.ExecLua("return {'myval', 'myotherval'}"), s => result = s);
 
                 trans.Commit();
@@ -82,7 +81,7 @@ namespace TheOne.Redis.Tests.Client {
 
             var results = new List<string>();
             Assert.That(this.Redis.GetListCount(_listKey), Is.EqualTo(0));
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.AddItemToList(_listKey, "listitem1"));
                 trans.QueueCommand(r => r.AddItemToList(_listKey, "listitem2"));
                 trans.QueueCommand(r => r.AddItemToList(_listKey, "listitem3"));
@@ -104,7 +103,7 @@ namespace TheOne.Redis.Tests.Client {
             Assert.That(this.Redis.GetValue(_key), Is.Null);
             var keys = new[] { "key1", "key2", "key3" };
             var values = new[] { "1", "2", "3" };
-            IRedisTransaction trans = this.Redis.CreateTransaction();
+            var trans = this.Redis.CreateTransaction();
 
             for (var i = 0; i < 3; ++i) {
                 var index0 = i;
@@ -127,7 +126,7 @@ namespace TheOne.Redis.Tests.Client {
         // If server info is fetched each time, then it will interfere with transaction
         public void Can_call_operation_not_supported_on_older_servers_in_transaction() {
             var temp = new byte[1];
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => ((RedisNativeClient)r).SetEx(_key, 5, temp));
                 trans.Commit();
             }
@@ -138,7 +137,7 @@ namespace TheOne.Redis.Tests.Client {
             var f = false;
             var s = false;
 
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(c => c.SetValueIfNotExists("foo", "blah"), r => f = r);
                 trans.QueueCommand(c => c.SetValueIfNotExists("bar", "blah"), r => s = r);
                 trans.Commit();
@@ -151,7 +150,7 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void Can_call_single_operation_3_Times_in_transaction() {
             Assert.That(this.Redis.GetValue(_key), Is.Null);
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.IncrementValue(_key));
                 trans.QueueCommand(r => r.IncrementValue(_key));
                 trans.QueueCommand(r => r.IncrementValue(_key));
@@ -165,7 +164,7 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void Can_call_single_operation_in_transaction() {
             Assert.That(this.Redis.GetValue(_key), Is.Null);
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.IncrementValue(_key));
                 var map = new Dictionary<string, int>();
                 trans.QueueCommand(r => r.Get<int>(_key), y => map[_key] = y);
@@ -182,7 +181,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_call_single_operation_with_callback_3_Times_in_transaction() {
             var results = new List<long>();
             Assert.That(this.Redis.GetValue(_key), Is.Null);
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.IncrementValue(_key), results.Add);
                 trans.QueueCommand(r => r.IncrementValue(_key), results.Add);
                 trans.QueueCommand(r => r.IncrementValue(_key), results.Add);
@@ -204,7 +203,7 @@ namespace TheOne.Redis.Tests.Client {
             var keys = new[] { "string", "list", "set", "zset" };
 
             var results = new Dictionary<string, string>();
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 foreach (var key in keys) {
                     trans.QueueCommand(r => r.Type(key), x => results[key] = x);
                 }
@@ -234,7 +233,7 @@ namespace TheOne.Redis.Tests.Client {
 
             var highestPriorityMessage = this.Redis.PopItemWithHighestScoreFromSortedSet(_prefix + "prioritymsgs");
 
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.RemoveItemFromSortedSet(_prefix + "prioritymsgs", highestPriorityMessage));
                 trans.QueueCommand(r => r.AddItemToList(_prefix + "workq", highestPriorityMessage));
 
@@ -249,11 +248,11 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Set_and_Expire_key_in_atomic_transaction() {
-            TimeSpan oneSec = TimeSpan.FromSeconds(1);
+            var oneSec = TimeSpan.FromSeconds(1);
 
             Assert.That(this.Redis.GetValue(_prefix + "key"), Is.Null);
             // Calls 'MULTI'
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.SetValue(_prefix + "key", "a"));         // Queues 'SET key a'
                 trans.QueueCommand(r => r.ExpireEntryIn(_prefix + "key", oneSec)); // Queues 'EXPIRE key 1'
 
@@ -268,12 +267,12 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_set_Expiry_on_key_in_transaction() {
-            TimeSpan expiresIn = TimeSpan.FromMinutes(15);
+            var expiresIn = TimeSpan.FromMinutes(15);
 
             const string key = "No TTL-Transaction";
             var keyWithTtl = string.Format("{0}s TTL-Transaction", expiresIn.TotalSeconds);
 
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.Add(key, "Foo"));
                 trans.QueueCommand(r => r.Add(keyWithTtl, "Bar", expiresIn));
 
@@ -286,19 +285,19 @@ namespace TheOne.Redis.Tests.Client {
             Assert.That(this.Redis.Get<string>(keyWithTtl), Is.EqualTo("Bar"));
 
             Assert.That(this.Redis.GetTimeToLive(key), Is.EqualTo(TimeSpan.MaxValue));
-            TimeSpan? timeSpan = this.Redis.GetTimeToLive(keyWithTtl);
+            var timeSpan = this.Redis.GetTimeToLive(keyWithTtl);
             Assert.NotNull(timeSpan);
             Assert.That(timeSpan.Value.TotalSeconds, Is.GreaterThan(1));
         }
 
         [Test]
         public void Does_not_set_Expiry_on_existing_key_in_transaction() {
-            TimeSpan expiresIn = TimeSpan.FromMinutes(15);
+            var expiresIn = TimeSpan.FromMinutes(15);
 
             var key = "Exting TTL-Transaction";
             this.Redis.Add(key, "Foo");
 
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.Add(key, "Bar", expiresIn));
 
                 if (!trans.Commit()) {
@@ -314,7 +313,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Exception_in_atomic_transactions_discards_all_commands() {
             Assert.That(this.Redis.GetValue(_key), Is.Null);
             try {
-                using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+                using (var trans = this.Redis.CreateTransaction()) {
                     trans.QueueCommand(r => r.IncrementValue(_key));
                     throw new NotSupportedException();
                 }
@@ -326,7 +325,7 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void No_commit_of_atomic_transactions_discards_all_commands() {
             Assert.That(this.Redis.GetValue(_key), Is.Null);
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.IncrementValue(_key));
             }
 
@@ -340,7 +339,7 @@ namespace TheOne.Redis.Tests.Client {
             var containsItem = false;
 
             Assert.That(this.Redis.GetValue(_key), Is.Null);
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.IncrementValue(_key), intResult => incrementResults.Add(intResult));
                 trans.QueueCommand(r => r.AddItemToList(_listKey, "listitem1"));
                 trans.QueueCommand(r => r.AddItemToList(_listKey, "listitem2"));
@@ -373,7 +372,7 @@ namespace TheOne.Redis.Tests.Client {
             var keySquared = _key + _key;
             Assert.That(this.Redis.GetValue(_key), Is.Null);
             Assert.That(this.Redis.GetValue(keySquared), Is.Null);
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.IncrementValue(_key));
                 trans.QueueCommand(r => r.IncrementValue(keySquared));
                 trans.Commit();
@@ -403,7 +402,7 @@ namespace TheOne.Redis.Tests.Client {
             this.Redis.Watch(_key, keySquared);
             this.Redis.Set(_key, 7);
 
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.Set(_key, 1));
                 trans.QueueCommand(r => r.Set(keySquared, 2));
                 trans.Commit();
@@ -420,7 +419,7 @@ namespace TheOne.Redis.Tests.Client {
             try {
                 this.Redis.Watch(_key);
                 this.Redis.Set(_key, value1);
-                using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+                using (var trans = this.Redis.CreateTransaction()) {
                     trans.QueueCommand(r => r.Set(_key, value1));
                     var success = trans.Commit();
                     Assert.False(success);

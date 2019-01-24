@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using TheOne.Redis.External;
 
 namespace TheOne.Redis.Common {
@@ -23,7 +22,7 @@ namespace TheOne.Redis.Common {
         public string IdFieldName { get; private set; }
 
         public static UrnId Parse(string urnId) {
-            string[] urnParts = urnId.Split(FieldSeparator);
+            var urnParts = urnId.Split(FieldSeparator);
             if (urnParts.Length == HasNoIdFieldName) {
                 return new UrnId { TypeName = urnParts[1], IdFieldValue = urnParts[2] };
             }
@@ -52,7 +51,7 @@ namespace TheOne.Redis.Common {
                 throw new ArgumentException("objectTypeName cannot have the illegal characters: ':'", "objectTypeName");
             }
 
-            StringBuilder sb = StringBuilderCache.Acquire();
+            var sb = StringBuilderCache.Acquire();
             foreach (var keyPart in keyParts) {
                 if (sb.Length > 0) {
                     sb.Append(FieldPartsSeparator);

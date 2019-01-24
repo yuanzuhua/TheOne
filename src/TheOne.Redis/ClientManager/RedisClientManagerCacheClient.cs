@@ -30,126 +30,126 @@ namespace TheOne.Redis.ClientManager {
 
         /// <inheritdoc />
         public T Get<T>(string key) {
-            using (IRedisClient client = this._redisManager.GetReadOnlyClient()) {
+            using (var client = this._redisManager.GetReadOnlyClient()) {
                 return client.Get<T>(key);
             }
         }
 
         /// <inheritdoc />
         public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys) {
-            using (IRedisClient client = this._redisManager.GetReadOnlyClient()) {
+            using (var client = this._redisManager.GetReadOnlyClient()) {
                 return client.GetAll<T>(keys);
             }
         }
 
         /// <inheritdoc />
         public bool Remove(string key) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Remove(key);
             }
         }
 
         /// <inheritdoc />
         public void RemoveAll(IEnumerable<string> keys) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 client.RemoveAll(keys);
             }
         }
 
         /// <inheritdoc />
         public long Increment(string key, uint amount) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Increment(key, amount);
             }
         }
 
         /// <inheritdoc />
         public long Decrement(string key, uint amount) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Decrement(key, amount);
             }
         }
 
         /// <inheritdoc />
         public bool Add<T>(string key, T value) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Add(key, value);
             }
         }
 
         /// <inheritdoc />
         public bool Set<T>(string key, T value) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Set(key, value);
             }
         }
 
         /// <inheritdoc />
         public bool Replace<T>(string key, T value) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Replace(key, value);
             }
         }
 
         /// <inheritdoc />
         public bool Add<T>(string key, T value, DateTime expiresAt) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Add(key, value, expiresAt);
             }
         }
 
         /// <inheritdoc />
         public bool Set<T>(string key, T value, DateTime expiresAt) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Set(key, value, expiresAt);
             }
         }
 
         /// <inheritdoc />
         public bool Replace<T>(string key, T value, DateTime expiresAt) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Replace(key, value, expiresAt);
             }
         }
 
         /// <inheritdoc />
         public bool Add<T>(string key, T value, TimeSpan expiresIn) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Set(key, value, expiresIn);
             }
         }
 
         /// <inheritdoc />
         public bool Set<T>(string key, T value, TimeSpan expiresIn) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Set(key, value, expiresIn);
             }
         }
 
         /// <inheritdoc />
         public bool Replace<T>(string key, T value, TimeSpan expiresIn) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 return client.Replace(key, value, expiresIn);
             }
         }
 
         /// <inheritdoc />
         public void FlushAll() {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 client.FlushAll();
             }
         }
 
         /// <inheritdoc />
         public void SetAll<T>(IDictionary<string, T> values) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 client.SetAll(values);
             }
         }
 
         /// <inheritdoc />
         public TimeSpan? GetTimeToLive(string key) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 if (client is ICacheClientExtended redisClient) {
                     return redisClient.GetTimeToLive(key);
                 }
@@ -167,7 +167,7 @@ namespace TheOne.Redis.ClientManager {
 
         /// <inheritdoc />
         public void RemoveByPattern(string pattern) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 if (client is IRemoveByPattern redisClient) {
                     redisClient.RemoveByPattern(pattern);
                 }
@@ -176,7 +176,7 @@ namespace TheOne.Redis.ClientManager {
 
         /// <inheritdoc />
         public void RemoveByRegex(string pattern) {
-            using (ICacheClient client = this.GetClient()) {
+            using (var client = this.GetClient()) {
                 if (client is IRemoveByPattern redisClient) {
                     redisClient.RemoveByRegex(pattern);
                 }

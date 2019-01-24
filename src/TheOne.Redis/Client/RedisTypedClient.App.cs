@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TheOne.Redis.Common;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Client {
 
@@ -11,9 +10,9 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public void StoreRelatedEntities<TChild>(object parentId, List<TChild> children) {
             var childRefKey = this.GetChildReferenceSetKey<TChild>(parentId);
-            List<string> childKeys = children.ConvertAll(x => this._client.UrnKey(x));
+            var childKeys = children.ConvertAll(x => this._client.UrnKey(x));
 
-            using (IRedisTransaction trans = this._client.CreateTransaction()) {
+            using (var trans = this._client.CreateTransaction()) {
                 // Ugly but need access to a generic constraint-free StoreAll method
                 trans.QueueCommand(c => ((RedisClient)c)._StoreAll(children));
                 trans.QueueCommand(c => c.AddRangeToSet(childRefKey, childKeys));
@@ -43,7 +42,7 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public List<TChild> GetRelatedEntities<TChild>(object parentId) {
             var childRefKey = this.GetChildReferenceSetKey<TChild>(parentId);
-            List<string> childKeys = this._client.GetAllItemsFromSet(childRefKey).ToList();
+            var childKeys = this._client.GetAllItemsFromSet(childRefKey).ToList();
 
             return this._client.As<TChild>().GetValues(childKeys);
         }
@@ -64,16 +63,16 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public List<T> GetLatestFromRecentsList(int skip, int take) {
             var toRank = take - 1;
-            List<string> keys = this._client.GetRangeFromSortedSetDesc(this._recentSortedSetKey, skip, toRank);
-            List<T> values = this.GetValues(keys);
+            var keys = this._client.GetRangeFromSortedSetDesc(this._recentSortedSetKey, skip, toRank);
+            var values = this.GetValues(keys);
             return values;
         }
 
         /// <inheritdoc />
         public List<T> GetEarliestFromRecentsList(int skip, int take) {
             var toRank = take - 1;
-            List<string> keys = this._client.GetRangeFromSortedSet(this._recentSortedSetKey, skip, toRank);
-            List<T> values = this.GetValues(keys);
+            var keys = this._client.GetRangeFromSortedSet(this._recentSortedSetKey, skip, toRank);
+            var values = this.GetValues(keys);
             return values;
         }
 

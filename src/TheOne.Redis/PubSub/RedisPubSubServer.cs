@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 using TheOne.Logging;
 using TheOne.Redis.Client;
@@ -181,7 +180,7 @@ namespace TheOne.Redis.PubSub {
 
         /// <inheritdoc />
         public string GetStatsDescription() {
-            StringBuilder sb = StringBuilderCache.Acquire();
+            var sb = StringBuilderCache.Acquire();
             sb.AppendLine("===============");
             sb.AppendLine("Current Status: " + this.GetStatus());
             sb.AppendLine("Times Started: " + Interlocked.CompareExchange(ref this._timesStarted, 0, 0));
@@ -222,7 +221,7 @@ namespace TheOne.Redis.PubSub {
 
         private void Init() {
             try {
-                using (IRedisClient redis = this.ClientsManager.GetReadOnlyClient()) {
+                using (var redis = this.ClientsManager.GetReadOnlyClient()) {
                     this._startedAt = Stopwatch.StartNew();
                     this._serverTimeAtStart = this.IsSentinelSubscription
                         ? DateTime.UtcNow
@@ -296,13 +295,13 @@ namespace TheOne.Redis.PubSub {
             try {
                 // RESET
                 while (Interlocked.CompareExchange(ref this._status, 0, 0) == Status.Started) {
-                    using (IRedisClient redis = this.ClientsManager.GetReadOnlyClient()) {
+                    using (var redis = this.ClientsManager.GetReadOnlyClient()) {
                         this._masterClient = redis;
 
                         // Record that we had a good run...
                         Interlocked.CompareExchange(ref this._noOfContinuousErrors, 0, this._noOfContinuousErrors);
 
-                        using (IRedisSubscription subscription = redis.CreateSubscription()) {
+                        using (var subscription = redis.CreateSubscription()) {
                             subscription.OnUnSubscribe = this.HandleUnSubscribe;
 
                             subscription.OnMessage = (channel, msg) => {
@@ -310,7 +309,7 @@ namespace TheOne.Redis.PubSub {
                                     return;
                                 }
 
-                                string[] ctrlMsg = msg.SplitOnFirst(':');
+                                var ctrlMsg = msg.SplitOnFirst(':');
                                 if (ctrlMsg[0] == ControlCommand.Control) {
                                     var op = Interlocked.CompareExchange(ref this._doOperation, Operation.NoOp, this._doOperation);
 
@@ -419,7 +418,7 @@ namespace TheOne.Redis.PubSub {
             }
 
             try {
-                using (IRedisClient redis = this.ClientsManager.GetClient()) {
+                using (var redis = this.ClientsManager.GetClient()) {
                     foreach (var channel in this.Channels) {
                         redis.PublishMessage(channel, msg);
                     }
@@ -436,7 +435,7 @@ namespace TheOne.Redis.PubSub {
 
                 if (this._masterClient != null) {
                     // New thread-safe client with same connection info as connected master
-                    using (RedisClient currentlySubscribedClient = ((RedisClient)this._masterClient).CloneClient()) {
+                    using (var currentlySubscribedClient = ((RedisClient)this._masterClient).CloneClient()) {
                         Interlocked.CompareExchange(ref this._doOperation, Operation.Reset, this._doOperation);
                         foreach (var channel in this.Channels) {
                             currentlySubscribedClient.PublishMessage(channel, ControlCommand.Control);

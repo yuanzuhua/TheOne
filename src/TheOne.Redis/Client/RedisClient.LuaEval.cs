@@ -31,25 +31,25 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public RedisText ExecLua(string body, params string[] args) {
-            RedisData data = this.EvalCommand(body, 0, args.ToMultiByteArray());
+            var data = this.EvalCommand(body, 0, args.ToMultiByteArray());
             return data.ToRedisText();
         }
 
         /// <inheritdoc />
         public RedisText ExecLua(string luaBody, string[] keys, string[] args) {
-            RedisData data = this.EvalCommand(luaBody, keys.Length, this.MergeAndConvertToBytes(keys, args));
+            var data = this.EvalCommand(luaBody, keys.Length, this.MergeAndConvertToBytes(keys, args));
             return data.ToRedisText();
         }
 
         /// <inheritdoc />
         public RedisText ExecLuaSha(string sha1, params string[] args) {
-            RedisData data = this.EvalShaCommand(sha1, 0, args.ToMultiByteArray());
+            var data = this.EvalShaCommand(sha1, 0, args.ToMultiByteArray());
             return data.ToRedisText();
         }
 
         /// <inheritdoc />
         public RedisText ExecLuaSha(string sha1, string[] keys, string[] args) {
-            RedisData data = this.EvalShaCommand(sha1, keys.Length, this.MergeAndConvertToBytes(keys, args));
+            var data = this.EvalShaCommand(sha1, keys.Length, this.MergeAndConvertToBytes(keys, args));
             return data.ToRedisText();
         }
 
@@ -120,7 +120,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public Dictionary<string, bool> WhichLuaScriptsExists(params string[] sha1Refs) {
-            byte[][] intFlags = this.ScriptExists(sha1Refs.ToMultiByteArray());
+            var intFlags = this.ScriptExists(sha1Refs.ToMultiByteArray());
             var map = new Dictionary<string, bool>();
             for (var i = 0; i < sha1Refs.Length; i++) {
                 var sha1Ref = sha1Refs[i];

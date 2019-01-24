@@ -64,13 +64,13 @@ namespace TheOne.Redis.ClientManager {
 
         /// <inheritdoc />
         public virtual RedisClient CreateRedisClient(RedisEndpoint config, bool master) {
-            RedisClient client = this.ClientFactory(config);
+            var client = this.ClientFactory(config);
 
             if (!master || !RedisConfig.VerifyMasterConnections) {
                 return client;
             }
 
-            RedisServerRole role = client.GetServerRole();
+            var role = client.GetServerRole();
             if (role == RedisServerRole.Master) {
                 return client;
             }
@@ -82,11 +82,11 @@ namespace TheOne.Redis.ClientManager {
             var newMasters = new List<RedisEndpoint>();
             var newSlaves = new List<RedisEndpoint>();
             RedisClient masterClient = null;
-            foreach (RedisEndpoint hostConfig in this._allHosts) {
+            foreach (var hostConfig in this._allHosts) {
                 try {
-                    RedisClient testClient = this.ClientFactory(hostConfig);
+                    var testClient = this.ClientFactory(hostConfig);
                     testClient.ConnectTimeout = RedisConfig.HostLookupTimeoutMs;
-                    RedisServerRole testRole = testClient.GetServerRole();
+                    var testRole = testClient.GetServerRole();
                     switch (testRole) {
                         case RedisServerRole.Master:
                             newMasters.Add(hostConfig);
@@ -137,7 +137,7 @@ namespace TheOne.Redis.ClientManager {
 
             this.Masters = newMasters.ToArray();
             this.ReadWriteHostsCount = this.Masters.Length;
-            foreach (RedisEndpoint value in newMasters) {
+            foreach (var value in newMasters) {
                 this._allHosts.Add(value);
             }
 
@@ -149,7 +149,7 @@ namespace TheOne.Redis.ClientManager {
         public virtual void ResetSlaves(List<RedisEndpoint> newSlaves) {
             this.Slaves = newSlaves?.ToArray() ?? Array.Empty<RedisEndpoint>();
             this.ReadOnlyHostsCount = this.Slaves.Length;
-            foreach (RedisEndpoint value in this.Slaves) {
+            foreach (var value in this.Slaves) {
                 this._allHosts.Add(value);
             }
 

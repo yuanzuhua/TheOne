@@ -21,7 +21,7 @@ namespace TheOne.Redis.Pipeline {
 
             try {
                 // receive expected results
-                foreach (QueuedRedisOperation queuedCommand in this.QueuedCommands) {
+                foreach (var queuedCommand in this.QueuedCommands) {
                     queuedCommand.ProcessResult();
                 }
             } catch {
@@ -64,7 +64,7 @@ namespace TheOne.Redis.Pipeline {
         protected void Execute() {
             var count = this.QueuedCommands.Count;
             for (var i = 0; i < count; ++i) {
-                QueuedRedisOperation op = this.QueuedCommands[0];
+                var op = this.QueuedCommands[0];
                 this.QueuedCommands.RemoveAt(0);
                 op.Execute(this.RedisClient);
                 this.QueuedCommands.Add(op);

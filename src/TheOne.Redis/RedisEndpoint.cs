@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using TheOne.Redis.Common;
 using TheOne.Redis.External;
 
@@ -107,9 +106,9 @@ namespace TheOne.Redis {
                 connectionString = connectionString.Substring("redis://".Length);
             }
 
-            string[] domainParts = connectionString.SplitOnLast('@');
-            string[] qsParts = domainParts.Last().SplitOnFirst('?');
-            string[] hostParts = qsParts[0].SplitOnLast(':');
+            var domainParts = connectionString.SplitOnLast('@');
+            var qsParts = domainParts.Last().SplitOnFirst('?');
+            var hostParts = qsParts[0].SplitOnLast(':');
             var useDefaultPort = true;
             var port = defaultPort.GetValueOrDefault(RedisConfig.DefaultPort);
             if (hostParts.Length > 1) {
@@ -119,7 +118,7 @@ namespace TheOne.Redis {
 
             var endpoint = new RedisEndpoint(hostParts[0], port);
             if (domainParts.Length > 1) {
-                string[] authParts = domainParts[0].SplitOnFirst(':');
+                var authParts = domainParts[0].SplitOnFirst(':');
                 if (authParts.Length > 1) {
                     endpoint.Client = authParts[0];
                 }
@@ -128,9 +127,9 @@ namespace TheOne.Redis {
             }
 
             if (qsParts.Length > 1) {
-                string[] qsParams = qsParts[1].Split('&');
+                var qsParams = qsParts[1].Split('&');
                 foreach (var param in qsParams) {
-                    string[] entry = param.Split('=');
+                    var entry = param.Split('=');
                     var value = entry.Length > 1 ? WebUtility.UrlDecode(entry[1]) : null;
                     if (value == null) {
                         continue;
@@ -183,7 +182,7 @@ namespace TheOne.Redis {
         #region override
 
         public override string ToString() {
-            StringBuilder sb = StringBuilderCache.Acquire();
+            var sb = StringBuilderCache.Acquire();
             sb.AppendFormat("{0}:{1}", this.Host, this.Port);
 
             var args = new List<string>();

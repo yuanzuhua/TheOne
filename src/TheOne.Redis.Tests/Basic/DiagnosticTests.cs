@@ -23,8 +23,8 @@ namespace TheOne.Redis.Tests.Basic {
 
         [Test]
         public void Test_Throughput() {
-            byte[] bytes = this.RandomBytes(_messageSizeBytes);
-            Stopwatch swTotal = Stopwatch.StartNew();
+            var bytes = this.RandomBytes(_messageSizeBytes);
+            var swTotal = Stopwatch.StartNew();
 
             var key = "test:bandwidth:" + bytes.Length;
 
@@ -33,14 +33,14 @@ namespace TheOne.Redis.Tests.Basic {
 
             using (var redisClient = new RedisNativeClient(Config.MasterHost)) {
                 for (var i = 0; i < _count; i++) {
-                    Stopwatch sw = Stopwatch.StartNew();
+                    var sw = Stopwatch.StartNew();
                     redisClient.Set(key, bytes);
                     bytesSent += bytes.Length;
                     Console.WriteLine("SEND {0} bytes in {1}ms", bytes.Length, sw.ElapsedMilliseconds);
 
                     sw.Reset();
                     sw.Start();
-                    byte[] receivedBytes = redisClient.Get(key);
+                    var receivedBytes = redisClient.Get(key);
                     bytesRecv += receivedBytes.Length;
                     Console.WriteLine("RECV {0} bytes in {1}ms", receivedBytes.Length, sw.ElapsedMilliseconds);
                     Console.WriteLine("TOTAL {0} bytes SENT {0} RECV {1} in {2}ms\n", bytesSent, bytesRecv, swTotal.ElapsedMilliseconds);

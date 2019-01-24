@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using NUnit.Framework;
 using TheOne.Redis.Client;
-using TheOne.Redis.ClientManager;
 using TheOne.Redis.Common;
 using TheOne.Redis.Sentinel;
 
@@ -21,7 +20,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
                 // if (this._useRedisManagerPool) {
                 //     sentinel.RedisManagerFactory = (masters, slaves) => new RedisManagerPool(masters);
 
-                IRedisClientManager redisManager = sentinel.Start();
+                var redisManager = sentinel.Start();
 
                 var i = 0;
 
@@ -70,7 +69,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
                 Thread.Sleep(20000);
 
                 try {
-                    RedisEndpoint debugConfig = sentinel.GetMaster();
+                    var debugConfig = sentinel.GetMaster();
                     using (var master = new RedisClient(debugConfig)) {
                         Console.WriteLine("Putting master '{0}' to sleep for 35 seconds...", master.GetHostString());
                         master.DebugSleep(35);

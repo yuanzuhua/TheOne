@@ -1,7 +1,5 @@
 using System;
 using NUnit.Framework;
-using TheOne.Redis.Client;
-using TheOne.Redis.ClientManager;
 using TheOne.Redis.Sentinel;
 
 namespace TheOne.Redis.Tests.ConsoleTests {
@@ -17,20 +15,20 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
             var sentinel = new RedisSentinel(Config.SentinelHosts, Config.SentinelMasterName);
 
-            IRedisClientManager redisManager = sentinel.Start();
+            var redisManager = sentinel.Start();
 
-            using (IRedisClient client = redisManager.GetClient()) {
+            using (var client = redisManager.GetClient()) {
                 client.FlushAll();
             }
 
-            using (IRedisClient client = redisManager.GetClient()) {
+            using (var client = redisManager.GetClient()) {
                 Console.WriteLine(client.IncrementValue("counter").ToString());
             }
 
             Console.WriteLine("Force 'SENTINEL failover mymaster'...");
 
             try {
-                using (IRedisClient client = redisManager.GetClient()) {
+                using (var client = redisManager.GetClient()) {
                     Console.WriteLine(client.IncrementValue("counter").ToString());
                 }
             } catch (Exception ex) {
@@ -38,7 +36,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             }
 
             try {
-                using (IRedisClient client = redisManager.GetClient()) {
+                using (var client = redisManager.GetClient()) {
                     Console.WriteLine(client.IncrementValue("counter").ToString());
                 }
             } catch (Exception ex) {
@@ -46,7 +44,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             }
 
             try {
-                using (IRedisClient client = redisManager.GetClient()) {
+                using (var client = redisManager.GetClient()) {
                     Console.WriteLine(client.IncrementValue("counter").ToString());
                 }
             } catch (Exception ex) {

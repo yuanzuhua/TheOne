@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using TheOne.Redis.Client;
 
 namespace TheOne.Redis.Tests.Examples {
 
@@ -44,12 +43,12 @@ namespace TheOne.Redis.Tests.Examples {
                 { "four", 4 }
             };
 
-            foreach (KeyValuePair<string, string> value in stringMap) {
+            foreach (var value in stringMap) {
                 this.Redis.SetEntryInHash("testhash", value.Key, value.Value);
             }
 
-            IRedisHash hash = this.Redis.Hashes["testhash"];
-            foreach (KeyValuePair<string, int> value1 in stringIntMap) {
+            var hash = this.Redis.Hashes["testhash"];
+            foreach (var value1 in stringIntMap) {
                 hash.Add(value1.Key, value1.Value.ToString());
             }
 
@@ -60,7 +59,7 @@ namespace TheOne.Redis.Tests.Examples {
             var storeMembers = new List<string> { "one", "two", "three", "four" };
             storeMembers.ForEach(x => this.Redis.AddItemToSortedSet("testzset", x, i++));
 
-            IRedisTypedClient<Article> redisArticles = this.Redis.As<Article>();
+            var redisArticles = this.Redis.As<Article>();
 
             var articles = new[] {
                 new Article { Id = 1, Title = "Article 1", ModifiedDate = new DateTime(2015, 01, 02) },
@@ -72,7 +71,7 @@ namespace TheOne.Redis.Tests.Examples {
 
             const string latestArticlesSet = "urn:Article:modified";
 
-            foreach (Article article in articles) {
+            foreach (var article in articles) {
                 this.Redis.AddItemToSortedSet(latestArticlesSet, article.Id.ToString(), article.ModifiedDate.Ticks);
             }
         }

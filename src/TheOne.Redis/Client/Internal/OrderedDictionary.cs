@@ -179,7 +179,7 @@ namespace TheOne.Redis.Client.Internal {
                     "'index' must be non-negative and less than the size of the collection");
             }
 
-            TKey key = this.List[index].Key;
+            var key = this.List[index].Key;
 
             this.List.RemoveAt(index);
             this.Dictionary.Remove(key);
@@ -204,7 +204,7 @@ namespace TheOne.Redis.Client.Internal {
                         "'index' must be non-negative and less than the size of the collection");
                 }
 
-                TKey key = this.List[index].Key;
+                var key = this.List[index].Key;
 
                 this.List[index] = new KeyValuePair<TKey, TValue>(key, value);
                 this.Dictionary[key] = value;
@@ -700,8 +700,8 @@ namespace TheOne.Redis.Client.Internal {
             }
 
             for (var index = 0; index < this.List.Count; index++) {
-                KeyValuePair<TKey, TValue> entry = this.List[index];
-                TKey next = entry.Key;
+                var entry = this.List[index];
+                var next = entry.Key;
                 if (null != this._comparer) {
                     if (this._comparer.Equals(next, key)) {
                         return index;

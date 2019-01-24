@@ -39,7 +39,7 @@ namespace TheOne.Redis.Tests.Issues {
 
         [Test]
         public void Can_deserialize_DomainEvent_into_Concrete_Type() {
-            Guid userId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
             var dto = (DomainEvent)new UserPromotedEvent { UserId = userId };
             var json = dto.ToJson();
             Console.WriteLine(json);
@@ -50,9 +50,9 @@ namespace TheOne.Redis.Tests.Issues {
         [Test]
         public void Can_from_Retrieve_DomainEvents_list() {
             var client = new RedisClient(Config.MasterHost);
-            IRedisTypedClient<AggregateEvents> users = client.As<AggregateEvents>();
+            var users = client.As<AggregateEvents>();
 
-            Guid userId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
 
             var eventsForUser = new AggregateEvents {
                 Id = userId,
@@ -63,19 +63,19 @@ namespace TheOne.Redis.Tests.Issues {
 
             users.Store(eventsForUser);
 
-            IList<AggregateEvents> all = users.GetAll();
+            var all = users.GetAll();
         }
 
         [Test]
         public void Can_Retrieve_DomainEvents() {
-            Guid userId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
             var client = new RedisClient(Config.MasterHost);
             client.FlushAll();
 
             client.As<DomainEvent>().Lists["urn:domainevents-" + userId].Add(new UserPromotedEvent { UserId = userId });
 
 
-            IRedisList<DomainEvent> users = client.As<DomainEvent>().Lists["urn:domainevents-" + userId];
+            var users = client.As<DomainEvent>().Lists["urn:domainevents-" + userId];
 
             Assert.That(users.Count, Is.EqualTo(1));
 

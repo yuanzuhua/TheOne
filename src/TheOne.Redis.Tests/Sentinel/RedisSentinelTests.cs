@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
 using TheOne.Redis.Client;
@@ -26,7 +25,7 @@ namespace TheOne.Redis.Tests.Sentinel {
 
         [Test]
         public void Can_Get_Master_Addr() {
-            List<string> addr = this._redisSentinel.SentinelGetMasterAddrByName(Config.SentinelMasterName);
+            var addr = this._redisSentinel.SentinelGetMasterAddrByName(Config.SentinelMasterName);
 
             var host = addr[0];
             var port = addr[1];
@@ -38,8 +37,8 @@ namespace TheOne.Redis.Tests.Sentinel {
         [Test]
         public void Can_Get_Redis_ClientsManager() {
             using (var sentinel = new RedisSentinel(Config.SentinelHosts, Config.SentinelMasterName)) {
-                IRedisClientManager clientsManager = sentinel.Start();
-                using (IRedisClient client = clientsManager.GetClient()) {
+                var clientsManager = sentinel.Start();
+                using (var client = clientsManager.GetClient()) {
                     Assert.That(client.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                 }
             }
@@ -47,7 +46,7 @@ namespace TheOne.Redis.Tests.Sentinel {
 
         [Test]
         public void Can_Get_Sentinel_Master() {
-            Dictionary<string, string> master = this._redisSentinel.SentinelMaster(Config.SentinelMasterName);
+            var master = this._redisSentinel.SentinelMaster(Config.SentinelMasterName);
             Console.WriteLine(master.ToJson());
 
             var host = string.Format("{0}:{1}", master["ip"], master["port"]);
@@ -57,7 +56,7 @@ namespace TheOne.Redis.Tests.Sentinel {
 
         [Test]
         public void Can_Get_Sentinel_Masters() {
-            List<Dictionary<string, string>> masters = this._redisSentinel.SentinelMasters();
+            var masters = this._redisSentinel.SentinelMasters();
             Console.WriteLine(masters.ToJson());
 
             Assert.That(masters.Count, Is.GreaterThan(0));
@@ -65,7 +64,7 @@ namespace TheOne.Redis.Tests.Sentinel {
 
         [Test]
         public void Can_Get_Sentinel_Sentinels() {
-            List<Dictionary<string, string>> sentinels = this._redisSentinel.SentinelSentinels(Config.SentinelMasterName);
+            var sentinels = this._redisSentinel.SentinelSentinels(Config.SentinelMasterName);
             Console.WriteLine(sentinels.ToJson());
 
             Assert.That(sentinels.Count, Is.GreaterThan(0));
@@ -73,7 +72,7 @@ namespace TheOne.Redis.Tests.Sentinel {
 
         [Test]
         public void Can_Get_Sentinel_Slaves() {
-            List<Dictionary<string, string>> slaves = this._redisSentinel.SentinelSlaves(Config.SentinelMasterName);
+            var slaves = this._redisSentinel.SentinelSlaves(Config.SentinelMasterName);
             Console.WriteLine(slaves.ToJson());
 
             Assert.That(slaves.Count, Is.GreaterThan(0));
@@ -89,8 +88,8 @@ namespace TheOne.Redis.Tests.Sentinel {
             using (var sentinel = new RedisSentinel(Config.SentinelHosts, Config.SentinelMasterName)) {
                 sentinel.HostFilter = host => string.Format("{0}?db=1", host);
 
-                using (IRedisClientManager clientsManager = sentinel.Start()) {
-                    using (IRedisClient client = clientsManager.GetClient()) {
+                using (var clientsManager = sentinel.Start()) {
+                    using (var client = clientsManager.GetClient()) {
                         Assert.That(client.Db, Is.EqualTo(1));
                     }
                 }
@@ -103,7 +102,7 @@ namespace TheOne.Redis.Tests.Sentinel {
                 sentinel.RedisManagerFactory = (masters, slaves) => new PooledRedisClientManager(masters, slaves) { IdleTimeoutSecs = 20 };
 
                 using (var clientsManager = (PooledRedisClientManager)sentinel.Start()) {
-                    using (IRedisClient client = clientsManager.GetClient()) {
+                    using (var client = clientsManager.GetClient()) {
                         Assert.That(clientsManager.IdleTimeoutSecs, Is.EqualTo(20));
                         Assert.That(((RedisNativeClient)client).IdleTimeoutSecs, Is.EqualTo(20));
                     }
@@ -113,7 +112,7 @@ namespace TheOne.Redis.Tests.Sentinel {
 
         [Test]
         public void Defaults_to_default_sentinel_port() {
-            RedisEndpoint sentinelEndpoint = RedisEndpoint.Create("127.0.0.1", RedisConfig.DefaultPortSentinel);
+            var sentinelEndpoint = RedisEndpoint.Create("127.0.0.1", RedisConfig.DefaultPortSentinel);
             Assert.That(sentinelEndpoint.Port, Is.EqualTo(RedisConfig.DefaultPortSentinel));
         }
 
@@ -122,11 +121,11 @@ namespace TheOne.Redis.Tests.Sentinel {
             using (var sentinel = new RedisSentinel(Config.Sentinel26380) {
                 ScanForOtherSentinels = true
             }) {
-                IRedisClientManager clientsManager = sentinel.Start();
+                var clientsManager = sentinel.Start();
 
                 Assert.That(sentinel.SentinelHosts, Is.EquivalentTo(Config.SentinelHosts));
 
-                using (IRedisClient client = clientsManager.GetClient()) {
+                using (var client = clientsManager.GetClient()) {
                     Assert.That(client.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                 }
             }
@@ -146,19 +145,19 @@ namespace TheOne.Redis.Tests.Sentinel {
                     Console.WriteLine("Received '{0}' on channel '{1}' from Sentinel", channel, msg);
                 };
 
-                using (IRedisClientManager redisManager = sentinel.Start()) {
+                using (var redisManager = sentinel.Start()) {
                     void TimerCallback(object state) {
                         Console.WriteLine("Incrementing key");
 
                         string key = null;
-                        using (IRedisClient redis = redisManager.GetClient()) {
+                        using (var redis = redisManager.GetClient()) {
                             var counter = redis.Increment("key", 1);
                             key = "key" + counter;
                             Console.WriteLine("Set key {0} in read/write client", key);
                             redis.SetValue(key, "value" + 1);
                         }
 
-                        using (IRedisClient redis = redisManager.GetClient()) {
+                        using (var redis = redisManager.GetClient()) {
                             Console.WriteLine("Get key {0} in read-only client...", key);
                             var value = redis.GetValue(key);
                             Console.WriteLine("{0} = {1}", key, value);

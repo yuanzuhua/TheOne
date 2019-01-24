@@ -22,7 +22,7 @@ namespace TheOne.Redis.ClientManager.Internal {
                 this._hashFunction = hashFunction;
             }
 
-            foreach (KeyValuePair<T, int> node in nodes) {
+            foreach (var node in nodes) {
                 this.AddTarget(node.Key, node.Value);
             }
         }
@@ -80,8 +80,8 @@ namespace TheOne.Redis.ClientManager.Internal {
         ///     Given a key, generates an unsigned 64 bit hash code using MD5
         /// </summary>
         public static ulong Md5Hash(string key) {
-            using (MD5 hash = MD5.Create()) {
-                byte[] data = hash.ComputeHash(key.ToUtf8Bytes());
+            using (var hash = MD5.Create()) {
+                var data = hash.ComputeHash(key.ToUtf8Bytes());
                 var a = BitConverter.ToUInt64(data, 0);
                 var b = BitConverter.ToUInt64(data, 8);
                 var hashCode = a ^ b;

@@ -42,7 +42,7 @@ namespace TheOne.Redis.Pipeline {
                 this.Exec();
 
                 // receive expected results
-                foreach (QueuedRedisOperation queuedCommand in this.QueuedCommands) {
+                foreach (var queuedCommand in this.QueuedCommands) {
                     queuedCommand.ProcessResult();
                 }
             } catch (RedisTransactionFailedException) {
@@ -73,7 +73,7 @@ namespace TheOne.Redis.Pipeline {
                 this.Execute();
 
                 // receive expected results
-                foreach (QueuedRedisOperation queuedCommand in this.QueuedCommands) {
+                foreach (var queuedCommand in this.QueuedCommands) {
                     queuedCommand.ProcessResult();
                 }
             } catch (RedisTransactionFailedException) {

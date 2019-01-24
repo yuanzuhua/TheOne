@@ -18,13 +18,13 @@ namespace TheOne.Redis.Tests.Basic {
 
         [OneTimeSetUp]
         public void OneTimeSetUp() {
-            List<ModelWithFieldsOfDifferentTypes>
+            var
                 results = Enumerable.Range(0, 100).Select(ModelWithFieldsOfDifferentTypes.Create).ToList();
             _testData = results.ToJson();
         }
 
         private static void UseClientAsync(IRedisClientManager manager, int clientNo) {
-            using (IRedisClient client = manager.GetClient()) {
+            using (var client = manager.GetClient()) {
                 UseClient(client, clientNo);
             }
         }
@@ -48,12 +48,12 @@ namespace TheOne.Redis.Tests.Basic {
 
                     var testClientSetKey = "test+set:" + host + ":" + clientNo;
                     client.AddItemToSet(testClientSetKey, _testData);
-                    HashSet<string> resultSet = client.GetAllItemsFromSet(testClientSetKey);
+                    var resultSet = client.GetAllItemsFromSet(testClientSetKey);
                     LogResult(db, testClientKey, resultSet.ToList().FirstOrDefault());
 
                     var testClientListKey = "test+list:" + host + ":" + clientNo;
                     client.AddItemToList(testClientListKey, _testData);
-                    List<string> resultList = client.GetAllItemsFromList(testClientListKey);
+                    var resultList = client.GetAllItemsFromList(testClientListKey);
                     LogResult(db, testClientKey, resultList.FirstOrDefault());
                 }
             } catch (NullReferenceException ex) {
@@ -105,11 +105,11 @@ namespace TheOne.Redis.Tests.Basic {
 
             using (var manager = new PooledRedisClientManager(Config.MasterHost)) {
                 var clientAsyncResults = new List<Task>();
-                using (IRedisClient client = manager.GetClient()) { client.FlushAll(); }
+                using (var client = manager.GetClient()) { client.FlushAll(); }
 
                 for (var i = 0; i < noOfConcurrentClients; i++) {
                     var clientNo = i;
-                    Task item = Task.Run(() => UseClientAsync(manager, clientNo));
+                    var item = Task.Run(() => UseClientAsync(manager, clientNo));
                     clientAsyncResults.Add(item);
                 }
 

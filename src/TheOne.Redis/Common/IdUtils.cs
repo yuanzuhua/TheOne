@@ -10,8 +10,8 @@ namespace TheOne.Redis.Common {
 
         static IdUtils() {
 
-            Type memberInfo = typeof(T);
-            Type[] hasIdInterfaces =
+            var memberInfo = typeof(T);
+            var hasIdInterfaces =
                 memberInfo.FindInterfaces((t, criteria) => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IHasRedisId<>), null);
 
             if (hasIdInterfaces.Length > 0) {
@@ -20,7 +20,7 @@ namespace TheOne.Redis.Common {
             }
 
             if (memberInfo.IsClass || memberInfo.IsInterface) {
-                PropertyInfo piId = memberInfo.GetIdProperty();
+                var piId = memberInfo.GetIdProperty();
                 if (piId?.GetGetMethod(true) != null) {
                     CanGetId = HasPropertyId<T>.GetId;
                     return;
@@ -29,7 +29,7 @@ namespace TheOne.Redis.Common {
 
             if (memberInfo == typeof(object)) {
                 CanGetId = x => {
-                    PropertyInfo piId = x.GetType().GetIdProperty();
+                    var piId = x.GetType().GetIdProperty();
                     if (piId?.GetGetMethod(true) != null) {
                         return x.GetObjectId();
                     }
@@ -53,12 +53,12 @@ namespace TheOne.Redis.Common {
         private static readonly GetMemberDelegate<TEntity> _getIdFn;
 
         static HasPropertyId() {
-            PropertyInfo pi = typeof(TEntity).GetIdProperty();
+            var pi = typeof(TEntity).GetIdProperty();
             _getIdFn = CreateGetter<TEntity>(pi);
         }
 
         public static GetMemberDelegate<T> CreateGetter<T>(PropertyInfo propertyInfo) {
-            MethodInfo getMethodInfo = propertyInfo.GetGetMethod(true);
+            var getMethodInfo = propertyInfo.GetGetMethod(true);
             if (getMethodInfo == null) {
                 return null;
             }
@@ -77,14 +77,14 @@ namespace TheOne.Redis.Common {
         private static readonly Func<TEntity, object> _getIdFn;
 
         static HasId() {
-            Type type = typeof(TEntity);
-            Type[] hasIdInterfaces =
+            var type = typeof(TEntity);
+            var hasIdInterfaces =
                 type.FindInterfaces((t, criteria) => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IHasRedisId<>), null);
-            Type genericArg = hasIdInterfaces[0].GetGenericArguments()[0];
-            Type genericType = typeof(HasIdGetter<,>).MakeGenericType(type, genericArg);
+            var genericArg = hasIdInterfaces[0].GetGenericArguments()[0];
+            var genericType = typeof(HasIdGetter<,>).MakeGenericType(type, genericArg);
 
-            ParameterExpression oInstanceParam = Expression.Parameter(type, "oInstanceParam");
-            MethodCallExpression exprCallStaticMethod = Expression.Call(
+            var oInstanceParam = Expression.Parameter(type, "oInstanceParam");
+            var exprCallStaticMethod = Expression.Call(
                 genericType,
                 "GetId",
                 Array.Empty<Type>(),
@@ -147,7 +147,7 @@ namespace TheOne.Redis.Common {
         }
 
         public static string CreateUrn<T>(this T entity) {
-            object id = GetId(entity);
+            var id = GetId(entity);
             return $"urn:{typeof(T).Name.ToLowerInvariant()}:{id}";
         }
 
@@ -168,7 +168,7 @@ namespace TheOne.Redis.Common {
         }
 
         public static PropertyInfo GetIdProperty(this Type type) {
-            foreach (PropertyInfo pi in type.GetProperties()) {
+            foreach (var pi in type.GetProperties()) {
                 if (string.Equals(IdField, pi.Name, StringComparison.OrdinalIgnoreCase)) {
                     return pi;
                 }

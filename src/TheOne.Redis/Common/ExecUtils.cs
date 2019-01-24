@@ -22,7 +22,7 @@ namespace TheOne.Redis.Common {
 
         public static void RetryUntilTrue(Func<bool> action, TimeSpan? timeout) {
             var i = 0;
-            DateTime firstAttempt = DateTime.UtcNow;
+            var firstAttempt = DateTime.UtcNow;
 
             while (timeout == null || DateTime.UtcNow - firstAttempt < timeout.Value) {
                 i++;
@@ -39,7 +39,7 @@ namespace TheOne.Redis.Common {
         public static void RetryOnException(Action action, TimeSpan? timeout) {
             var i = 0;
             Exception lastEx = null;
-            DateTime firstAttempt = DateTime.UtcNow;
+            var firstAttempt = DateTime.UtcNow;
 
             while (timeout == null || DateTime.UtcNow - firstAttempt < timeout.Value) {
                 i++;

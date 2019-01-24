@@ -81,20 +81,20 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_Delete() {
             this.Redis.StoreAll(this._testModels);
 
-            TestModel last = this._testModels.Last();
+            var last = this._testModels.Last();
             this.Redis.Delete(last);
 
             this._testModels.Remove(last);
 
-            List<TestModel> allModels = this.Redis.GetAll<TestModel>().OrderBy(x => x.Age).ToList();
+            var allModels = this.Redis.GetAll<TestModel>().OrderBy(x => x.Age).ToList();
 
             Assert.That(allModels, Is.EquivalentTo(this._testModels));
 
             // Test internal TestModelIdsSetKey state
-            List<Guid> idsRemaining = this.Redis.GetAllItemsFromSet(this.PrefixedKey(_testModelIdsSetKey))
-                                          .OrderBy(x => x).Select(x => new Guid(x)).ToList();
+            var idsRemaining = this.Redis.GetAllItemsFromSet(this.PrefixedKey(_testModelIdsSetKey))
+                                   .OrderBy(x => x).Select(x => new Guid(x)).ToList();
 
-            List<Guid> testModelIds = this._testModels.OrderBy(x => x.Id).Select(x => x.Id).ToList();
+            var testModelIds = this._testModels.OrderBy(x => x.Id).Select(x => x.Id).ToList();
 
             Assert.That(idsRemaining, Is.EquivalentTo(testModelIds));
         }
@@ -105,12 +105,12 @@ namespace TheOne.Redis.Tests.Client {
 
             this.Redis.DeleteAll<TestModel>();
 
-            IList<TestModel> allModels = this.Redis.GetAll<TestModel>();
+            var allModels = this.Redis.GetAll<TestModel>();
 
             Assert.That(allModels, Is.Empty);
 
             // Test internal TestModelIdsSetKey state
-            HashSet<string> idsRemaining = this.Redis.GetAllItemsFromSet(_testModelIdsSetKey);
+            var idsRemaining = this.Redis.GetAllItemsFromSet(_testModelIdsSetKey);
             Assert.That(idsRemaining, Is.Empty);
         }
 
@@ -118,24 +118,24 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_DeleteByIds() {
             this.Redis.StoreAll(this._testModels);
 
-            List<TestModel> evenTestModels = this._testModels.Where(x => x.Age % 2 == 0)
-                                                 .OrderBy(x => x.Id).ToList();
-            List<Guid> evenTestModelIds = evenTestModels.Select(x => x.Id).ToList();
+            var evenTestModels = this._testModels.Where(x => x.Age % 2 == 0)
+                                     .OrderBy(x => x.Id).ToList();
+            var evenTestModelIds = evenTestModels.Select(x => x.Id).ToList();
 
             this.Redis.DeleteByIds<TestModel>(evenTestModelIds);
 
             evenTestModels.ForEach(x => this._testModels.Remove(x));
 
-            List<TestModel> allModels = this.Redis.GetAll<TestModel>().OrderBy(x => x.Age).ToList();
+            var allModels = this.Redis.GetAll<TestModel>().OrderBy(x => x.Age).ToList();
 
             Assert.That(allModels, Is.EqualTo(this._testModels));
 
 
             // Test internal TestModelIdsSetKey state
-            List<Guid> idsRemaining = this.Redis.GetAllItemsFromSet(this.PrefixedKey(_testModelIdsSetKey))
-                                          .OrderBy(x => x).Select(x => new Guid(x)).ToList();
+            var idsRemaining = this.Redis.GetAllItemsFromSet(this.PrefixedKey(_testModelIdsSetKey))
+                                   .OrderBy(x => x).Select(x => new Guid(x)).ToList();
 
-            List<Guid> testModelIds = this._testModels.OrderBy(x => x.Id).Select(x => x.Id).ToList();
+            var testModelIds = this._testModels.OrderBy(x => x.Id).Select(x => x.Id).ToList();
 
             Assert.That(idsRemaining, Is.EquivalentTo(testModelIds));
         }
@@ -144,7 +144,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_GetById() {
             this.Redis.StoreAll(this._testModels);
 
-            TestModel last = this._testModels.Last();
+            var last = this._testModels.Last();
             var lastById = this.Redis.GetById<TestModel>(last.Id);
 
             Assert.That(lastById, Is.EqualTo(last));
@@ -154,10 +154,10 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_GetByIds() {
             this.Redis.StoreAll(this._testModels);
 
-            List<TestModel> evenTestModels = this._testModels.Where(x => x.Age % 2 == 0).OrderBy(x => x.Id).ToList();
-            List<Guid> evenTestModelIds = evenTestModels.Select(x => x.Id).ToList();
+            var evenTestModels = this._testModels.Where(x => x.Age % 2 == 0).OrderBy(x => x.Id).ToList();
+            var evenTestModelIds = evenTestModels.Select(x => x.Id).ToList();
 
-            List<TestModel> selectedModels = this.Redis.GetByIds<TestModel>(evenTestModelIds).OrderBy(x => x.Id).ToList();
+            var selectedModels = this.Redis.GetByIds<TestModel>(evenTestModelIds).OrderBy(x => x.Id).ToList();
             Assert.That(selectedModels, Is.EqualTo(evenTestModels));
         }
 
@@ -165,7 +165,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_Store() {
             this._testModels.ForEach(x => this.Redis.Store(x));
 
-            List<TestModel> allModels = this.Redis.GetAll<TestModel>().OrderBy(x => x.Age).ToList();
+            var allModels = this.Redis.GetAll<TestModel>().OrderBy(x => x.Age).ToList();
 
             Assert.That(allModels, Is.EquivalentTo(this._testModels));
         }
@@ -174,7 +174,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_StoreAll() {
             this.Redis.StoreAll(this._testModels);
 
-            List<TestModel> allModels = this.Redis.GetAll<TestModel>().OrderBy(x => x.Age).ToList();
+            var allModels = this.Redis.GetAll<TestModel>().OrderBy(x => x.Age).ToList();
 
             Assert.That(allModels, Is.EquivalentTo(this._testModels));
         }
@@ -183,10 +183,10 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_WriteAll() {
             this.Redis.WriteAll(this._testModels);
 
-            List<Guid> testModelIds = this._testModels.ConvertAll(x => x.Id);
+            var testModelIds = this._testModels.ConvertAll(x => x.Id);
 
-            List<TestModel> allModels = this.Redis.GetByIds<TestModel>(testModelIds)
-                                            .OrderBy(x => x.Age).ToList();
+            var allModels = this.Redis.GetByIds<TestModel>(testModelIds)
+                                .OrderBy(x => x.Age).ToList();
 
             Assert.That(allModels, Is.EquivalentTo(this._testModels));
         }

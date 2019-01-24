@@ -155,7 +155,7 @@ namespace TheOne.Redis.Sentinel {
         public IRedisClientManager Start() {
             lock (this._oLock) {
                 for (var i = 0; i < this.SentinelHosts.Count; i++) {
-                    string[] parts = this.SentinelHosts[i].SplitOnLast(':');
+                    var parts = this.SentinelHosts[i].SplitOnLast(':');
                     if (parts.Length == 1) {
                         this.SentinelHosts[i] = parts[0] + ":" + RedisConfig.DefaultPortSentinel;
                     }
@@ -169,7 +169,7 @@ namespace TheOne.Redis.Sentinel {
                                              .Select(x => RedisEndpoint.Create(x, RedisConfig.DefaultPortSentinel))
                                              .ToArray();
 
-                RedisSentinelWorker sentinelWorker = this.GetValidSentinelWorker();
+                var sentinelWorker = this.GetValidSentinelWorker();
 
                 if (this.RedisManager == null || sentinelWorker == null) {
                     throw new Exception("Unable to resolve sentinels!");
@@ -203,9 +203,9 @@ namespace TheOne.Redis.Sentinel {
                         _logger.Debug("Connecting to all available Sentinels to discover Active Sentinel Hosts...");
                     }
 
-                    RedisEndpoint endpoint = RedisEndpoint.Create(sentinelHost, RedisConfig.DefaultPortSentinel);
+                    var endpoint = RedisEndpoint.Create(sentinelHost, RedisConfig.DefaultPortSentinel);
                     using (var sentinelWorker = new RedisSentinelWorker(this, endpoint)) {
-                        List<string> activeHosts = sentinelWorker.GetSentinelHosts(this.MasterName);
+                        var activeHosts = sentinelWorker.GetSentinelHosts(this.MasterName);
 
                         if (!activeSentinelHosts.Contains(sentinelHost)) {
                             activeSentinelHosts.Add(sentinelHost);
@@ -230,7 +230,7 @@ namespace TheOne.Redis.Sentinel {
         }
 
         public void RefreshActiveSentinels() {
-            List<string> activeHosts = this.GetActiveSentinelHosts(this.SentinelHosts);
+            var activeHosts = this.GetActiveSentinelHosts(this.SentinelHosts);
             if (activeHosts.Count == 0) {
                 return;
             }
@@ -261,7 +261,7 @@ namespace TheOne.Redis.Sentinel {
         }
 
         public SentinelInfo ResetClients() {
-            SentinelInfo sentinelInfo = this.GetSentinelInfo();
+            var sentinelInfo = this.GetSentinelInfo();
 
             if (this.RedisManager == null) {
                 if (_logger.IsDebugEnabled()) {
@@ -282,9 +282,9 @@ namespace TheOne.Redis.Sentinel {
         }
 
         private IRedisClientManager CreateRedisManager(SentinelInfo sentinelInfo) {
-            string[] masters = this.ConfigureHosts(sentinelInfo.RedisMasters);
-            string[] slaves = this.ConfigureHosts(sentinelInfo.RedisSlaves);
-            IRedisClientManager redisManager = this.RedisManagerFactory(masters, slaves);
+            var masters = this.ConfigureHosts(sentinelInfo.RedisMasters);
+            var slaves = this.ConfigureHosts(sentinelInfo.RedisSlaves);
+            var redisManager = this.RedisManagerFactory(masters, slaves);
 
             var hasRedisResolver = (IHasRedisResolver)redisManager;
             hasRedisResolver.RedisResolver = new RedisSentinelResolver(this, masters, slaves);
@@ -337,7 +337,7 @@ namespace TheOne.Redis.Sentinel {
         }
 
         public RedisEndpoint GetMaster() {
-            RedisSentinelWorker sentinelWorker = this.GetValidSentinelWorker();
+            var sentinelWorker = this.GetValidSentinelWorker();
             var host = sentinelWorker.GetMasterHost(this.MasterName);
 
             if (this.ScanForOtherSentinels && DateTime.UtcNow - this._lastSentinelsRefresh > this.RefreshSentinelHostsAfter) {
@@ -350,8 +350,8 @@ namespace TheOne.Redis.Sentinel {
         }
 
         public List<RedisEndpoint> GetSlaves() {
-            RedisSentinelWorker sentinelWorker = this.GetValidSentinelWorker();
-            List<string> hosts = sentinelWorker.GetSlaveHosts(this.MasterName);
+            var sentinelWorker = this.GetValidSentinelWorker();
+            var hosts = sentinelWorker.GetSlaveHosts(this.MasterName);
             return this.ConfigureHosts(hosts).Select(x => RedisEndpoint.Create(x)).ToList();
         }
 
@@ -400,12 +400,12 @@ namespace TheOne.Redis.Sentinel {
         }
 
         public void ForceMasterFailover() {
-            RedisSentinelWorker sentinelWorker = this.GetValidSentinelWorker();
+            var sentinelWorker = this.GetValidSentinelWorker();
             sentinelWorker.ForceMasterFailover(this.MasterName);
         }
 
         public SentinelInfo GetSentinelInfo() {
-            RedisSentinelWorker sentinelWorker = this.GetValidSentinelWorker();
+            var sentinelWorker = this.GetValidSentinelWorker();
             return sentinelWorker.GetSentinelInfo();
         }
 

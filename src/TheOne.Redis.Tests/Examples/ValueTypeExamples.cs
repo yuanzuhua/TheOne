@@ -30,11 +30,11 @@ namespace TheOne.Redis.Tests.Examples {
         public void Working_with_Generic_types() {
             using (var redisClient = new RedisClient(Config.MasterHost)) {
                 // Create a typed Redis client that treats all values as IntAndString:
-                IRedisTypedClient<IntAndString> typedRedis = redisClient.As<IntAndString>();
+                var typedRedis = redisClient.As<IntAndString>();
 
                 var pocoValue = new IntAndString { Id = 1, Letter = "A" };
                 typedRedis.SetValue("pocoKey", pocoValue);
-                IntAndString toPocoValue = typedRedis.GetValue("pocoKey");
+                var toPocoValue = typedRedis.GetValue("pocoKey");
 
                 Assert.That(toPocoValue.Id, Is.EqualTo(pocoValue.Id));
                 Assert.That(toPocoValue.Letter, Is.EqualTo(pocoValue.Letter));
@@ -46,12 +46,12 @@ namespace TheOne.Redis.Tests.Examples {
                     new IntAndString { Id = 5, Letter = "E" }
                 };
 
-                IRedisList<IntAndString> pocoList = typedRedis.Lists["pocoListKey"];
+                var pocoList = typedRedis.Lists["pocoListKey"];
 
                 // Adding all IntAndString objects into the redis list 'pocoListKey'
                 pocoListValues.ForEach(x => pocoList.Add(x));
 
-                List<IntAndString> toPocoListValues = pocoList.ToList();
+                var toPocoListValues = pocoList.ToList();
 
                 for (var i = 0; i < pocoListValues.Count; i++) {
                     pocoValue = pocoListValues[i];
@@ -75,10 +75,10 @@ namespace TheOne.Redis.Tests.Examples {
                 intValues.ForEach(x => strList.Add(x.ToString()));
 
                 // retrieve all values again as strings
-                List<string> strListValues = strList.ToList();
+                var strListValues = strList.ToList();
 
                 // convert back to list of ints
-                List<int> toIntValues = strListValues.ConvertAll(x => int.Parse(x));
+                var toIntValues = strListValues.ConvertAll(x => int.Parse(x));
 
                 Assert.That(toIntValues, Is.EqualTo(intValues));
 
@@ -89,14 +89,14 @@ namespace TheOne.Redis.Tests.Examples {
             // STORING INTS INTO A LIST USING THE GENERIC CLIENT
             using (var redisClient = new RedisClient(Config.MasterHost)) {
                 // Create a generic client that treats all values as ints:
-                IRedisTypedClient<int> intRedis = redisClient.As<int>();
+                var intRedis = redisClient.As<int>();
 
-                IRedisList<int> intList = intRedis.Lists[intListKey];
+                var intList = intRedis.Lists[intListKey];
 
                 // storing all int values in the redis list 'intListKey' as ints
                 intValues.ForEach(x => intList.Add(x));
 
-                List<int> toIntListValues = intList.ToList();
+                var toIntListValues = intList.ToList();
 
                 Assert.That(toIntListValues, Is.EqualTo(intValues));
             }
@@ -119,7 +119,7 @@ namespace TheOne.Redis.Tests.Examples {
             // STORING AN INT USING THE GENERIC CLIENT
             using (var redisClient = new RedisClient(Config.MasterHost)) {
                 // Create a generic client that treats all values as ints:
-                IRedisTypedClient<int> intRedis = redisClient.As<int>();
+                var intRedis = redisClient.As<int>();
 
                 intRedis.SetValue(intKey, intValue);
                 var toIntValue = intRedis.GetValue(intKey);

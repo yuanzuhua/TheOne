@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using TheOne.Redis.Client;
@@ -27,8 +26,8 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Delete_ModelWithIdAndName() {
-            List<T> tos = this._factory.CreateList();
-            List<string> ids = tos.ConvertAll(x => x.GetId().ToString());
+            var tos = this._factory.CreateList();
+            var ids = tos.ConvertAll(x => x.GetId().ToString());
 
             this._redis.StoreAll(tos);
 
@@ -36,21 +35,21 @@ namespace TheOne.Redis.Tests.Client {
 
             this._redis.DeleteByIds(deleteIds);
 
-            IList<T> froms = this._redis.GetByIds(ids);
-            List<string> fromIds = froms.Select(x => x.GetId().ToString()).ToList();
+            var froms = this._redis.GetByIds(ids);
+            var fromIds = froms.Select(x => x.GetId().ToString()).ToList();
 
-            List<string> expectedIds = ids.Where(x => !deleteIds.Contains(x))
-                                          .ToList().ConvertAll(x => x.ToString());
+            var expectedIds = ids.Where(x => !deleteIds.Contains(x))
+                                 .ToList().ConvertAll(x => x.ToString());
 
             Assert.That(fromIds, Is.EquivalentTo(expectedIds));
         }
 
         [Test]
         public void Can_DeleteAll() {
-            List<T> tos = this._factory.CreateList();
+            var tos = this._factory.CreateList();
             this._redis.StoreAll(tos);
 
-            IList<T> all = this._redis.GetAll();
+            var all = this._redis.GetAll();
 
             Assert.That(all.Count, Is.EqualTo(tos.Count));
 
@@ -64,23 +63,23 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void Can_Store_and_GetById_ModelWithIdAndName() {
             const int modelId = 1;
-            T to = this._factory.CreateInstance(modelId);
+            var to = this._factory.CreateInstance(modelId);
             this._redis.Store(to);
 
-            T from = this._redis.GetById(to.GetId().ToString());
+            var from = this._redis.GetById(to.GetId().ToString());
 
             this._factory.AssertIsEqual(to, from);
         }
 
         [Test]
         public void Can_StoreAll_and_GetByIds_ModelWithIdAndName() {
-            List<T> tos = this._factory.CreateList();
-            List<string> ids = tos.ConvertAll(x => x.GetId().ToString());
+            var tos = this._factory.CreateList();
+            var ids = tos.ConvertAll(x => x.GetId().ToString());
 
             this._redis.StoreAll(tos);
 
-            IList<T> froms = this._redis.GetByIds(ids);
-            List<string> fromIds = froms.Select(x => x.GetId().ToString()).ToList();
+            var froms = this._redis.GetByIds(ids);
+            var fromIds = froms.Select(x => x.GetId().ToString()).ToList();
 
             Assert.That(fromIds, Is.EquivalentTo(ids));
         }

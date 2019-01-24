@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using TheOne.Redis.Client;
 using TheOne.Redis.ClientManager;
 using TheOne.Redis.PubSub;
 
@@ -34,7 +33,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             try {
                 var message = "MSG: #" + Interlocked.Increment(ref _messagesSent);
                 Console.WriteLine("PublishMessage(): " + message);
-                using (IRedisClient redis = _manager.GetClient()) {
+                using (var redis = _manager.GetClient()) {
                     redis.PublishMessage(_channel, message);
                 }
             } catch (Exception ex) {

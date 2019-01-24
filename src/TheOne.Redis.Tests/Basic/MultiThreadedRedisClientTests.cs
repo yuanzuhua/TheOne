@@ -17,7 +17,7 @@ namespace TheOne.Redis.Tests.Basic {
 
         [OneTimeSetUp]
         public void OnBeforeTestFixture() {
-            List<ModelWithFieldsOfDifferentTypes>
+            var
                 results = Enumerable.Range(0, 100).Select(ModelWithFieldsOfDifferentTypes.Create).ToList();
 
             _testData = results.ToJson();
@@ -80,7 +80,7 @@ namespace TheOne.Redis.Tests.Basic {
 
                 for (var i = 0; i < noOfConcurrentClients; i++) {
                     var clientNo = i;
-                    Task item = Task.Run(() => this.UseClientAsync(redisClient, clientNo));
+                    var item = Task.Run(() => this.UseClientAsync(redisClient, clientNo));
                     tasks.Add(item);
 
                 }

@@ -36,7 +36,7 @@ namespace TheOne.Redis.Tests.Queue {
                 }
 
                 // dequeue half of the messages
-                IList<KeyValuePair<string, string>> batch = queue.Dequeue(0, numMessages, numMessages / 2);
+                var batch = queue.Dequeue(0, numMessages, numMessages / 2);
                 // check that half of patient[0] messages are returned
                 for (var i = 0; i < numMessages / 2; ++i) {
                     Assert.AreEqual(batch[i].Value, messages[i]);
@@ -66,7 +66,7 @@ namespace TheOne.Redis.Tests.Queue {
                 }
 
                 queue.PrepareNextWorkItem();
-                ISequentialData<string> batch = queue.Dequeue(_numMessages / 2);
+                var batch = queue.Dequeue(_numMessages / 2);
                 // check that half of patient[0] messages are returned
                 for (var i = 0; i < _numMessages / 2; ++i) {
                     Assert.AreEqual(batch.DequeueItems[i], this._messages0[i]);
@@ -127,7 +127,7 @@ namespace TheOne.Redis.Tests.Queue {
                 }
 
                 queue.PrepareNextWorkItem();
-                ISequentialData<string> batch = queue.Dequeue(_numMessages / 2);
+                var batch = queue.Dequeue(_numMessages / 2);
                 // check that half of patient[0] messages are returned
                 for (var i = 0; i < _numMessages / 2; ++i) {
                     Assert.AreEqual(batch.DequeueItems[i], this._messages0[i] + "UPDATE");
@@ -145,7 +145,7 @@ namespace TheOne.Redis.Tests.Queue {
                     queue.Enqueue(messages[i]);
                 }
 
-                IList<string> batch = queue.Dequeue(numMessages * 2);
+                var batch = queue.Dequeue(numMessages * 2);
                 // test that batch size is respected
                 Assert.AreEqual(batch.Count, numMessages);
 

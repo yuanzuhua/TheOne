@@ -36,8 +36,8 @@ namespace TheOne.Redis.Queue {
         /// <param name="values" >array of serializable objects</param>
         public List<byte[]> Serialize(object[] values) {
             var rc = new List<byte[]>();
-            foreach (object value in values) {
-                byte[] bytes = this.Serialize(value);
+            foreach (var value in values) {
+                var bytes = this.Serialize(value);
                 if (bytes != null) {
                     rc.Add(bytes);
                 }
@@ -59,8 +59,8 @@ namespace TheOne.Redis.Queue {
         /// </summary>
         public IList Deserialize(byte[][] byteArray) {
             IList rc = new ArrayList();
-            foreach (byte[] someBytes in byteArray) {
-                object obj = this.Deserialize(someBytes);
+            foreach (var someBytes in byteArray) {
+                var obj = this.Deserialize(someBytes);
                 if (obj != null) {
                     rc.Add(obj);
                 }

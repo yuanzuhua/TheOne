@@ -24,7 +24,7 @@ namespace TheOne.Redis.Client {
                 return new List<T>();
             }
 
-            List<string> urnKeys = ids.Cast<object>().Select(this.UrnKey<T>).ToList();
+            var urnKeys = ids.Cast<object>().Select(this.UrnKey<T>).ToList();
             return this.GetValues<T>(urnKeys);
         }
 
@@ -45,8 +45,8 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            object id = entity.GetObjectId();
-            Type entityType = entity.GetType();
+            var id = entity.GetObjectId();
+            var entityType = entity.GetType();
             var urnKey = this.UrnKey(entityType, id);
             var valueString = entity.ToJson();
 
@@ -74,7 +74,7 @@ namespace TheOne.Redis.Client {
         /// </summary>
         public void StoreAsHash<T>(T entity) {
             var key = this.UrnKey(entity);
-            Dictionary<string, string> hash = ConvertToHashFn(entity);
+            var hash = ConvertToHashFn(entity);
             this.SetRangeInHash(key, hash);
             this.RegisterTypeId(entity);
         }
@@ -85,7 +85,7 @@ namespace TheOne.Redis.Client {
                 return;
             }
 
-            List<TEntity> entitiesList = entities.ToList();
+            var entitiesList = entities.ToList();
             var len = entitiesList.Count;
 
             var keys = new byte[len][];
@@ -120,7 +120,7 @@ namespace TheOne.Redis.Client {
             }
 
             IEnumerable<object> idsList = ids.Cast<object>().ToList();
-            List<string> urnKeys = idsList.Select(this.UrnKey<T>).ToList();
+            var urnKeys = idsList.Select(this.UrnKey<T>).ToList();
             this.RemoveEntry(urnKeys.ToArray());
             this.RemoveTypeIds<T>(idsList.Select(x => x.ToString()).ToArray());
         }
@@ -128,9 +128,9 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public void DeleteAll<T>() {
             var typeIdsSetKey = this.GetTypeIdsSetKey<T>();
-            HashSet<string> ids = this.GetAllItemsFromSet(typeIdsSetKey);
+            var ids = this.GetAllItemsFromSet(typeIdsSetKey);
             if (ids.Count > 0) {
-                List<string> urnKeys = ids.ToList().ConvertAll(this.UrnKey<T>);
+                var urnKeys = ids.ToList().ConvertAll(this.UrnKey<T>);
                 this.RemoveEntry(urnKeys.ToArray());
                 this.Remove(typeIdsSetKey);
             }
@@ -160,7 +160,7 @@ namespace TheOne.Redis.Client {
         }
 
         internal HashSet<string> GetRegisteredTypeIdsWithinPipeline(string typeIdsSet) {
-            if (!this._registeredTypeIdsWithinPipelineMap.TryGetValue(typeIdsSet, out HashSet<string> registeredTypeIdsWithinPipeline)) {
+            if (!this._registeredTypeIdsWithinPipelineMap.TryGetValue(typeIdsSet, out var registeredTypeIdsWithinPipeline)) {
                 registeredTypeIdsWithinPipeline = new HashSet<string>();
                 this._registeredTypeIdsWithinPipelineMap[typeIdsSet] = registeredTypeIdsWithinPipeline;
             }
@@ -177,7 +177,7 @@ namespace TheOne.Redis.Client {
 
         internal void RegisterTypeId(string typeIdsSetKey, string id) {
             if (this.Pipeline != null) {
-                HashSet<string> registeredTypeIdsWithinPipeline = this.GetRegisteredTypeIdsWithinPipeline(typeIdsSetKey);
+                var registeredTypeIdsWithinPipeline = this.GetRegisteredTypeIdsWithinPipeline(typeIdsSetKey);
                 registeredTypeIdsWithinPipeline.Add(id);
             } else {
                 this.AddItemToSet(typeIdsSetKey, id);
@@ -186,10 +186,10 @@ namespace TheOne.Redis.Client {
 
         internal void RegisterTypeIds<T>(IEnumerable<T> values) {
             var typeIdsSetKey = this.GetTypeIdsSetKey<T>();
-            List<string> ids = values.Select(x => x.GetId().ToString()).ToList();
+            var ids = values.Select(x => x.GetId().ToString()).ToList();
 
             if (this.Pipeline != null) {
-                HashSet<string> registeredTypeIdsWithinPipeline = this.GetRegisteredTypeIdsWithinPipeline(typeIdsSetKey);
+                var registeredTypeIdsWithinPipeline = this.GetRegisteredTypeIdsWithinPipeline(typeIdsSetKey);
                 ids.ForEach(x => registeredTypeIdsWithinPipeline.Add(x));
             } else {
                 this.AddRangeToSet(typeIdsSetKey, ids);
@@ -199,7 +199,7 @@ namespace TheOne.Redis.Client {
         internal void RemoveTypeIds<T>(params string[] ids) {
             var typeIdsSetKey = this.GetTypeIdsSetKey<T>();
             if (this.Pipeline != null) {
-                HashSet<string> registeredTypeIdsWithinPipeline = this.GetRegisteredTypeIdsWithinPipeline(typeIdsSetKey);
+                var registeredTypeIdsWithinPipeline = this.GetRegisteredTypeIdsWithinPipeline(typeIdsSetKey);
                 foreach (var value in ids) {
                     registeredTypeIdsWithinPipeline.Remove(value);
                 }
@@ -214,13 +214,13 @@ namespace TheOne.Redis.Client {
         internal void RemoveTypeIds<T>(params T[] values) {
             var typeIdsSetKey = this.GetTypeIdsSetKey<T>();
             if (this.Pipeline != null) {
-                HashSet<string> registeredTypeIdsWithinPipeline = this.GetRegisteredTypeIdsWithinPipeline(typeIdsSetKey);
-                foreach (T value in values) {
+                var registeredTypeIdsWithinPipeline = this.GetRegisteredTypeIdsWithinPipeline(typeIdsSetKey);
+                foreach (var value in values) {
                     registeredTypeIdsWithinPipeline.Remove(value.GetId().ToString());
                 }
 
             } else {
-                foreach (T value in values) {
+                foreach (var value in values) {
                     this.RemoveItemFromSet(typeIdsSetKey, value.GetId().ToString());
                 }
 
@@ -229,7 +229,7 @@ namespace TheOne.Redis.Client {
 
         // Called just after original Pipeline is closed.
         internal void AddTypeIdsRegisteredDuringPipeline() {
-            foreach (KeyValuePair<string, HashSet<string>> entry in this._registeredTypeIdsWithinPipelineMap) {
+            foreach (var entry in this._registeredTypeIdsWithinPipelineMap) {
                 this.AddRangeToSet(entry.Key, entry.Value.ToList());
             }
 
@@ -242,8 +242,8 @@ namespace TheOne.Redis.Client {
 
         public IList<T> GetAll<T>() {
             var typeIdsSetKy = this.GetTypeIdsSetKey<T>();
-            HashSet<string> allTypeIds = this.GetAllItemsFromSet(typeIdsSetKy);
-            List<string> urnKeys = allTypeIds.Cast<object>().Select(this.UrnKey<T>).ToList();
+            var allTypeIds = this.GetAllItemsFromSet(typeIdsSetKy);
+            var urnKeys = allTypeIds.Cast<object>().Select(this.UrnKey<T>).ToList();
             return this.GetValues<T>(urnKeys);
         }
 
@@ -253,7 +253,7 @@ namespace TheOne.Redis.Client {
                 return;
             }
 
-            List<TEntity> entitiesList = entities.ToList();
+            var entitiesList = entities.ToList();
             var len = entitiesList.Count;
             if (len == 0) {
                 return;

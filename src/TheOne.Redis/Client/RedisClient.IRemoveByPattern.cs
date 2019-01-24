@@ -6,7 +6,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void RemoveByPattern(string pattern) {
-            string[] keys = this.Keys(pattern).ToStringArray();
+            var keys = this.Keys(pattern).ToStringArray();
             if (keys.Length > 0) {
                 this.Del(keys);
             }

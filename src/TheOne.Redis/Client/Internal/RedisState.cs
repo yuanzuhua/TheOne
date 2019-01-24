@@ -41,7 +41,7 @@ namespace TheOne.Redis.Client.Internal {
                 return;
             }
 
-            DateTime deactivatedAt = client.DeactivatedAt ?? DateTime.UtcNow;
+            var deactivatedAt = client.DeactivatedAt ?? DateTime.UtcNow;
             client.DeactivatedAt = deactivatedAt;
 
             if (!DeactivatedClients.TryAdd(client, deactivatedAt)) {
@@ -54,10 +54,10 @@ namespace TheOne.Redis.Client.Internal {
                 return;
             }
 
-            DateTime now = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
             var removeDisposed = new List<RedisClient>();
 
-            foreach (KeyValuePair<RedisClient, DateTime> entry in DeactivatedClients) {
+            foreach (var entry in DeactivatedClients) {
                 try {
                     if (now - entry.Value <= RedisConfig.DeactivatedClientsExpiry) {
                         continue;
@@ -79,7 +79,7 @@ namespace TheOne.Redis.Client.Internal {
             }
 
             var dict = (IDictionary<RedisClient, DateTime>)DeactivatedClients;
-            foreach (RedisClient client in removeDisposed) {
+            foreach (var client in removeDisposed) {
                 dict.Remove(client);
             }
         }
@@ -89,9 +89,9 @@ namespace TheOne.Redis.Client.Internal {
                 return;
             }
 
-            RedisClient[] allClients = DeactivatedClients.Keys.ToArray();
+            var allClients = DeactivatedClients.Keys.ToArray();
             DeactivatedClients.Clear();
-            foreach (RedisClient client in allClients) {
+            foreach (var client in allClients) {
                 if (_logger.IsDebugEnabled()) {
                     _logger.Debug(string.Format("Disposed Deactivated Client (All): {0}", client.GetHostString()));
                 }

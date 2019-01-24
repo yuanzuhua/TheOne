@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using TheOne.Redis.Client;
@@ -13,7 +12,7 @@ namespace TheOne.Redis.Tests.Basic {
 
         [Test]
         public void Can_send_complex_types_in_Custom_Commands() {
-            RedisText ret = this.Redis.Custom("SET", "foo", new Poco { Name = "Bar" });
+            var ret = this.Redis.Custom("SET", "foo", new Poco { Name = "Bar" });
             Assert.That(ret.Text, Is.EqualTo("OK"));
 
             ret = this.Redis.Custom("GET", "foo");
@@ -24,7 +23,7 @@ namespace TheOne.Redis.Tests.Basic {
                 .ForEach(x => this.Redis.Custom("RPUSH", "DaysOfWeek", new Poco { Name = x }));
 
             ret = this.Redis.Custom("LRANGE", "DaysOfWeek", 1, -2);
-            List<Poco> weekDays = ret.GetResults<Poco>();
+            var weekDays = ret.GetResults<Poco>();
 
             Assert.That(weekDays.First().Name, Is.EqualTo("Monday"));
 
@@ -33,7 +32,7 @@ namespace TheOne.Redis.Tests.Basic {
 
         [Test]
         public void Can_send_custom_commands() {
-            RedisText ret = this.Redis.Custom("SET", "foo", 1);
+            var ret = this.Redis.Custom("SET", "foo", 1);
             Assert.That(ret.Text, Is.EqualTo("OK"));
             ret = this.Redis.Custom(Commands.Set, "bar", "b");
             Assert.That(ret.Text, Is.EqualTo("OK"));
@@ -44,11 +43,11 @@ namespace TheOne.Redis.Tests.Basic {
             Assert.That(ret.Text, Is.EqualTo("b"));
 
             ret = this.Redis.Custom(Commands.Keys, "*");
-            List<string> keys = ret.GetResults();
+            var keys = ret.GetResults();
             Assert.That(keys, Is.EquivalentTo(new[] { "foo", "bar" }));
 
             ret = this.Redis.Custom("MGET", "foo", "bar");
-            List<string> values = ret.GetResults();
+            var values = ret.GetResults();
             Assert.That(values, Is.EquivalentTo(new[] { "1", "b" }));
 
             Enum.GetNames(typeof(DayOfWeek)).ToList()
@@ -56,7 +55,7 @@ namespace TheOne.Redis.Tests.Basic {
 
             ret = this.Redis.Custom("LRANGE", "DaysOfWeek", 1, -2);
 
-            List<string> weekDays = ret.GetResults();
+            var weekDays = ret.GetResults();
             Assert.That(weekDays,
                 Is.EquivalentTo(
                     new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" }));

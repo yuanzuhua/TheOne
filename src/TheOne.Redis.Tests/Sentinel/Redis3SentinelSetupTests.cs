@@ -1,7 +1,6 @@
 using System;
 using NUnit.Framework;
 using TheOne.Redis.Client;
-using TheOne.Redis.ClientManager;
 using TheOne.Redis.Common;
 using TheOne.Redis.Sentinel;
 
@@ -27,9 +26,9 @@ namespace TheOne.Redis.Tests.Sentinel {
         public void Can_connect_to_3SentinelSetup() {
             var sentinel = new RedisSentinel(Config.SentinelHosts, Config.SentinelMasterName);
 
-            IRedisClientManager redisManager = sentinel.Start();
+            var redisManager = sentinel.Start();
 
-            using (IRedisClient client = redisManager.GetClient()) {
+            using (var client = redisManager.GetClient()) {
                 Console.WriteLine("{0}:{1}", client.Host, client.Port);
 
                 client.FlushAll();
@@ -40,7 +39,7 @@ namespace TheOne.Redis.Tests.Sentinel {
                 Assert.That(result, Is.EqualTo("IntranetSentinel"));
             }
 
-            using (IRedisClient readOnly = redisManager.GetReadOnlyClient()) {
+            using (var readOnly = redisManager.GetReadOnlyClient()) {
                 Console.WriteLine("{0}:{1}", readOnly.Host, readOnly.Port);
 
                 var result = readOnly.GetValue("Sentinel3Setup");

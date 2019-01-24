@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using NUnit.Framework;
-using TheOne.Redis.Client;
 using TheOne.Redis.ClientManager;
 
 namespace TheOne.Redis.Tests.ConsoleTests {
@@ -35,12 +34,12 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             // name of list
             var listId = "testlist";
 
-            DateTime startedAt = DateTime.Now;
+            var startedAt = DateTime.Now;
             Console.WriteLine("--------------------------");
             Console.WriteLine("push {0} items to a list, then try pop for {1} seconds. repeat.", items, waitForSeconds);
             Console.WriteLine("--------------------------");
 
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 do {
                     // add items to list
                     for (var i = 1; i <= items; i++) {

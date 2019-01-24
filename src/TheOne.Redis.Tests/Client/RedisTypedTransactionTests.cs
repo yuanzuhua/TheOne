@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using TheOne.Redis.Client;
-using TheOne.Redis.Pipeline;
 using TheOne.Redis.Tests.Shared;
 
 namespace TheOne.Redis.Tests.Client {
@@ -33,10 +32,10 @@ namespace TheOne.Redis.Tests.Client {
 
             var results = new List<Shipper>();
 
-            IRedisList<Shipper> typedList = this._typedClient.Lists[_listKey];
+            var typedList = this._typedClient.Lists[_listKey];
             Assert.That(typedList.Count, Is.EqualTo(0));
 
-            using (IRedisTypedTransaction<Shipper> trans = this._typedClient.CreateTransaction()) {
+            using (var trans = this._typedClient.CreateTransaction()) {
                 trans.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(1)));
                 trans.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(2)));
                 trans.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(3)));
@@ -65,7 +64,7 @@ namespace TheOne.Redis.Tests.Client {
         // If server info is fetched each time, then it will interfere with transaction
         public void Can_call_operation_not_supported_on_older_servers_in_transaction() {
             var temp = new byte[1];
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => ((RedisNativeClient)r).SetEx("key", 5, temp));
                 trans.Commit();
             }
@@ -73,10 +72,10 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_call_single_operation_3_Times_in_transaction() {
-            IRedisList<Shipper> typedList = this._typedClient.Lists[_listKey];
+            var typedList = this._typedClient.Lists[_listKey];
             Assert.That(typedList.Count, Is.EqualTo(0));
 
-            using (IRedisTypedTransaction<Shipper> trans = this._typedClient.CreateTransaction()) {
+            using (var trans = this._typedClient.CreateTransaction()) {
                 trans.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(1)));
                 trans.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(2)));
                 trans.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(3)));
@@ -91,7 +90,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_call_single_operation_in_transaction() {
             Assert.That(this._typedClient.GetValue(_key), Is.Null);
 
-            using (IRedisTypedTransaction<Shipper> trans = this._typedClient.CreateTransaction()) {
+            using (var trans = this._typedClient.CreateTransaction()) {
                 trans.QueueCommand(r => r.SetValue(_key, this._model));
 
                 trans.Commit();
@@ -104,10 +103,10 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_call_single_operation_with_callback_3_Times_in_transaction() {
             var results = new List<int>();
 
-            IRedisList<Shipper> typedList = this._typedClient.Lists[_listKey];
+            var typedList = this._typedClient.Lists[_listKey];
             Assert.That(typedList.Count, Is.EqualTo(0));
 
-            using (IRedisTypedTransaction<Shipper> trans = this._typedClient.CreateTransaction()) {
+            using (var trans = this._typedClient.CreateTransaction()) {
                 trans.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(1)), () => results.Add(1));
                 trans.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(2)), () => results.Add(2));
                 trans.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(3)), () => results.Add(3));
@@ -123,7 +122,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Exception_in_atomic_transactions_discards_all_commands() {
             Assert.That(this._typedClient.GetValue(_key), Is.Null);
             try {
-                using (IRedisTypedTransaction<Shipper> trans = this._typedClient.CreateTransaction()) {
+                using (var trans = this._typedClient.CreateTransaction()) {
                     trans.QueueCommand(r => r.SetValue(_key, this._model));
                     throw new NotSupportedException();
                 }
@@ -136,7 +135,7 @@ namespace TheOne.Redis.Tests.Client {
         public void No_commit_of_atomic_transactions_discards_all_commands() {
             Assert.That(this._typedClient.GetValue(_key), Is.Null);
 
-            using (IRedisTypedTransaction<Shipper> trans = this._typedClient.CreateTransaction()) {
+            using (var trans = this._typedClient.CreateTransaction()) {
                 trans.QueueCommand(r => r.SetValue(_key, this._model));
             }
 
@@ -149,12 +148,12 @@ namespace TheOne.Redis.Tests.Client {
             var collectionCounts = new List<long>();
             var containsItem = false;
 
-            IRedisList<Shipper> typedList = this._typedClient.Lists[_listKey];
-            IRedisSet<Shipper> typedSet = this._typedClient.Sets[_setKey];
-            IRedisSortedSet<Shipper> typedSortedSet = this._typedClient.SortedSets[_sortedSetKey];
+            var typedList = this._typedClient.Lists[_listKey];
+            var typedSet = this._typedClient.Sets[_setKey];
+            var typedSortedSet = this._typedClient.SortedSets[_sortedSetKey];
 
             Assert.That(this._typedClient.GetValue(_key), Is.Null);
-            using (IRedisTypedTransaction<Shipper> trans = this._typedClient.CreateTransaction()) {
+            using (var trans = this._typedClient.CreateTransaction()) {
                 trans.QueueCommand(r => r.IncrementValue(_key), intResult => incrementResults.Add(intResult));
                 trans.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(1)));
                 trans.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(2)));
@@ -201,7 +200,7 @@ namespace TheOne.Redis.Tests.Client {
             var keySquared = _key + _key;
             Assert.That(this.Redis.GetValue(_key), Is.Null);
             Assert.That(this.Redis.GetValue(keySquared), Is.Null);
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.IncrementValue(_key));
                 trans.QueueCommand(r => r.IncrementValue(keySquared));
                 trans.Commit();

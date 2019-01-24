@@ -36,7 +36,7 @@ namespace TheOne.Redis.Client.Internal {
             }
 
             var results = new List<string>();
-            foreach (byte[] multiData in multiDataList) {
+            foreach (var multiData in multiDataList) {
                 results.Add(multiData.FromUtf8Bytes());
             }
 
@@ -97,7 +97,7 @@ namespace TheOne.Redis.Client.Internal {
             var newArgs = new byte[args.Length + 1][];
             newArgs[0] = valueToPrepend;
             var i = 1;
-            foreach (byte[] arg in args) {
+            foreach (var arg in args) {
                 newArgs[i++] = arg;
             }
 

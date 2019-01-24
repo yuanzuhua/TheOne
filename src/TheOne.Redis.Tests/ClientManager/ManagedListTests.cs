@@ -22,12 +22,12 @@ namespace TheOne.Redis.Tests.ClientManager {
 
         [Test]
         public void Can_Get_Managed_List() {
-            ManagedList<string> managedList = this._redisManager.GetManagedList<string>("testkey");
+            var managedList = this._redisManager.GetManagedList<string>("testkey");
 
             var testString = "simple Item to test";
             managedList.Add(testString);
 
-            ManagedList<string> actualList = this._redisManager.GetManagedList<string>("testkey");
+            var actualList = this._redisManager.GetManagedList<string>("testkey");
 
             Assert.AreEqual(managedList.First(), actualList.First());
         }

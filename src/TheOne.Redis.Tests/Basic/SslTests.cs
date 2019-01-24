@@ -44,7 +44,7 @@ namespace TheOne.Redis.Tests.Basic {
         public void WriteAllToStream(Stream stream, params byte[][] cmdWithBinaryArgs) {
             this.WriteToStream(stream, GetCmdBytes('*', cmdWithBinaryArgs.Length));
 
-            foreach (byte[] safeBinaryValue in cmdWithBinaryArgs) {
+            foreach (var safeBinaryValue in cmdWithBinaryArgs) {
                 this.WriteToStream(stream, GetCmdBytes('$', safeBinaryValue.Length));
                 this.WriteToStream(stream, safeBinaryValue);
                 this.WriteToStream(stream, this._endData);
@@ -112,7 +112,7 @@ namespace TheOne.Redis.Tests.Basic {
         }
 
         private static void UseClientAsync(IRedisClientManager manager, int clientNo, string testData) {
-            using (IRedisClient client = manager.GetReadOnlyClient()) {
+            using (var client = manager.GetReadOnlyClient()) {
                 UseClient(client, clientNo, testData);
             }
         }
@@ -216,8 +216,8 @@ namespace TheOne.Redis.Tests.Basic {
         [Test]
         public void Can_connect_to_ssl_azure_redis_with_PooledClientsManager() {
             using (var redisManager = new PooledRedisClientManager(this._connectionString)) {
-                using (IRedisClient client1 = redisManager.GetClient()) {
-                    using (IRedisClient client2 = redisManager.GetClient()) {
+                using (var client1 = redisManager.GetClient()) {
+                    using (var client2 = redisManager.GetClient()) {
                         client1.Set("foo", "bar");
                         var foo = client2.GetValue("foo");
                         Console.WriteLine(foo);
@@ -238,7 +238,7 @@ namespace TheOne.Redis.Tests.Basic {
 
         [Test]
         public void SSL_can_support_64_threads_using_the_client_sequentially() {
-            List<ModelWithFieldsOfDifferentTypes>
+            var
                 results = Enumerable.Range(0, 100).Select(ModelWithFieldsOfDifferentTypes.Create).ToList();
             var testData = results.ToJson();
 
@@ -258,7 +258,7 @@ namespace TheOne.Redis.Tests.Basic {
 
         [Test]
         public void SSL_can_support_64_threads_using_the_client_simultaneously() {
-            List<ModelWithFieldsOfDifferentTypes>
+            var
                 results = Enumerable.Range(0, 100).Select(ModelWithFieldsOfDifferentTypes.Create).ToList();
             var testData = results.ToJson();
 
@@ -268,11 +268,11 @@ namespace TheOne.Redis.Tests.Basic {
 
             var clientAsyncResults = new List<Task>();
             using (var manager = new PooledRedisClientManager(Config.MasterHosts, Config.SlaveHosts)) {
-                using (IRedisClient client = manager.GetClient()) { client.FlushAll(); }
+                using (var client = manager.GetClient()) { client.FlushAll(); }
 
                 for (var i = 0; i < noOfConcurrentClients; i++) {
                     var clientNo = i;
-                    Task item = Task.Run(() => UseClientAsync(manager, clientNo, testData));
+                    var item = Task.Run(() => UseClientAsync(manager, clientNo, testData));
                     clientAsyncResults.Add(item);
                 }
             }

@@ -35,7 +35,7 @@ namespace TheOne.Redis.Tests.Benchmarks {
             var results = new string[_times];
 
             this.Reset();
-            Stopwatch sw = Stopwatch.StartNew();
+            var sw = Stopwatch.StartNew();
 
             for (var i = 0; i < _times; i++) {
                 results[i] = (initialVal + i).ToString();

@@ -81,7 +81,7 @@ namespace TheOne.Redis.Sentinel {
 
         /// <inheritdoc />
         public RedisEndpoint GetReadOnlyHost(int desiredIndex) {
-            List<RedisEndpoint> slavesEndpoints = this._sentinel.GetSlaves();
+            var slavesEndpoints = this._sentinel.GetSlaves();
             if (slavesEndpoints.Count > 0) {
                 return slavesEndpoints[desiredIndex % slavesEndpoints.Count];
             }
@@ -93,7 +93,7 @@ namespace TheOne.Redis.Sentinel {
 
         /// <inheritdoc />
         public virtual RedisClient CreateRedisClient(RedisEndpoint config, bool master) {
-            RedisClient client = this.ClientFactory(config);
+            var client = this.ClientFactory(config);
             if (master) {
                 var role = RedisServerRole.Unknown;
                 try {
@@ -131,14 +131,14 @@ namespace TheOne.Redis.Sentinel {
 
                 if (role != RedisServerRole.Master && RedisConfig.VerifyMasterConnections) {
                     try {
-                        Stopwatch stopwatch = Stopwatch.StartNew();
+                        var stopwatch = Stopwatch.StartNew();
                         while (true) {
                             try {
-                                RedisEndpoint masterConfig = this._sentinel.GetMaster();
-                                RedisClient masterClient = this.ClientFactory(masterConfig);
+                                var masterConfig = this._sentinel.GetMaster();
+                                var masterClient = this.ClientFactory(masterConfig);
                                 masterClient.ConnectTimeout = this._sentinel.SentinelWorkerConnectTimeoutMs;
 
-                                RedisServerRole masterRole = masterClient.GetServerRole();
+                                var masterRole = masterClient.GetServerRole();
                                 if (masterRole == RedisServerRole.Master) {
                                     this.LastValidMasterFromSentinelAt = DateTime.UtcNow;
                                     return masterClient;
@@ -163,11 +163,11 @@ namespace TheOne.Redis.Sentinel {
                         var newMasters = new List<RedisEndpoint>();
                         var newSlaves = new List<RedisEndpoint>();
                         RedisClient masterClient = null;
-                        foreach (RedisEndpoint hostConfig in this._allHosts) {
+                        foreach (var hostConfig in this._allHosts) {
                             try {
-                                RedisClient testClient = this.ClientFactory(hostConfig);
+                                var testClient = this.ClientFactory(hostConfig);
                                 testClient.ConnectTimeout = RedisConfig.HostLookupTimeoutMs;
-                                RedisServerRole testRole = testClient.GetServerRole();
+                                var testRole = testClient.GetServerRole();
                                 switch (testRole) {
                                     case RedisServerRole.Master:
                                         newMasters.Add(hostConfig);
@@ -210,7 +210,7 @@ namespace TheOne.Redis.Sentinel {
 
             this.Masters = newMasters.ToArray();
             this.ReadWriteHostsCount = this.Masters.Length;
-            foreach (RedisEndpoint value in newMasters) {
+            foreach (var value in newMasters) {
                 this._allHosts.Add(value);
             }
 
@@ -222,7 +222,7 @@ namespace TheOne.Redis.Sentinel {
         public virtual void ResetSlaves(List<RedisEndpoint> newSlaves) {
             this.Slaves = newSlaves?.ToArray() ?? Array.Empty<RedisEndpoint>();
             this.ReadOnlyHostsCount = this.Slaves.Length;
-            foreach (RedisEndpoint value in this.Slaves) {
+            foreach (var value in this.Slaves) {
                 this._allHosts.Add(value);
             }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TheOne.Redis.Client.Internal;
 using TheOne.Redis.Common;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Client {
 
@@ -17,13 +16,13 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public List<string> GetAllItemsFromList(string listId) {
-            byte[][] multiDataList = this.LRange(listId, _firstElement, _lastElement);
+            var multiDataList = this.LRange(listId, _firstElement, _lastElement);
             return multiDataList.ToStringList();
         }
 
         /// <inheritdoc />
         public List<string> GetRangeFromList(string listId, int startingFrom, int endingAt) {
-            byte[][] multiDataList = this.LRange(listId, startingFrom, endingAt);
+            var multiDataList = this.LRange(listId, startingFrom, endingAt);
             return multiDataList.ToStringList();
         }
 
@@ -35,7 +34,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public List<string> GetSortedItemsFromList(string listId, SortOptions sortOptions) {
-            byte[][] multiDataList = this.Sort(listId, sortOptions);
+            var multiDataList = this.Sort(listId, sortOptions);
             return multiDataList.ToStringList();
         }
 
@@ -46,9 +45,9 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void AddRangeToList(string listId, List<string> values) {
-            byte[] uListId = listId.ToUtf8Bytes();
+            var uListId = listId.ToUtf8Bytes();
 
-            RedisPipelineCommand pipeline = this.CreatePipelineCommand();
+            var pipeline = this.CreatePipelineCommand();
             foreach (var value in values) {
                 pipeline.WriteCommand(Commands.RPush, uListId, value.ToUtf8Bytes());
             }
@@ -67,9 +66,9 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void PrependRangeToList(string listId, List<string> values) {
-            byte[] uListId = listId.ToUtf8Bytes();
+            var uListId = listId.ToUtf8Bytes();
 
-            RedisPipelineCommand pipeline = this.CreatePipelineCommand();
+            var pipeline = this.CreatePipelineCommand();
             // ensure list[0] == value[0] after batch operation
             for (var i = values.Count - 1; i >= 0; i--) {
                 var value = values[i];
@@ -101,7 +100,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public ItemRef BlockingRemoveStartFromLists(string[] listIds, TimeSpan? timeout) {
-            byte[][] value = this.BLPopValue(listIds, (int)timeout.GetValueOrDefault().TotalSeconds);
+            var value = this.BLPopValue(listIds, (int)timeout.GetValueOrDefault().TotalSeconds);
             if (value == null) {
                 return null;
             }
@@ -161,7 +160,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public ItemRef BlockingDequeueItemFromLists(string[] listIds, TimeSpan? timeout) {
-            byte[][] value = this.BRPopValue(listIds, (int)timeout.GetValueOrDefault().TotalSeconds);
+            var value = this.BRPopValue(listIds, (int)timeout.GetValueOrDefault().TotalSeconds);
             if (value == null) {
                 return null;
             }
@@ -186,7 +185,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public ItemRef BlockingPopItemFromLists(string[] listIds, TimeSpan? timeout) {
-            byte[][] value = this.BRPopValue(listIds, (int)timeout.GetValueOrDefault().TotalSeconds);
+            var value = this.BRPopValue(listIds, (int)timeout.GetValueOrDefault().TotalSeconds);
             if (value == null) {
                 return null;
             }
@@ -218,7 +217,7 @@ namespace TheOne.Redis.Client {
             public IRedisList this[string listId] {
                 get => new RedisClientList(this._client, listId);
                 set {
-                    IRedisList list = this[listId];
+                    var list = this[listId];
                     list.Clear();
                     list.CopyTo(value.ToArray(), 0);
                 }

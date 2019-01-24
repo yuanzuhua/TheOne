@@ -26,11 +26,11 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_GetTimeToLive() {
-            ModelWithIdAndName model = ModelWithIdAndName.Create(1);
+            var model = ModelWithIdAndName.Create(1);
             var key = "model:" + model.CreateUrn();
             this._cacheClient.Add(key, model);
 
-            TimeSpan? ttl = this._cacheClient.GetTimeToLive(key);
+            var ttl = this._cacheClient.GetTimeToLive(key);
             Assert.That(ttl, Is.EqualTo(TimeSpan.MaxValue));
 
             this._cacheClient.Set(key, model, TimeSpan.FromSeconds(10));
@@ -46,7 +46,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_increment_and_reset_values() {
-            using (ICacheClient client = new RedisManagerPool(Config.MasterHost).GetCacheClient()) {
+            using (var client = new RedisManagerPool(Config.MasterHost).GetCacheClient()) {
                 Assert.That(client.Increment("incr:counter", 10), Is.EqualTo(10));
                 client.Set("incr:counter", 0);
                 Assert.That(client.Increment("incr:counter", 10), Is.EqualTo(10));
@@ -55,7 +55,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Replace_By_Pattern() {
-            ModelWithIdAndName model = ModelWithIdAndName.Create(1);
+            var model = ModelWithIdAndName.Create(1);
             var modelKey = "model:" + model.CreateUrn();
             this._cacheClient.Add(modelKey, model);
 
@@ -100,7 +100,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_store_and_get_model() {
-            ModelWithIdAndName model = ModelWithIdAndName.Create(1);
+            var model = ModelWithIdAndName.Create(1);
             var cacheKey = model.CreateUrn();
             this._cacheClient.Set(cacheKey, model);
 
@@ -115,7 +115,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Get_non_existent_generic_value_returns_null() {
-            ModelWithIdAndName model = ModelWithIdAndName.Create(1);
+            var model = ModelWithIdAndName.Create(1);
             var cacheKey = model.CreateUrn();
             var existingModel = this._cacheClient.Get<ModelWithIdAndName>(cacheKey);
             Assert.That(existingModel, Is.Null);
@@ -123,7 +123,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Get_non_existent_value_returns_null() {
-            ModelWithIdAndName model = ModelWithIdAndName.Create(1);
+            var model = ModelWithIdAndName.Create(1);
             var cacheKey = model.CreateUrn();
             var existingModel = this._cacheClient.Get<ModelWithIdAndName>(cacheKey);
             Assert.That(existingModel, Is.Null);

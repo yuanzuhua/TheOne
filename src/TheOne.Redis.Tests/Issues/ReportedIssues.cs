@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Tests.Issues {
 
@@ -13,7 +12,7 @@ namespace TheOne.Redis.Tests.Issues {
         public void Add_range_to_set_fails_if_first_command() {
             this.Redis.AddRangeToSet("testset", this._storeMembers);
 
-            HashSet<string> members = this.Redis.GetAllItemsFromSet("testset");
+            var members = this.Redis.GetAllItemsFromSet("testset");
             Assert.That(members, Is.EquivalentTo(this._storeMembers));
         }
 
@@ -22,7 +21,7 @@ namespace TheOne.Redis.Tests.Issues {
             double score = 0;
             this.Redis.AddItemToSortedSet("testzset", "value", 1);
 
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 pipeline.QueueCommand(u => u.GetItemScoreInSortedSet("testzset", "value"),
                     x => {
                         // score should be assigned to 1 here
@@ -37,7 +36,7 @@ namespace TheOne.Redis.Tests.Issues {
 
         [Test]
         public void Transaction_fails_if_first_command() {
-            using (IRedisTransaction trans = this.Redis.CreateTransaction()) {
+            using (var trans = this.Redis.CreateTransaction()) {
                 trans.QueueCommand(r => r.IncrementValue("A"));
 
                 trans.Commit();

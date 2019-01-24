@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using TheOne.Redis.Common;
 using TheOne.Redis.External;
 
@@ -20,11 +19,11 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public string GetConfig(string configItem) {
-            StringBuilder sb = StringBuilderCache.Acquire();
-            byte[][] byteArray = this.ConfigGet(configItem);
+            var sb = StringBuilderCache.Acquire();
+            var byteArray = this.ConfigGet(configItem);
             const int startAt = 1; // skip repeating config name
             for (var i = startAt; i < byteArray.Length; i++) {
-                byte[] bytes = byteArray[i];
+                var bytes = byteArray[i];
                 if (sb.Length > 0) {
                     sb.Append(" ");
                 }
@@ -72,16 +71,16 @@ namespace TheOne.Redis.Client {
             var clientList = this.ClientList().FromUtf8Bytes();
             var results = new List<Dictionary<string, string>>();
 
-            string[] lines = clientList.Split('\n');
+            var lines = clientList.Split('\n');
             foreach (var line in lines) {
                 if (string.IsNullOrEmpty(line)) {
                     continue;
                 }
 
                 var map = new Dictionary<string, string>();
-                string[] parts = line.Split(' ');
+                var parts = line.Split(' ');
                 foreach (var part in parts) {
-                    string[] keyValue = part.SplitOnFirst('=');
+                    var keyValue = part.SplitOnFirst('=');
                     map[keyValue[0]] = keyValue[1];
                 }
 
@@ -98,13 +97,13 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public DateTime GetServerTime() {
-            byte[][] parts = this.Time();
+            var parts = this.Time();
             var unixTime = long.Parse(parts[0].FromUtf8Bytes());
             var microSecs = long.Parse(parts[1].FromUtf8Bytes());
             var ticks = microSecs / 1000 * TimeSpan.TicksPerMillisecond;
 
-            DateTime date = unixTime.FromUnixTime();
-            TimeSpan timeSpan = TimeSpan.FromTicks(ticks);
+            var date = unixTime.FromUnixTime();
+            var timeSpan = TimeSpan.FromTicks(ticks);
             return date + timeSpan;
         }
 

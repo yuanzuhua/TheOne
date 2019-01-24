@@ -32,7 +32,7 @@ namespace TheOne.Redis.Tests.Basic {
         public void Can_Serialize_type_with_object() {
             var obj = new CustomType { CustomId = 1, CustomName = "Name" };
             var typeWithObject = new Tuple(obj.GetType(), obj);
-            byte[] bytes = Encoding.UTF8.GetBytes(typeWithObject.ToJson());
+            var bytes = Encoding.UTF8.GetBytes(typeWithObject.ToJson());
 
             var bytesStr = Encoding.UTF8.GetString(bytes);
             var fromTypeWithObject = bytesStr.FromJson<Tuple>();

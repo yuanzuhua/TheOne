@@ -57,8 +57,8 @@ namespace TheOne.Redis.Tests.Examples {
             // Acquire lock and never release it
             redisClient.AcquireLock("testlock");
 
-            TimeSpan waitFor = TimeSpan.FromSeconds(2);
-            DateTime now = DateTime.Now;
+            var waitFor = TimeSpan.FromSeconds(2);
+            var now = DateTime.Now;
 
             try {
                 using (var newClient = new RedisClient(Config.MasterHost)) {
@@ -69,7 +69,7 @@ namespace TheOne.Redis.Tests.Examples {
                     }
                 }
             } catch (TimeoutException tex) {
-                TimeSpan timeTaken = DateTime.Now - now;
+                var timeTaken = DateTime.Now - now;
                 Console.WriteLine("After '{0}', Received TimeoutException: '{1}'", timeTaken, tex.Message);
 
                 var counter = redisClient.Get<int>("atomic-counter");
@@ -80,11 +80,11 @@ namespace TheOne.Redis.Tests.Examples {
         [Test]
         public void SimulateLockTimeout() {
             var redisClient = new RedisClient(Config.MasterHost);
-            TimeSpan waitFor = TimeSpan.FromMilliseconds(20);
+            var waitFor = TimeSpan.FromMilliseconds(20);
 
-            IDisposable loc = redisClient.AcquireLock("testlock", waitFor);
+            var loc = redisClient.AcquireLock("testlock", waitFor);
             Thread.Sleep(100); // should have lock expire
-            using (IDisposable newloc = redisClient.AcquireLock("testlock", waitFor)) { }
+            using (var newloc = redisClient.AcquireLock("testlock", waitFor)) { }
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace TheOne.Redis.Tests.Examples {
                 var clientNo = i;
 
                 // Asynchronously
-                Task item = Task.Run(() => {
+                var item = Task.Run(() => {
                     var redisClient = new RedisClient(Config.MasterHost);
                     using (redisClient.AcquireLock("testlock")) {
                         Console.WriteLine("client {0} acquired lock", clientNo);

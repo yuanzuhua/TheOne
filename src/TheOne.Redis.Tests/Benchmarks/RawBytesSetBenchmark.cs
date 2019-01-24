@@ -19,7 +19,7 @@ namespace TheOne.Redis.Tests.Benchmarks {
             // Clear DB
             redis.FlushAll();
 
-            Stopwatch sw = Stopwatch.StartNew();
+            var sw = Stopwatch.StartNew();
             var ms1 = sw.ElapsedMilliseconds;
             for (var i = 0; i < nMaxIterations; i++) {
                 fn(i, pBuffer);

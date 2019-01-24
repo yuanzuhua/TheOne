@@ -48,7 +48,7 @@ namespace TheOne.Redis.Client.Internal {
 
         /// <inheritdoc />
         public void CopyTo(T[] array, int arrayIndex) {
-            List<T> allItemsInSet = this._client.GetAllItemsFromSortedSet(this);
+            var allItemsInSet = this._client.GetAllItemsFromSortedSet(this);
             allItemsInSet.CopyTo(array, arrayIndex);
         }
 
@@ -159,7 +159,7 @@ namespace TheOne.Redis.Client.Internal {
             List<T> pageResults;
             do {
                 pageResults = this._client.GetRangeFromSortedSet(this, skip, skip + PageLimit - 1);
-                foreach (T result in pageResults) {
+                foreach (var result in pageResults) {
                     yield return result;
                 }
 

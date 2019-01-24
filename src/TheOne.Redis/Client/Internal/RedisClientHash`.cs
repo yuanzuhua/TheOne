@@ -45,16 +45,16 @@ namespace TheOne.Redis.Client.Internal {
 
         /// <inheritdoc />
         public bool Contains(KeyValuePair<TKey, T> item) {
-            T value = this._client.GetValueFromHash(this, item.Key);
+            var value = this._client.GetValueFromHash(this, item.Key);
             return !Equals(value, default(T)) && Equals(value, item.Value);
         }
 
         /// <inheritdoc />
         public void CopyTo(KeyValuePair<TKey, T>[] array, int arrayIndex) {
-            Dictionary<TKey, T> allItemsInHash = this._client.GetAllEntriesFromHash(this);
+            var allItemsInHash = this._client.GetAllEntriesFromHash(this);
 
             var i = arrayIndex;
-            foreach (KeyValuePair<TKey, T> entry in allItemsInHash) {
+            foreach (var entry in allItemsInHash) {
                 if (i >= array.Length) {
                     return;
                 }

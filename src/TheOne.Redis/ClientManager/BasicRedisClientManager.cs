@@ -83,7 +83,7 @@ namespace TheOne.Redis.ClientManager {
 
         /// <inheritdoc />
         public void SetAll<T>(IDictionary<string, T> values) {
-            foreach (KeyValuePair<string, T> entry in values) {
+            foreach (var entry in values) {
                 this.Set(entry.Key, entry.Value);
             }
         }
@@ -98,7 +98,7 @@ namespace TheOne.Redis.ClientManager {
         ///     Returns a Read/Write client (The default) using the hosts defined in ReadWriteHosts
         /// </summary>
         public IRedisClient GetClient() {
-            RedisClient client = this.InitNewClient(this.RedisResolver.CreateMasterClient(this._readWriteHostsIndex++));
+            var client = this.InitNewClient(this.RedisResolver.CreateMasterClient(this._readWriteHostsIndex++));
             return client;
         }
 
@@ -106,7 +106,7 @@ namespace TheOne.Redis.ClientManager {
         ///     Returns a ReadOnly client using the hosts defined in ReadOnlyHosts.
         /// </summary>
         public virtual IRedisClient GetReadOnlyClient() {
-            RedisClient client = this.InitNewClient(this.RedisResolver.CreateSlaveClient(this._readOnlyHostsIndex++));
+            var client = this.InitNewClient(this.RedisResolver.CreateSlaveClient(this._readOnlyHostsIndex++));
             return client;
         }
 

@@ -46,7 +46,7 @@ namespace TheOne.Redis.Client {
             var result = new Dictionary<string, Dictionary<string, string>>();
             var section = new Dictionary<string, string>();
 
-            IEnumerable<string> rows = SplitRows(source);
+            var rows = SplitRows(source);
 
             foreach (var row in rows) {
                 if (row.IndexOf("#", StringComparison.Ordinal) == 0) {
@@ -54,7 +54,7 @@ namespace TheOne.Redis.Client {
                     section = new Dictionary<string, string>();
                     result.Add(name, section);
                 } else {
-                    KeyValuePair<string, string>? pair = ParseKeyValue(row);
+                    var pair = ParseKeyValue(row);
                     if (pair.HasValue) {
                         section.Add(pair.Value.Key, pair.Value.Value);
                     }

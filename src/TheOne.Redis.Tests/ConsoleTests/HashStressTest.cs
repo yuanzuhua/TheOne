@@ -65,7 +65,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
         private void WorkerLoop() {
             while (Interlocked.CompareExchange(ref this._running, 0, 0) > 0) {
-                using (IRedisClient client = this.RedisManager.GetClient()) {
+                using (var client = this.RedisManager.GetClient()) {
                     try {
                         this.GetCollection<Guid, DeviceInfo>(client)[this._data.PlayerId] = this._data;
                         Interlocked.Increment(ref this._writeCount);
@@ -74,7 +74,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
                     }
 
                     try {
-                        DeviceInfo readData = this.GetCollection<Guid, DeviceInfo>(client)[this._data.PlayerId];
+                        var readData = this.GetCollection<Guid, DeviceInfo>(client)[this._data.PlayerId];
                         Interlocked.Increment(ref this._readCount);
 
                         if (!readData.Equals(this._data)) {
@@ -92,7 +92,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
         }
 
         private IRedisHash<TKey, TValue> GetCollection<TKey, TValue>(IRedisClient redis) {
-            IRedisTypedClient<TValue> redisTypedClient = redis.As<TValue>();
+            var redisTypedClient = redis.As<TValue>();
             return redisTypedClient.GetHash<TKey>(this._collectionKey);
         }
 
@@ -103,7 +103,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
             this.RedisManager = new RedisManagerPool(Config.MasterHost, new RedisPoolConfig { MaxPoolSize = noOfThreads });
 
-            DateTime startedAt = DateTime.UtcNow;
+            var startedAt = DateTime.UtcNow;
             Interlocked.Increment(ref this._running);
 
             Console.WriteLine("Starting HashStressTest with {0} threads", noOfThreads);

@@ -159,7 +159,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public bool RemoveEntry(params IHasRedisStringId[] entities) {
-            List<string> ids = entities.Select(x => x.Id).ToList();
+            var ids = entities.Select(x => x.Id).ToList();
             var success = this._client.Del(ids.ToArray()) == RedisNativeClient.Success;
             if (success) {
                 this._client.RemoveTypeIds(ids.ToArray());
@@ -265,7 +265,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public T[] SearchKeys(string pattern) {
-            List<string> strKeys = this._client.SearchKeys(pattern);
+            var strKeys = this._client.SearchKeys(pattern);
             var keysCount = strKeys.Count;
 
             var keys = new T[keysCount];
@@ -282,10 +282,10 @@ namespace TheOne.Redis.Client {
                 return new List<T>();
             }
 
-            byte[][] resultBytesArray = this._client.MGet(keys.ToArray());
+            var resultBytesArray = this._client.MGet(keys.ToArray());
 
             var results = new List<T>();
-            foreach (byte[] resultBytes in resultBytesArray) {
+            foreach (var resultBytes in resultBytesArray) {
                 if (resultBytes == null) {
                     continue;
                 }

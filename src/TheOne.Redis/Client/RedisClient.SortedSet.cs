@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using TheOne.Redis.Client.Internal;
 using TheOne.Redis.Common;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Client {
 
@@ -25,9 +24,9 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public bool AddRangeToSortedSet(string setId, List<string> values, double score) {
-            RedisPipelineCommand pipeline = this.CreatePipelineCommand();
-            byte[] uSetId = setId.ToUtf8Bytes();
-            byte[] uScore = score.ToFastUtf8Bytes();
+            var pipeline = this.CreatePipelineCommand();
+            var uSetId = setId.ToUtf8Bytes();
+            var uScore = score.ToFastUtf8Bytes();
 
             foreach (var value in values) {
                 pipeline.WriteCommand(Commands.ZAdd, uSetId, uScore, value.ToUtf8Bytes());
@@ -41,9 +40,9 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public bool AddRangeToSortedSet(string setId, List<string> values, long score) {
-            RedisPipelineCommand pipeline = this.CreatePipelineCommand();
-            byte[] uSetId = setId.ToUtf8Bytes();
-            byte[] uScore = score.ToUtf8Bytes();
+            var pipeline = this.CreatePipelineCommand();
+            var uSetId = setId.ToUtf8Bytes();
+            var uScore = score.ToUtf8Bytes();
 
             foreach (var value in values) {
                 pipeline.WriteCommand(Commands.ZAdd, uSetId, uScore, value.ToUtf8Bytes());
@@ -68,7 +67,7 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public string PopItemWithLowestScoreFromSortedSet(string setId) {
             // TODO this should be atomic
-            byte[][] topScoreItemBytes = this.ZRange(setId, _firstElement, 1);
+            var topScoreItemBytes = this.ZRange(setId, _firstElement, 1);
             if (topScoreItemBytes.Length == 0) {
                 return null;
             }
@@ -80,7 +79,7 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public string PopItemWithHighestScoreFromSortedSet(string setId) {
             // TODO this should be atomic
-            byte[][] topScoreItemBytes = this.ZRevRange(setId, _firstElement, 1);
+            var topScoreItemBytes = this.ZRevRange(setId, _firstElement, 1);
             if (topScoreItemBytes.Length == 0) {
                 return null;
             }
@@ -116,43 +115,43 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public List<string> GetAllItemsFromSortedSet(string setId) {
-            byte[][] multiDataList = this.ZRange(setId, _firstElement, _lastElement);
+            var multiDataList = this.ZRange(setId, _firstElement, _lastElement);
             return multiDataList.ToStringList();
         }
 
         /// <inheritdoc />
         public List<string> GetAllItemsFromSortedSetDesc(string setId) {
-            byte[][] multiDataList = this.ZRevRange(setId, _firstElement, _lastElement);
+            var multiDataList = this.ZRevRange(setId, _firstElement, _lastElement);
             return multiDataList.ToStringList();
         }
 
         /// <inheritdoc />
         public List<string> GetRangeFromSortedSet(string setId, int fromRank, int toRank) {
-            byte[][] multiDataList = this.ZRange(setId, fromRank, toRank);
+            var multiDataList = this.ZRange(setId, fromRank, toRank);
             return multiDataList.ToStringList();
         }
 
         /// <inheritdoc />
         public List<string> GetRangeFromSortedSetDesc(string setId, int fromRank, int toRank) {
-            byte[][] multiDataList = this.ZRevRange(setId, fromRank, toRank);
+            var multiDataList = this.ZRevRange(setId, fromRank, toRank);
             return multiDataList.ToStringList();
         }
 
         /// <inheritdoc />
         public IDictionary<string, double> GetAllWithScoresFromSortedSet(string setId) {
-            byte[][] multiDataList = this.ZRangeWithScores(setId, _firstElement, _lastElement);
+            var multiDataList = this.ZRangeWithScores(setId, _firstElement, _lastElement);
             return CreateSortedScoreMap(multiDataList);
         }
 
         /// <inheritdoc />
         public IDictionary<string, double> GetRangeWithScoresFromSortedSet(string setId, int fromRank, int toRank) {
-            byte[][] multiDataList = this.ZRangeWithScores(setId, fromRank, toRank);
+            var multiDataList = this.ZRangeWithScores(setId, fromRank, toRank);
             return CreateSortedScoreMap(multiDataList);
         }
 
         /// <inheritdoc />
         public IDictionary<string, double> GetRangeWithScoresFromSortedSetDesc(string setId, int fromRank, int toRank) {
-            byte[][] multiDataList = this.ZRevRangeWithScores(setId, fromRank, toRank);
+            var multiDataList = this.ZRevRangeWithScores(setId, fromRank, toRank);
             return CreateSortedScoreMap(multiDataList);
         }
 
@@ -181,13 +180,13 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public List<string> GetRangeFromSortedSetByLowestScore(string setId, double fromScore, double toScore, int? skip, int? take) {
-            byte[][] multiDataList = this.ZRangeByScore(setId, fromScore, toScore, skip, take);
+            var multiDataList = this.ZRangeByScore(setId, fromScore, toScore, skip, take);
             return multiDataList.ToStringList();
         }
 
         /// <inheritdoc />
         public List<string> GetRangeFromSortedSetByLowestScore(string setId, long fromScore, long toScore, int? skip, int? take) {
-            byte[][] multiDataList = this.ZRangeByScore(setId, fromScore, toScore, skip, take);
+            var multiDataList = this.ZRangeByScore(setId, fromScore, toScore, skip, take);
             return multiDataList.ToStringList();
         }
 
@@ -218,14 +217,14 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public IDictionary<string, double> GetRangeWithScoresFromSortedSetByLowestScore(string setId, double fromScore, double toScore,
             int? skip, int? take) {
-            byte[][] multiDataList = this.ZRangeByScoreWithScores(setId, fromScore, toScore, skip, take);
+            var multiDataList = this.ZRangeByScoreWithScores(setId, fromScore, toScore, skip, take);
             return CreateSortedScoreMap(multiDataList);
         }
 
         /// <inheritdoc />
         public IDictionary<string, double> GetRangeWithScoresFromSortedSetByLowestScore(string setId, long fromScore, long toScore,
             int? skip, int? take) {
-            byte[][] multiDataList = this.ZRangeByScoreWithScores(setId, fromScore, toScore, skip, take);
+            var multiDataList = this.ZRangeByScoreWithScores(setId, fromScore, toScore, skip, take);
             return CreateSortedScoreMap(multiDataList);
         }
 
@@ -254,13 +253,13 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public List<string> GetRangeFromSortedSetByHighestScore(string setId, double fromScore, double toScore, int? skip, int? take) {
-            byte[][] multiDataList = this.ZRevRangeByScore(setId, fromScore, toScore, skip, take);
+            var multiDataList = this.ZRevRangeByScore(setId, fromScore, toScore, skip, take);
             return multiDataList.ToStringList();
         }
 
         /// <inheritdoc />
         public List<string> GetRangeFromSortedSetByHighestScore(string setId, long fromScore, long toScore, int? skip, int? take) {
-            byte[][] multiDataList = this.ZRevRangeByScore(setId, fromScore, toScore, skip, take);
+            var multiDataList = this.ZRevRangeByScore(setId, fromScore, toScore, skip, take);
             return multiDataList.ToStringList();
         }
 
@@ -291,14 +290,14 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public IDictionary<string, double> GetRangeWithScoresFromSortedSetByHighestScore(string setId, double fromScore, double toScore,
             int? skip, int? take) {
-            byte[][] multiDataList = this.ZRevRangeByScoreWithScores(setId, fromScore, toScore, skip, take);
+            var multiDataList = this.ZRevRangeByScoreWithScores(setId, fromScore, toScore, skip, take);
             return CreateSortedScoreMap(multiDataList);
         }
 
         /// <inheritdoc />
         public IDictionary<string, double> GetRangeWithScoresFromSortedSetByHighestScore(string setId, long fromScore, long toScore,
             int? skip, int? take) {
-            byte[][] multiDataList = this.ZRevRangeByScoreWithScores(setId, fromScore, toScore, skip, take);
+            var multiDataList = this.ZRevRangeByScoreWithScores(setId, fromScore, toScore, skip, take);
             return CreateSortedScoreMap(multiDataList);
         }
 
@@ -369,7 +368,7 @@ namespace TheOne.Redis.Client {
             start = GetSearchStart(start);
             end = GetSearchEnd(end);
 
-            byte[][] ret = this.ZRangeByLex(setId, start, end, skip, take);
+            var ret = this.ZRangeByLex(setId, start, end, skip, take);
             return ret.ToStringList();
         }
 
@@ -453,7 +452,7 @@ namespace TheOne.Redis.Client {
             public IRedisSortedSet this[string setId] {
                 get => new RedisClientSortedSet(this._client, setId);
                 set {
-                    IRedisSortedSet col = this[setId];
+                    var col = this[setId];
                     col.Clear();
                     col.CopyTo(value.ToArray(), 0);
                 }

@@ -56,7 +56,7 @@ namespace TheOne.Redis.Client.Internal {
 
         /// <inheritdoc />
         public void CopyTo(string[] array, int arrayIndex) {
-            List<string> allItemsInList = this._client.GetAllItemsFromList(this.Id);
+            var allItemsInList = this._client.GetAllItemsFromList(this.Id);
             allItemsInList.CopyTo(array, arrayIndex);
         }
 

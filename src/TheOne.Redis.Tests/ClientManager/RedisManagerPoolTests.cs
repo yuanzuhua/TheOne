@@ -44,7 +44,7 @@ namespace TheOne.Redis.Tests.ClientManager {
         }
 
         private static void AssertClientHasHost(IRedisClient client, string hostWithOptionalPort) {
-            string[] parts = hostWithOptionalPort.Split(':');
+            var parts = hostWithOptionalPort.Split(':');
             var port = parts.Length > 1 ? int.Parse(parts[1]) : RedisConfig.DefaultPort;
 
             Assert.That(client.Host, Is.EqualTo(parts[0]));
@@ -63,8 +63,8 @@ namespace TheOne.Redis.Tests.ClientManager {
                 using (var db2 = new RedisManagerPool(Config.MasterHost + "?db=2")) {
                     var val = Environment.TickCount;
                     var key = "test" + val;
-                    IRedisClient db1Client = db1.GetClient();
-                    IRedisClient db2Client = db2.GetClient();
+                    var db1Client = db1.GetClient();
+                    var db2Client = db2.GetClient();
                     try {
                         db1Client.Set(key, val);
                         Assert.That(db2Client.Get<int>(key), Is.EqualTo(0));
@@ -78,8 +78,8 @@ namespace TheOne.Redis.Tests.ClientManager {
 
         [Test]
         public void Can_get_ReadWrite_client() {
-            using (RedisManagerPool manager = this.CreateManager()) {
-                IRedisClient client = manager.GetClient();
+            using (var manager = this.CreateManager()) {
+                var client = manager.GetClient();
 
                 AssertClientHasHost(client, this._firstReadWriteHost);
             }
@@ -93,10 +93,10 @@ namespace TheOne.Redis.Tests.ClientManager {
                 writeHosts,
                 new RedisPoolConfig { MaxPoolSize = 4 })) {
                 // A pool size of 4 will not block getting 4 clients
-                using (IRedisClient client1 = manager.GetClient()) {
-                    using (IRedisClient client2 = manager.GetClient()) {
-                        using (IRedisClient client3 = manager.GetClient()) {
-                            using (IRedisClient client4 = manager.GetClient()) {
+                using (var client1 = manager.GetClient()) {
+                    using (var client2 = manager.GetClient()) {
+                        using (var client3 = manager.GetClient()) {
+                            using (var client4 = manager.GetClient()) {
                                 AssertClientHasHost(client1, writeHosts[0]);
                                 AssertClientHasHost(client2, writeHosts[0]);
                                 AssertClientHasHost(client3, writeHosts[0]);
@@ -112,7 +112,7 @@ namespace TheOne.Redis.Tests.ClientManager {
         public void Can_support_64_threads_using_the_client_simultaneously() {
 
             void UseClient(IRedisClientManager manager1, int clientNo1, Dictionary<string, int> hostCountMap1) {
-                using (IRedisClient client = manager1.GetClient()) {
+                using (var client = manager1.GetClient()) {
                     lock (hostCountMap1) {
                         if (!hostCountMap1.TryGetValue(client.Host, out var hostCount1)) {
                             hostCount1 = 0;
@@ -130,10 +130,10 @@ namespace TheOne.Redis.Tests.ClientManager {
 
             var tasks = new List<Task>();
 
-            using (RedisManagerPool manager = this.CreateManager()) {
+            using (var manager = this.CreateManager()) {
                 for (var i = 0; i < noOfConcurrentClients; i++) {
                     var clientNo = i;
-                    Task item = Task.Run(() => UseClient(manager, clientNo, clientUsageMap));
+                    var item = Task.Run(() => UseClient(manager, clientNo, clientUsageMap));
                     tasks.Add(item);
                 }
             }
@@ -143,7 +143,7 @@ namespace TheOne.Redis.Tests.ClientManager {
             Console.WriteLine(clientUsageMap.ToJson());
 
             var hostCount = 0;
-            foreach (KeyValuePair<string, int> entry in clientUsageMap) {
+            foreach (var entry in clientUsageMap) {
                 Assert.That(entry.Value, Is.GreaterThanOrEqualTo(5), "Host has unproportianate distrobution: " + entry.Value);
                 Assert.That(entry.Value, Is.LessThanOrEqualTo(30), "Host has unproportianate distrobution: " + entry.Value);
                 hostCount += entry.Value;
@@ -155,13 +155,13 @@ namespace TheOne.Redis.Tests.ClientManager {
 
         [Test]
         public void Does_loop_through_ReadWrite_hosts() {
-            using (RedisManagerPool manager = this.CreateManager()) {
-                IRedisClient client1 = manager.GetClient();
+            using (var manager = this.CreateManager()) {
+                var client1 = manager.GetClient();
                 client1.Dispose();
-                IRedisClient client2 = manager.GetClient();
-                IRedisClient client3 = manager.GetClient();
-                IRedisClient client4 = manager.GetClient();
-                IRedisClient client5 = manager.GetClient();
+                var client2 = manager.GetClient();
+                var client3 = manager.GetClient();
+                var client4 = manager.GetClient();
+                var client5 = manager.GetClient();
 
                 AssertClientHasHost(client1, this._hosts[0]);
                 AssertClientHasHost(client2, this._hosts[1]);
@@ -175,11 +175,11 @@ namespace TheOne.Redis.Tests.ClientManager {
         public void Does_not_block_ReadWrite_clients_pool() {
             using (var manager = new RedisManagerPool(this._hosts,
                 new RedisPoolConfig { MaxPoolSize = 4 })) {
-                TimeSpan delay = TimeSpan.FromSeconds(1);
-                IRedisClient client1 = manager.GetClient();
-                IRedisClient client2 = manager.GetClient();
-                IRedisClient client3 = manager.GetClient();
-                IRedisClient client4 = manager.GetClient();
+                var delay = TimeSpan.FromSeconds(1);
+                var client1 = manager.GetClient();
+                var client2 = manager.GetClient();
+                var client3 = manager.GetClient();
+                var client4 = manager.GetClient();
 
                 Assert.That(((RedisClient)client1).IsManagedClient, Is.True);
                 Assert.That(((RedisClient)client2).IsManagedClient, Is.True);
@@ -191,9 +191,9 @@ namespace TheOne.Redis.Tests.ClientManager {
                     client4.Dispose();
                 });
 
-                DateTime start = DateTime.Now;
+                var start = DateTime.Now;
 
-                IRedisClient client5 = manager.GetClient();
+                var client5 = manager.GetClient();
 
                 Assert.That(((RedisClient)client5).IsManagedClient, Is.False); // outside of pool
 

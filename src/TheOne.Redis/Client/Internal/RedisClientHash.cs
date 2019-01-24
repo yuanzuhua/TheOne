@@ -58,10 +58,10 @@ namespace TheOne.Redis.Client.Internal {
 
         /// <inheritdoc />
         public void CopyTo(KeyValuePair<string, string>[] array, int arrayIndex) {
-            Dictionary<string, string> allItemsInHash = this._client.GetAllEntriesFromHash(this.Id);
+            var allItemsInHash = this._client.GetAllEntriesFromHash(this.Id);
 
             var i = arrayIndex;
-            foreach (KeyValuePair<string, string> item in allItemsInHash) {
+            foreach (var item in allItemsInHash) {
                 if (i >= array.Length) {
                     return;
                 }

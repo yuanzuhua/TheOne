@@ -29,7 +29,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void SetRangeInHash<TKey>(IRedisHash<TKey, T> hash, IEnumerable<KeyValuePair<TKey, T>> keyValuePairs) {
-            List<KeyValuePair<string, string>> stringKeyValuePairs = keyValuePairs.ToList().ConvertAll(
+            var stringKeyValuePairs = keyValuePairs.ToList().ConvertAll(
                 x => new KeyValuePair<string, string>(
                     x.Key.ToJson(),
                     x.Value.ToJson()));
@@ -69,7 +69,7 @@ namespace TheOne.Redis.Client {
 
         private static Dictionary<TKey, TValue> ConvertEachTo<TKey, TValue>(IDictionary<string, string> map) {
             var to = new Dictionary<TKey, TValue>();
-            foreach (KeyValuePair<string, string> item in map) {
+            foreach (var item in map) {
                 to[item.Key.FromJson<TKey>()] = item.Value.FromJson<TValue>();
             }
 

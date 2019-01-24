@@ -304,7 +304,7 @@ namespace TheOne.Redis.Client {
         public RedisData RawCommand(params object[] cmdWithArgs) {
             var byteArgs = new List<byte[]>();
 
-            foreach (object arg in cmdWithArgs) {
+            foreach (var arg in cmdWithArgs) {
                 if (arg == null) {
                     byteArgs.Add(Array.Empty<byte>());
                     continue;
@@ -321,7 +321,7 @@ namespace TheOne.Redis.Client {
                 }
             }
 
-            RedisData data = this.SendExpectComplexResponse(byteArgs.ToArray());
+            var data = this.SendExpectComplexResponse(byteArgs.ToArray());
             return data;
         }
 
@@ -513,7 +513,7 @@ namespace TheOne.Redis.Client {
         }
 
         public bool Set(string key, byte[] value, bool exists, int expirySeconds = 0, long expiryMs = 0) {
-            byte[] entryExists = exists ? Commands.Xx : Commands.Nx;
+            var entryExists = exists ? Commands.Xx : Commands.Nx;
 
             if (expirySeconds > 0) {
                 return this.SendExpectString(Commands.Set,
@@ -586,7 +586,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void MSet(byte[][] keys, byte[][] values) {
-            byte[][] keysAndValues = MergeCommandWithKeysAndValues(Commands.MSet, keys, values);
+            var keysAndValues = MergeCommandWithKeysAndValues(Commands.MSet, keys, values);
 
             this.SendExpectSuccess(keysAndValues);
         }
@@ -598,7 +598,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public bool MSetNx(byte[][] keys, byte[][] values) {
-            byte[][] keysAndValues = MergeCommandWithKeysAndValues(Commands.MSet, keys, values);
+            var keysAndValues = MergeCommandWithKeysAndValues(Commands.MSet, keys, values);
 
             return this.SendExpectLong(keysAndValues) == Success;
         }
@@ -684,7 +684,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(keys));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.Del, keys);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.Del, keys);
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -1015,7 +1015,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(keys));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.MGet, keys);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.MGet, keys);
 
             return this.SendExpectMultiData(cmdWithArgs);
         }
@@ -1027,7 +1027,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(keys));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.MGet, keys);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.MGet, keys);
 
             return this.SendExpectMultiData(cmdWithArgs);
         }
@@ -1037,7 +1037,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(keys));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.Watch, keys);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.Watch, keys);
 
             this.SendExpectCode(cmdWithArgs);
 
@@ -1142,8 +1142,8 @@ namespace TheOne.Redis.Client {
         }
 
         internal ScanResult SendExpectScanResult(byte[] cmd, params byte[][] args) {
-            byte[][] cmdWithArgs = MergeCommandWithArgs(cmd, args);
-            object[] multiData = this.SendExpectDeeplyNestedMultiData(cmdWithArgs);
+            var cmdWithArgs = MergeCommandWithArgs(cmd, args);
+            var multiData = this.SendExpectDeeplyNestedMultiData(cmdWithArgs);
             var counterBytes = (byte[])multiData[0];
 
             var ret = new ScanResult {
@@ -1152,7 +1152,7 @@ namespace TheOne.Redis.Client {
             };
             var keysBytes = (object[])multiData[1];
 
-            foreach (object keyBytes in keysBytes) {
+            foreach (var keyBytes in keysBytes) {
                 ret.Results.Add((byte[])keyBytes);
             }
 
@@ -1161,20 +1161,20 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public bool PfAdd(string key, params byte[][] elements) {
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.PfAdd, key.ToUtf8Bytes(), elements);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.PfAdd, key.ToUtf8Bytes(), elements);
             return this.SendExpectLong(cmdWithArgs) == 1;
         }
 
         /// <inheritdoc />
         public long PfCount(string key) {
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.PfCount, key.ToUtf8Bytes());
+            var cmdWithArgs = MergeCommandWithArgs(Commands.PfCount, key.ToUtf8Bytes());
             return this.SendExpectLong(cmdWithArgs);
         }
 
         /// <inheritdoc />
         public void PfMerge(string toKeyId, params string[] fromKeys) {
-            byte[][] fromKeyBytes = fromKeys.Select(x => x.ToUtf8Bytes()).ToArray();
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.PfMerge, toKeyId.ToUtf8Bytes(), fromKeyBytes);
+            var fromKeyBytes = fromKeys.Select(x => x.ToUtf8Bytes()).ToArray();
+            var cmdWithArgs = MergeCommandWithArgs(Commands.PfMerge, toKeyId.ToUtf8Bytes(), fromKeyBytes);
             this.SendExpectSuccess(cmdWithArgs);
         }
 
@@ -1204,7 +1204,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.SAdd, setId.ToUtf8Bytes(), values);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.SAdd, setId.ToUtf8Bytes(), values);
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -1224,7 +1224,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.SRem, setId.ToUtf8Bytes(), values);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.SRem, setId.ToUtf8Bytes(), values);
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -1279,7 +1279,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public byte[][] SInter(params string[] setIds) {
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.SInter, setIds);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.SInter, setIds);
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
@@ -1288,13 +1288,13 @@ namespace TheOne.Redis.Client {
             var setIdsList = new List<string>(setIds);
             setIdsList.Insert(0, intoSetId);
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.SInterStore, setIdsList.ToArray());
+            var cmdWithArgs = MergeCommandWithArgs(Commands.SInterStore, setIdsList.ToArray());
             this.SendExpectSuccess(cmdWithArgs);
         }
 
         /// <inheritdoc />
         public byte[][] SUnion(params string[] setIds) {
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.SUnion, setIds);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.SUnion, setIds);
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
@@ -1303,7 +1303,7 @@ namespace TheOne.Redis.Client {
             var setIdsList = new List<string>(setIds);
             setIdsList.Insert(0, intoSetId);
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.SUnionStore, setIdsList.ToArray());
+            var cmdWithArgs = MergeCommandWithArgs(Commands.SUnionStore, setIdsList.ToArray());
             this.SendExpectSuccess(cmdWithArgs);
         }
 
@@ -1312,7 +1312,7 @@ namespace TheOne.Redis.Client {
             var setIdsList = new List<string>(withSetIds);
             setIdsList.Insert(0, fromSetId);
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.SDiff, setIdsList.ToArray());
+            var cmdWithArgs = MergeCommandWithArgs(Commands.SDiff, setIdsList.ToArray());
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
@@ -1322,7 +1322,7 @@ namespace TheOne.Redis.Client {
             setIdsList.Insert(0, fromSetId);
             setIdsList.Insert(0, intoSetId);
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.SDiffStore, setIdsList.ToArray());
+            var cmdWithArgs = MergeCommandWithArgs(Commands.SDiffStore, setIdsList.ToArray());
             this.SendExpectSuccess(cmdWithArgs);
         }
 
@@ -1403,7 +1403,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.RPush, listId.ToUtf8Bytes(), values);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.RPush, listId.ToUtf8Bytes(), values);
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -1430,7 +1430,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.LPush, listId.ToUtf8Bytes(), values);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.LPush, listId.ToUtf8Bytes(), values);
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -1483,7 +1483,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(listId));
             }
 
-            byte[] position = insertBefore ? Commands.Before : Commands.After;
+            var position = insertBefore ? Commands.Before : Commands.After;
 
             this.SendExpectSuccess(Commands.LInsert, listId.ToUtf8Bytes(), position, pivot, value);
         }
@@ -1538,7 +1538,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public byte[] BLPopValue(string listId, int timeoutSecs) {
-            byte[][] blockingResponse = this.BLPop(new[] { listId }, timeoutSecs);
+            var blockingResponse = this.BLPop(new[] { listId }, timeoutSecs);
             return blockingResponse.Length == 0
                 ? null
                 : blockingResponse[1];
@@ -1546,7 +1546,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public byte[][] BLPopValue(string[] listIds, int timeoutSecs) {
-            byte[][] blockingResponse = this.BLPop(listIds, timeoutSecs);
+            var blockingResponse = this.BLPop(listIds, timeoutSecs);
             return blockingResponse.Length == 0
                 ? null
                 : blockingResponse;
@@ -1575,7 +1575,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public byte[] BRPopValue(string listId, int timeoutSecs) {
-            byte[][] blockingResponse = this.BRPop(new[] { listId }, timeoutSecs);
+            var blockingResponse = this.BRPop(new[] { listId }, timeoutSecs);
             return blockingResponse.Length == 0
                 ? null
                 : blockingResponse[1];
@@ -1583,7 +1583,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public byte[][] BRPopValue(string[] listIds, int timeoutSecs) {
-            byte[][] blockingResponse = this.BRPop(listIds, timeoutSecs);
+            var blockingResponse = this.BRPop(listIds, timeoutSecs);
             return blockingResponse.Length == 0
                 ? null
                 : blockingResponse;
@@ -1612,7 +1612,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(toListId));
             }
 
-            byte[][] result = this.SendExpectMultiData(Commands.BRPopLPush,
+            var result = this.SendExpectMultiData(Commands.BRPopLPush,
                 fromListId.ToUtf8Bytes(),
                 toListId.ToUtf8Bytes(),
                 timeoutSecs.ToUtf8Bytes());
@@ -1637,7 +1637,7 @@ namespace TheOne.Redis.Client {
                 Commands.Master,
                 masterName.ToUtf8Bytes()
             };
-            RedisData results = this.SendExpectComplexResponse(args.ToArray());
+            var results = this.SendExpectComplexResponse(args.ToArray());
             return ToDictionary(results);
         }
 
@@ -1771,7 +1771,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.ZRem, setId.ToUtf8Bytes(), values);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.ZRem, setId.ToUtf8Bytes(), values);
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -2014,7 +2014,7 @@ namespace TheOne.Redis.Client {
             setIdsList.Insert(0, setIds.Length.ToString());
             setIdsList.Insert(0, intoSetId);
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.ZUnionStore, setIdsList.ToArray());
+            var cmdWithArgs = MergeCommandWithArgs(Commands.ZUnionStore, setIdsList.ToArray());
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -2024,7 +2024,7 @@ namespace TheOne.Redis.Client {
             totalArgs.Insert(0, intoSetId);
             totalArgs.AddRange(args);
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.ZUnionStore, totalArgs.ToArray());
+            var cmdWithArgs = MergeCommandWithArgs(Commands.ZUnionStore, totalArgs.ToArray());
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -2034,7 +2034,7 @@ namespace TheOne.Redis.Client {
             setIdsList.Insert(0, setIds.Length.ToString());
             setIdsList.Insert(0, intoSetId);
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.ZInterStore, setIdsList.ToArray());
+            var cmdWithArgs = MergeCommandWithArgs(Commands.ZInterStore, setIdsList.ToArray());
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -2044,7 +2044,7 @@ namespace TheOne.Redis.Client {
             totalArgs.Insert(0, intoSetId);
             totalArgs.AddRange(args);
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.ZInterStore, totalArgs.ToArray());
+            var cmdWithArgs = MergeCommandWithArgs(Commands.ZInterStore, totalArgs.ToArray());
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -2134,7 +2134,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(hashId));
             }
 
-            byte[][] cmdArgs = MergeCommandWithKeysAndValues(Commands.HMSet, hashId.ToUtf8Bytes(), keys, values);
+            var cmdArgs = MergeCommandWithKeysAndValues(Commands.HMSet, hashId.ToUtf8Bytes(), keys, values);
 
             this.SendExpectSuccess(cmdArgs);
         }
@@ -2183,7 +2183,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(keys));
             }
 
-            byte[][] cmdArgs = MergeCommandWithArgs(Commands.HMGet, hashId.ToUtf8Bytes(), keys);
+            var cmdArgs = MergeCommandWithArgs(Commands.HMGet, hashId.ToUtf8Bytes(), keys);
 
             return this.SendExpectMultiData(cmdArgs);
         }
@@ -2208,7 +2208,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(keys));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.HDel, hashId.ToUtf8Bytes(), keys);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.HDel, hashId.ToUtf8Bytes(), keys);
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -2276,13 +2276,13 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(toChannels));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.Subscribe, toChannels);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.Subscribe, toChannels);
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
         /// <inheritdoc />
         public byte[][] UnSubscribe(params string[] fromChannels) {
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.UnSubscribe, fromChannels);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.UnSubscribe, fromChannels);
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
@@ -2292,13 +2292,13 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(toChannelsMatchingPatterns));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.PSubscribe, toChannelsMatchingPatterns);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.PSubscribe, toChannelsMatchingPatterns);
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
         /// <inheritdoc />
         public byte[][] PUnSubscribe(params string[] fromChannelsMatchingPatterns) {
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.PUnSubscribe, fromChannelsMatchingPatterns);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.PUnSubscribe, fromChannelsMatchingPatterns);
             return this.SendExpectMultiData(cmdWithArgs);
         }
 
@@ -2336,13 +2336,13 @@ namespace TheOne.Redis.Client {
 
             var members = new byte[geoPoints.Length * 3][];
             for (var i = 0; i < geoPoints.Length; i++) {
-                RedisGeo geoPoint = geoPoints[i];
+                var geoPoint = geoPoints[i];
                 members[i * 3 + 0] = geoPoint.Longitude.ToUtf8Bytes();
                 members[i * 3 + 1] = geoPoint.Latitude.ToUtf8Bytes();
                 members[i * 3 + 2] = geoPoint.Member.ToUtf8Bytes();
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.GeoAdd, key.ToUtf8Bytes(), members);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.GeoAdd, key.ToUtf8Bytes(), members);
             return this.SendExpectLong(cmdWithArgs);
         }
 
@@ -2367,7 +2367,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            byte[][] cmdWithArgs =
+            var cmdWithArgs =
                 MergeCommandWithArgs(Commands.GeoHash, key.ToUtf8Bytes(), members.Select(x => x.ToUtf8Bytes()).ToArray());
             return this.SendExpectMultiData(cmdWithArgs).ToStringArray();
         }
@@ -2378,8 +2378,8 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.GeoPos, key.ToUtf8Bytes(), members.Select(x => x.ToUtf8Bytes()).ToArray());
-            RedisData data = this.SendExpectComplexResponse(cmdWithArgs);
+            var cmdWithArgs = MergeCommandWithArgs(Commands.GeoPos, key.ToUtf8Bytes(), members.Select(x => x.ToUtf8Bytes()).ToArray());
+            var data = this.SendExpectComplexResponse(cmdWithArgs);
             var to = new List<RedisGeo>();
 
             for (var i = 0; i < members.Length; i++) {
@@ -2387,9 +2387,9 @@ namespace TheOne.Redis.Client {
                     break;
                 }
 
-                RedisData entry = data.Children[i];
+                var entry = data.Children[i];
 
-                List<RedisData> children = entry.Children;
+                var children = entry.Children;
                 if (children.Count == 0) {
                     continue;
                 }
@@ -2441,19 +2441,19 @@ namespace TheOne.Redis.Client {
                 args.Add(Commands.Desc);
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.GeoRadius, key.ToUtf8Bytes(), args.ToArray());
+            var cmdWithArgs = MergeCommandWithArgs(Commands.GeoRadius, key.ToUtf8Bytes(), args.ToArray());
 
             var to = new List<RedisGeoResult>();
 
             if (!(withCoords || withDist || withHash)) {
-                string[] members = this.SendExpectMultiData(cmdWithArgs).ToStringArray();
+                var members = this.SendExpectMultiData(cmdWithArgs).ToStringArray();
                 foreach (var member in members) {
                     to.Add(new RedisGeoResult { Member = member });
                 }
             } else {
-                RedisData data = this.SendExpectComplexResponse(cmdWithArgs);
+                var data = this.SendExpectComplexResponse(cmdWithArgs);
 
-                foreach (RedisData child in data.Children) {
+                foreach (var child in data.Children) {
                     var i = 0;
                     var result = new RedisGeoResult { Unit = unit, Member = child.Children[i++].Data.FromUtf8Bytes() };
 
@@ -2466,7 +2466,7 @@ namespace TheOne.Redis.Client {
                     }
 
                     if (withCoords) {
-                        List<RedisData> children = child.Children[i].Children;
+                        var children = child.Children[i].Children;
                         result.Longitude = children[0].ToDouble();
                         result.Latitude = children[1].ToDouble();
                     }
@@ -2514,19 +2514,19 @@ namespace TheOne.Redis.Client {
                 args.Add(Commands.Desc);
             }
 
-            byte[][] cmdWithArgs = MergeCommandWithArgs(Commands.GeoRadiusByMember, key.ToUtf8Bytes(), args.ToArray());
+            var cmdWithArgs = MergeCommandWithArgs(Commands.GeoRadiusByMember, key.ToUtf8Bytes(), args.ToArray());
 
             var to = new List<RedisGeoResult>();
 
             if (!(withCoords || withDist || withHash)) {
-                string[] members = this.SendExpectMultiData(cmdWithArgs).ToStringArray();
+                var members = this.SendExpectMultiData(cmdWithArgs).ToStringArray();
                 foreach (var x in members) {
                     to.Add(new RedisGeoResult { Member = x });
                 }
             } else {
-                RedisData data = this.SendExpectComplexResponse(cmdWithArgs);
+                var data = this.SendExpectComplexResponse(cmdWithArgs);
 
-                foreach (RedisData child in data.Children) {
+                foreach (var child in data.Children) {
                     var i = 0;
                     var result = new RedisGeoResult { Unit = unit, Member = child.Children[i++].Data.FromUtf8Bytes() };
 
@@ -2539,7 +2539,7 @@ namespace TheOne.Redis.Client {
                     }
 
                     if (withCoords) {
-                        List<RedisData> children = child.Children[i].Children;
+                        var children = child.Children[i].Children;
                         result.Longitude = children[0].ToDouble();
                         result.Latitude = children[1].ToDouble();
                     }

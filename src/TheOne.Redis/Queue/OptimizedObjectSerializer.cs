@@ -14,7 +14,7 @@ namespace TheOne.Redis.Queue {
 
         /// <inheritdoc />
         public override byte[] Serialize(object value) {
-            SerializedObjectWrapper temp = this.SerializeToWrapper(value);
+            var temp = this.SerializeToWrapper(value);
             return base.Serialize(temp);
         }
 
@@ -44,7 +44,7 @@ namespace TheOne.Redis.Queue {
 
             byte[] data;
             var length = -1;
-            TypeCode code = value == null ? TypeCode.DBNull : Type.GetTypeCode(value.GetType());
+            var code = value == null ? TypeCode.DBNull : Type.GetTypeCode(value.GetType());
             switch (code) {
                 case TypeCode.DBNull:
                     data = Array.Empty<byte>();
@@ -126,7 +126,7 @@ namespace TheOne.Redis.Queue {
             }
 
             if (item.Flags == RawDataFlag) {
-                ArraySegment<byte> tmp = item.Data;
+                var tmp = item.Data;
 
                 if (tmp.Array == null) {
                     return null;
@@ -146,7 +146,7 @@ namespace TheOne.Redis.Queue {
 
             var code = (TypeCode)(item.Flags & 0x00ff);
 
-            byte[] data = item.Data.Array;
+            var data = item.Data.Array;
             var offset = item.Data.Offset;
             var count = item.Data.Count;
 

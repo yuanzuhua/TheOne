@@ -19,9 +19,9 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
 
             repository.StoreUsers(ayende, mythz);
 
-            Blog ayendeBlog = ayende.CreateNewBlog(new Blog { Tags = { "Architecture", ".NET", "Databases" } });
+            var ayendeBlog = ayende.CreateNewBlog(new Blog { Tags = { "Architecture", ".NET", "Databases" } });
 
-            Blog mythzBlog = mythz.CreateNewBlog(new Blog { Tags = { "Architecture", ".NET", "Databases" } });
+            var mythzBlog = mythz.CreateNewBlog(new Blog { Tags = { "Architecture", ".NET", "Databases" } });
 
             ayendeBlog.StoreNewBlogPosts(new BlogPost {
                     Title = "RavenDB",
@@ -72,28 +72,28 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
         [Test]
         public void Add_comment_to_existing_post() {
             var postId = 1;
-            BlogPost blogPost = this._repository.GetBlogPost(postId);
+            var blogPost = this._repository.GetBlogPost(postId);
 
             blogPost.Comments.Add(
                 new BlogPostComment { Content = "Third Comment!", CreatedDate = DateTime.UtcNow });
 
             this._repository.StoreBlogPost(blogPost);
 
-            BlogPost refreshBlogPost = this._repository.GetBlogPost(postId);
+            var refreshBlogPost = this._repository.GetBlogPost(postId);
             Console.WriteLine(refreshBlogPost.ToJson());
         }
 
         [Test]
         public void Show_a_list_of_blogs() {
-            List<Blog> blogs = this._repository.GetAllBlogs();
+            var blogs = this._repository.GetAllBlogs();
             Console.WriteLine(blogs.ToJson());
         }
 
         [Test]
         public void Show_a_list_of_recent_posts_and_comments() {
             // Recent posts are already maintained in the repository
-            List<BlogPost> recentPosts = this._repository.GetRecentBlogPosts();
-            List<BlogPostComment> recentComments = this._repository.GetRecentBlogPostComments();
+            var recentPosts = this._repository.GetRecentBlogPosts();
+            var recentComments = this._repository.GetRecentBlogPostComments();
 
             Console.WriteLine("Recent Posts:\n" + recentPosts.ToJson());
             Console.WriteLine("Recent Comments:\n" + recentComments.ToJson());
@@ -102,35 +102,35 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
         [Test]
         public void Show_a_TagCloud() {
             // Tags are maintained in the repository
-            IDictionary<string, double> tagCloud = this._repository.GetTopTags(5);
+            var tagCloud = this._repository.GetTopTags(5);
             Console.WriteLine(tagCloud.ToJson());
         }
 
         [Test]
         public void Show_all_Categories() {
             // Categories are maintained in the repository
-            HashSet<string> allCategories = this._repository.GetAllCategories();
+            var allCategories = this._repository.GetAllCategories();
             Console.WriteLine(allCategories.ToJson());
         }
 
         [Test]
         public void Show_all_Posts_for_a_Category() {
-            List<BlogPost> documentDbPosts = this._repository.GetBlogPostsByCategory("DocumentDB");
+            var documentDbPosts = this._repository.GetBlogPostsByCategory("DocumentDB");
             Console.WriteLine(documentDbPosts.ToJson());
         }
 
         [Test]
         public void Show_post_and_all_comments() {
             var postId = 1;
-            BlogPost blogPost = this._repository.GetBlogPost(postId);
+            var blogPost = this._repository.GetBlogPost(postId);
             Console.WriteLine(blogPost.ToJson());
         }
 
         [Test]
         public void View_test_data() {
-            User mythz = this._repository.GetAllUsers().First(x => x.Name == "mythz");
-            IEnumerable<long> mythzBlogPostIds = mythz.GetBlogs().SelectMany(x => x.BlogPostIds);
-            List<BlogPost> mythzBlogPosts = this._repository.GetBlogPosts(mythzBlogPostIds);
+            var mythz = this._repository.GetAllUsers().First(x => x.Name == "mythz");
+            var mythzBlogPostIds = mythz.GetBlogs().SelectMany(x => x.BlogPostIds);
+            var mythzBlogPosts = this._repository.GetBlogPosts(mythzBlogPostIds);
 
             Console.WriteLine(mythzBlogPosts.ToJson());
         }

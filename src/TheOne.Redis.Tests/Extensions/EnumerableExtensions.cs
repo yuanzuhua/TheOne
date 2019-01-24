@@ -14,8 +14,8 @@ namespace TheOne.Redis.Tests.Extensions {
                 return thisList == otherList;
             }
 
-            IEnumerator<T> otherEnum = otherList.GetEnumerator();
-            foreach (T item in thisList) {
+            var otherEnum = otherList.GetEnumerator();
+            foreach (var item in thisList) {
                 if (!otherEnum.MoveNext()) {
                     return false;
                 }

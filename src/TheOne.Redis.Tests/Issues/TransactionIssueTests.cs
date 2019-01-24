@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using TheOne.Redis.Client;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Tests.Issues {
 
@@ -15,7 +14,7 @@ namespace TheOne.Redis.Tests.Issues {
             Console.WriteLine("CheckingThisConnection()...");
 
             using (var redis = new RedisClient(Config.MasterHost)) {
-                using (IRedisTransaction trans = redis.CreateTransaction()) {
+                using (var trans = redis.CreateTransaction()) {
                     trans.QueueCommand(
                         r => r.SetEntryInHash("Test", "Price", "123"));
                     trans.QueueCommand(
@@ -69,11 +68,11 @@ namespace TheOne.Redis.Tests.Issues {
                 this.Redis.Set("foo" + i, i);
             }
 
-            List<string> keys = this.Redis.SearchKeys("foo*");
+            var keys = this.Redis.SearchKeys("foo*");
             Assert.That(keys, Has.Count.EqualTo(5));
 
             var dict = new Dictionary<string, int>();
-            using (IRedisTransaction transaction = this.Redis.CreateTransaction()) {
+            using (var transaction = this.Redis.CreateTransaction()) {
                 foreach (var key in keys) {
                     var y = key;
                     transaction.QueueCommand(x => x.Get<int>(y), val => dict.Add(y, val));
@@ -94,11 +93,11 @@ namespace TheOne.Redis.Tests.Issues {
                 this.Redis.Set("foo" + i, i);
             }
 
-            List<string> keys = this.Redis.SearchKeys("foo*");
+            var keys = this.Redis.SearchKeys("foo*");
             Assert.That(keys, Has.Count.EqualTo(5));
 
             var values = new List<string>();
-            using (IRedisTransaction transaction = this.Redis.CreateTransaction()) {
+            using (var transaction = this.Redis.CreateTransaction()) {
                 transaction.QueueCommand(x => x.GetValues(keys), val => values = val);
                 transaction.QueueCommand(x => x.RemoveAll(keys));
                 transaction.Commit();

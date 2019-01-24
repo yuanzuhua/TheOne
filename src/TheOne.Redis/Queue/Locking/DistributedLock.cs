@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using TheOne.Redis.Client;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Queue.Locking {
 
@@ -32,7 +31,7 @@ namespace TheOne.Redis.Queue.Locking {
             acquisitionTimeout *= 1000; // convert to ms
             var tryCount = acquisitionTimeout / sleepIfLockSet + 1;
 
-            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
+            var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
             var newLockExpire = CalculateLockExpire(ts, lockTimeout);
 
             var localClient = (RedisClient)client;
@@ -55,7 +54,7 @@ namespace TheOne.Redis.Queue.Locking {
                 }
 
                 // handle possibility of crashed client still holding the lock
-                using (IRedisPipeline pipe = localClient.CreatePipeline()) {
+                using (var pipe = localClient.CreatePipeline()) {
                     long lockValue = 0;
                     pipe.QueueCommand(r => ((RedisNativeClient)r).Watch(key));
                     pipe.QueueCommand(r => ((RedisNativeClient)r).Get(key), x => lockValue = x != null ? BitConverter.ToInt64(x, 0) : 0);
@@ -66,7 +65,7 @@ namespace TheOne.Redis.Queue.Locking {
                     if (lockValue < ts.TotalSeconds) {
                         ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
                         newLockExpire = CalculateLockExpire(ts, lockTimeout);
-                        using (IRedisTransaction trans = localClient.CreateTransaction()) {
+                        using (var trans = localClient.CreateTransaction()) {
                             var expire = newLockExpire;
                             trans.QueueCommand(r => ((RedisNativeClient)r).Set(key, BitConverter.GetBytes(expire)));
                             if (trans.Commit()) {
@@ -103,7 +102,7 @@ namespace TheOne.Redis.Queue.Locking {
 
             long lockVal = 0;
             var localClient = (RedisClient)client;
-            using (IRedisPipeline pipe = localClient.CreatePipeline()) {
+            using (var pipe = localClient.CreatePipeline()) {
 
                 pipe.QueueCommand(r => ((RedisNativeClient)r).Watch(key));
                 pipe.QueueCommand(r => ((RedisNativeClient)r).Get(key),
@@ -122,7 +121,7 @@ namespace TheOne.Redis.Queue.Locking {
                 return false;
             }
 
-            using (IRedisTransaction trans = localClient.CreateTransaction()) {
+            using (var trans = localClient.CreateTransaction()) {
                 trans.QueueCommand(r => ((RedisNativeClient)r).Del(key));
                 var rc = trans.Commit();
                 if (!rc) {

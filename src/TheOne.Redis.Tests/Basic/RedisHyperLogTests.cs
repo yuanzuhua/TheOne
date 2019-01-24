@@ -32,7 +32,7 @@ namespace TheOne.Redis.Tests.Basic {
 
             this.Redis.Set("key", "value", TimeSpan.FromDays(14));
 
-            byte[] value = this.Redis.Get("key");
+            var value = this.Redis.Get("key");
 
             Console.WriteLine(value.FromUtf8Bytes());
         }

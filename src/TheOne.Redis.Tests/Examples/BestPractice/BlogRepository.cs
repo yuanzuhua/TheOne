@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TheOne.Redis.Client;
 using TheOne.Redis.Common;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Tests.Examples.BestPractice {
 
@@ -91,9 +90,9 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
         }
 
         public void StoreUsers(params User[] users) {
-            IRedisTypedClient<User> redisUsers = this._redis.As<User>();
+            var redisUsers = this._redis.As<User>();
             this.Inject(users);
-            foreach (User value in users.Where(x => x.Id == default(int))) {
+            foreach (var value in users.Where(x => x.Id == default(int))) {
                 value.Id = redisUsers.GetNextSequence();
             }
 
@@ -101,13 +100,13 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
         }
 
         public List<User> GetAllUsers() {
-            IRedisTypedClient<User> redisUsers = this._redis.As<User>();
+            var redisUsers = this._redis.As<User>();
             return this.Inject(redisUsers.GetAll());
         }
 
         public void StoreBlogs(User user, params Blog[] blogs) {
-            IRedisTypedClient<Blog> redisBlogs = this._redis.As<Blog>();
-            foreach (Blog blog in blogs) {
+            var redisBlogs = this._redis.As<Blog>();
+            foreach (var blog in blogs) {
                 blog.Id = blog.Id != default(int) ? blog.Id : redisBlogs.GetNextSequence();
                 blog.UserId = user.Id;
                 blog.UserName = user.Name;
@@ -117,7 +116,7 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
                 }
             }
 
-            using (IRedisTransaction trans = this._redis.CreateTransaction()) {
+            using (var trans = this._redis.CreateTransaction()) {
                 trans.QueueCommand(x => x.Store(user));
                 trans.QueueCommand(x => x.StoreAll(blogs));
 
@@ -128,30 +127,30 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
         }
 
         public List<Blog> GetBlogs(IEnumerable<long> blogIds) {
-            IRedisTypedClient<Blog> redisBlogs = this._redis.As<Blog>();
+            var redisBlogs = this._redis.As<Blog>();
             return this.Inject(
                 redisBlogs.GetByIds(blogIds.Select(x => x.ToString())));
         }
 
         public List<Blog> GetAllBlogs() {
-            IRedisTypedClient<Blog> redisBlogs = this._redis.As<Blog>();
+            var redisBlogs = this._redis.As<Blog>();
             return this.Inject(redisBlogs.GetAll());
         }
 
         public List<BlogPost> GetBlogPosts(IEnumerable<long> blogPostIds) {
-            IRedisTypedClient<BlogPost> redisBlogPosts = this._redis.As<BlogPost>();
+            var redisBlogPosts = this._redis.As<BlogPost>();
             return redisBlogPosts.GetByIds(blogPostIds.Select(x => x.ToString())).ToList();
         }
 
         public void StoreNewBlogPosts(Blog blog, params BlogPost[] blogPosts) {
-            IRedisTypedClient<BlogPost> redisBlogPosts = this._redis.As<BlogPost>();
-            IRedisTypedClient<BlogPostComment> redisComments = this._redis.As<BlogPostComment>();
+            var redisBlogPosts = this._redis.As<BlogPost>();
+            var redisComments = this._redis.As<BlogPostComment>();
 
             // Get wrapper around a strongly-typed Redis server-side List
-            IRedisList<BlogPost> recentPosts = redisBlogPosts.Lists[_recentBlogPostsKey];
-            IRedisList<BlogPostComment> recentComments = redisComments.Lists[_recentBlogPostCommentsKey];
+            var recentPosts = redisBlogPosts.Lists[_recentBlogPostsKey];
+            var recentComments = redisComments.Lists[_recentBlogPostCommentsKey];
 
-            foreach (BlogPost blogPost in blogPosts) {
+            foreach (var blogPost in blogPosts) {
                 blogPost.Id = blogPost.Id != default(int) ? blogPost.Id : redisBlogPosts.GetNextSequence();
                 blogPost.BlogId = blog.Id;
                 if (!blog.BlogPostIds.Contains(blogPost.Id)) {
@@ -176,7 +175,7 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
             recentPosts.Trim(0, 4);
             recentComments.Trim(0, 4);
 
-            using (IRedisTransaction trans = this._redis.CreateTransaction()) {
+            using (var trans = this._redis.CreateTransaction()) {
                 trans.QueueCommand(x => x.Store(blog));
                 trans.QueueCommand(x => x.StoreAll(blogPosts));
 
@@ -185,12 +184,12 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
         }
 
         public List<BlogPost> GetRecentBlogPosts() {
-            IRedisTypedClient<BlogPost> redisBlogPosts = this._redis.As<BlogPost>();
+            var redisBlogPosts = this._redis.As<BlogPost>();
             return redisBlogPosts.Lists[_recentBlogPostsKey].GetAll();
         }
 
         public List<BlogPostComment> GetRecentBlogPostComments() {
-            IRedisTypedClient<BlogPostComment> redisComments = this._redis.As<BlogPostComment>();
+            var redisComments = this._redis.As<BlogPostComment>();
             return redisComments.Lists[_recentBlogPostCommentsKey].GetAll();
         }
 
@@ -212,14 +211,14 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
 
         public List<BlogPost> GetBlogPostsByCategory(string categoryName) {
             var categoryUrn = UrnId.Create(_categoryTypeName, categoryName);
-            HashSet<string> documentDbPostIds = this._redis.GetAllItemsFromSet(categoryUrn);
+            var documentDbPostIds = this._redis.GetAllItemsFromSet(categoryUrn);
 
             return this._redis.GetByIds<BlogPost>(documentDbPostIds.ToArray()).ToList();
         }
 
         public List<T> Inject<T>(IEnumerable<T> entities)
             where T : IHasBlogRepository {
-            List<T> entitiesList = entities.ToList();
+            var entitiesList = entities.ToList();
             entitiesList.ForEach(x => x.Repository = this);
             return entitiesList;
         }

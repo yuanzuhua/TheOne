@@ -118,12 +118,12 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_AddToRecentsList() {
-            IRedisTypedClient<Answer> redisAnswers = this.Redis.As<Answer>();
+            var redisAnswers = this.Redis.As<Answer>();
 
             redisAnswers.StoreAll(this._q1Answers);
             this._q1Answers.ForEach(redisAnswers.AddToRecentsList);
 
-            List<Answer> allAnswers = redisAnswers.GetLatestFromRecentsList(0, int.MaxValue);
+            var allAnswers = redisAnswers.GetLatestFromRecentsList(0, int.MaxValue);
             allAnswers.Sort((x, y) => x.Id.CompareTo(y.Id));
 
             Assert.That(allAnswers.EquivalentTo(this._q1Answers));
@@ -137,7 +137,7 @@ namespace TheOne.Redis.Tests.Client {
 
             this._redisQuestions.DeleteRelatedEntities<Answer>(this._question1.Id);
 
-            List<Answer> answers = this._redisQuestions.GetRelatedEntities<Answer>(this._question1.Id);
+            var answers = this._redisQuestions.GetRelatedEntities<Answer>(this._question1.Id);
 
             Assert.That(answers.Count, Is.EqualTo(0));
         }
@@ -148,24 +148,24 @@ namespace TheOne.Redis.Tests.Client {
 
             this._redisQuestions.StoreRelatedEntities(this._question1.Id, this._q1Answers);
 
-            Answer answerToDelete = this._q1Answers[3];
+            var answerToDelete = this._q1Answers[3];
             this._redisQuestions.DeleteRelatedEntity<Answer>(this._question1.Id, answerToDelete.Id);
 
             this._q1Answers.RemoveAll(x => x.Id == answerToDelete.Id);
 
-            List<Answer> answers = this._redisQuestions.GetRelatedEntities<Answer>(this._question1.Id);
+            var answers = this._redisQuestions.GetRelatedEntities<Answer>(this._question1.Id);
 
             Assert.That(answers.EquivalentTo(answers));
         }
 
         [Test]
         public void Can_GetEarliestFromRecentsList() {
-            IRedisTypedClient<Answer> redisAnswers = this.Redis.As<Answer>();
+            var redisAnswers = this.Redis.As<Answer>();
 
             redisAnswers.StoreAll(this._q1Answers);
             this._q1Answers.ForEach(redisAnswers.AddToRecentsList);
 
-            List<Answer> earliest3Answers = redisAnswers.GetEarliestFromRecentsList(0, 3);
+            var earliest3Answers = redisAnswers.GetEarliestFromRecentsList(0, 3);
 
             var i = 0;
             var expectedAnswers = new List<Answer> {
@@ -179,12 +179,12 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_GetLatestFromRecentsList() {
-            IRedisTypedClient<Answer> redisAnswers = this.Redis.As<Answer>();
+            var redisAnswers = this.Redis.As<Answer>();
 
             redisAnswers.StoreAll(this._q1Answers);
             this._q1Answers.ForEach(redisAnswers.AddToRecentsList);
 
-            List<Answer> latest3Answers = redisAnswers.GetLatestFromRecentsList(0, 3);
+            var latest3Answers = redisAnswers.GetLatestFromRecentsList(0, 3);
 
             var i = this._q1Answers.Count;
             var expectedAnswers = new List<Answer> {
@@ -200,7 +200,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_GetRelatedEntities_When_Empty() {
             this._redisQuestions.Store(this._question1);
 
-            List<Answer> answers = this._redisQuestions.GetRelatedEntities<Answer>(this._question1.Id);
+            var answers = this._redisQuestions.GetRelatedEntities<Answer>(this._question1.Id);
 
             Assert.That(answers, Has.Count.EqualTo(0));
         }
@@ -211,7 +211,7 @@ namespace TheOne.Redis.Tests.Client {
 
             this._redisQuestions.StoreRelatedEntities(this._question1.Id, this._q1Answers);
 
-            List<Answer> actualAnswers = this._redisQuestions.GetRelatedEntities<Answer>(this._question1.Id);
+            var actualAnswers = this._redisQuestions.GetRelatedEntities<Answer>(this._question1.Id);
             actualAnswers.Sort((x, y) => x.Id.CompareTo(y.Id));
 
             Assert.That(actualAnswers.EquivalentTo(this._q1Answers));
@@ -219,7 +219,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_StoreRelatedEntities_with_StringId() {
-            IRedisTypedClient<Customer> redisCustomers = this.Redis.As<Customer>();
+            var redisCustomers = this.Redis.As<Customer>();
             var customer = new Customer { Id = "CUST-01", Name = "Customer" };
 
             redisCustomers.Store(customer);
@@ -231,7 +231,7 @@ namespace TheOne.Redis.Tests.Client {
 
             redisCustomers.StoreRelatedEntities(customer.Id, addresses);
 
-            List<CustomerAddress> actualAddresses = redisCustomers.GetRelatedEntities<CustomerAddress>(customer.Id);
+            var actualAddresses = redisCustomers.GetRelatedEntities<CustomerAddress>(customer.Id);
 
             Assert.That(actualAddresses.Select(x => x.Id).ToArray(),
                 Is.EquivalentTo(new[] { "ADDR-01", "ADDR-02" }));

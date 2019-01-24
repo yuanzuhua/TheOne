@@ -1,6 +1,5 @@
 using System;
 using TheOne.Redis.Common;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Client.Internal {
 
@@ -17,8 +16,8 @@ namespace TheOne.Redis.Client.Internal {
                 // This pattern is taken from the redis command for SETNX http://redis.io/commands/setnx
 
                 // Calculate a unix time for when the lock should expire
-                TimeSpan realSpan = timeout ?? new TimeSpan(365, 0, 0, 0); // if nothing is passed in the timeout hold for a year
-                DateTime expireTime = DateTime.UtcNow.Add(realSpan);
+                var realSpan = timeout ?? new TimeSpan(365, 0, 0, 0); // if nothing is passed in the timeout hold for a year
+                var expireTime = DateTime.UtcNow.Add(realSpan);
                 var lockString = (expireTime.ToUnixTimeMs() + 1).ToString();
 
                 // Try to set the lock, if it does not exist this will succeed and the lock is obtained
@@ -48,7 +47,7 @@ namespace TheOne.Redis.Client.Internal {
                 // acquire the lock. The above call to Watch(_lockKey) enrolled the key in monitoring, so if it changes
                 // before we call Commit() below, the Commit will fail and return false, which means that another thread 
                 // was able to acquire the lock before we finished processing.
-                using (IRedisTransaction trans = redisClient.CreateTransaction()) {
+                using (var trans = redisClient.CreateTransaction()) {
                     // we started the "Watch" above; this tx will succeed if the value has not moved 
                     trans.QueueCommand(r => r.Set(key, lockString));
                     return trans.Commit(); // returns false if Transaction failed

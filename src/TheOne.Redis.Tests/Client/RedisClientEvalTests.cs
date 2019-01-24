@@ -18,10 +18,10 @@ namespace TheOne.Redis.Tests.Client {
                 return val";
 
             var i = 0;
-            List<string> alphabet = Enumerable.Range(0, 26).Select(c => ((char)('A' + c)).ToString()).ToList();
+            var alphabet = Enumerable.Range(0, 26).Select(c => ((char)('A' + c)).ToString()).ToList();
             alphabet.ForEach(x => this.Redis.AddItemToSortedSet("zalphabet", x, i++));
 
-            List<string> letters = this.Redis.ExecLuaAsList(luaBody, new[] { "zalphabet" }, new[] { "3" });
+            var letters = this.Redis.ExecLuaAsList(luaBody, new[] { "zalphabet" }, new[] { "3" });
 
             Console.WriteLine(letters.ToJson());
             Assert.That(letters, Is.EquivalentTo(new[] { "A", "B", "C" }));
@@ -35,10 +35,10 @@ namespace TheOne.Redis.Tests.Client {
                 return val";
 
             var i = 0;
-            List<string> alphabet = Enumerable.Range(0, 26).Select(c => ((char)('A' + c)).ToString()).ToList();
+            var alphabet = Enumerable.Range(0, 26).Select(c => ((char)('A' + c)).ToString()).ToList();
             alphabet.ForEach(x => this.Redis.AddItemToSortedSet("zalphabet", x, i++));
 
-            List<string> letters = this.Redis.ExecLuaAsList(luaBody, new[] { "zalphabet" }, new[] { "3" });
+            var letters = this.Redis.ExecLuaAsList(luaBody, new[] { "zalphabet" }, new[] { "3" });
 
             Console.WriteLine(letters.ToJson());
             Assert.That(letters, Is.EquivalentTo(new[] { "X", "Y", "Z" }));
@@ -52,7 +52,7 @@ namespace TheOne.Redis.Tests.Client {
 
             Assert.That(this.Redis.HasLuaScript(sha1));
 
-            Dictionary<string, bool> existsMap = this.Redis.WhichLuaScriptsExists(sha1, sha2, sha3);
+            var existsMap = this.Redis.WhichLuaScriptsExists(sha1, sha2, sha3);
             Assert.That(existsMap[sha1]);
             Assert.That(!existsMap[sha2]);
             Assert.That(existsMap[sha3]);
@@ -90,13 +90,13 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Eval_MultiData_with_args() {
-            List<string> strList = this.Redis.ExecLuaAsList(@"return {ARGV[1],ARGV[2],ARGV[3]}", "at", "dot", "com");
+            var strList = this.Redis.ExecLuaAsList(@"return {ARGV[1],ARGV[2],ARGV[3]}", "at", "dot", "com");
             Assert.That(strList, Is.EquivalentTo(new List<string> { "at", "dot", "com" }));
         }
 
         [Test]
         public void Can_Eval_MultiData_with_keys_and_args() {
-            List<string> strList = this.Redis.ExecLuaAsList(@"return {KEYS[1],ARGV[1],ARGV[2]}", new[] { "at" }, new[] { "dot", "com" });
+            var strList = this.Redis.ExecLuaAsList(@"return {KEYS[1],ARGV[1],ARGV[2]}", new[] { "at" }, new[] { "dot", "com" });
             Assert.That(strList, Is.EquivalentTo(new List<string> { "at", "dot", "com" }));
         }
 

@@ -26,14 +26,14 @@ namespace TheOne.Redis.ClientManager {
 
         /// <inheritdoc />
         public void Insert(int index, T item) {
-            using (IRedisClient redis = this.GetClient()) {
+            using (var redis = this.GetClient()) {
                 redis.As<T>().Lists[this._key].Insert(index, item);
             }
         }
 
         /// <inheritdoc />
         public void RemoveAt(int index) {
-            using (IRedisClient redis = this.GetClient()) {
+            using (var redis = this.GetClient()) {
                 redis.As<T>().Lists[this._key].RemoveAt(index);
             }
         }
@@ -42,7 +42,7 @@ namespace TheOne.Redis.ClientManager {
         public T this[int index] {
             get => this.GetRedisList()[index];
             set {
-                using (IRedisClient redis = this.GetClient()) {
+                using (var redis = this.GetClient()) {
                     redis.As<T>().Lists[this._key][index] = value;
                 }
             }
@@ -50,14 +50,14 @@ namespace TheOne.Redis.ClientManager {
 
         /// <inheritdoc />
         public void Add(T item) {
-            using (IRedisClient redis = this.GetClient()) {
+            using (var redis = this.GetClient()) {
                 redis.As<T>().Lists[this._key].Add(item);
             }
         }
 
         /// <inheritdoc />
         public void Clear() {
-            using (IRedisClient redis = this.GetClient()) {
+            using (var redis = this.GetClient()) {
                 redis.As<T>().Lists[this._key].Clear();
             }
         }
@@ -104,8 +104,8 @@ namespace TheOne.Redis.ClientManager {
         }
 
         private List<T> GetRedisList() {
-            using (IRedisClient redis = this.GetClient()) {
-                IRedisTypedClient<T> client = redis.As<T>();
+            using (var redis = this.GetClient()) {
+                var client = redis.As<T>();
                 return client.Lists[this._key].ToList();
             }
         }

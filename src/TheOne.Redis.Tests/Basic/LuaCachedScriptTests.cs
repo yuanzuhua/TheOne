@@ -4,7 +4,6 @@ using System.Linq;
 using NUnit.Framework;
 using TheOne.Redis.Client;
 using TheOne.Redis.Common;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Tests.Basic {
 
@@ -96,7 +95,7 @@ return cjson.encode(keyAttrs)";
             using (var redis = new RedisClient(Config.MasterHost)) {
                 AddTestKeys(redis, 20);
 
-                RedisText r = redis.ExecCachedLua(_luaScript, sha1 => redis.ExecLuaSha(sha1, "key:*", "10"));
+                var r = redis.ExecCachedLua(_luaScript, sha1 => redis.ExecLuaSha(sha1, "key:*", "10"));
                 Assert.That(r.Children.Count, Is.EqualTo(10));
 
                 r = redis.ExecCachedLua(_luaScript, sha1 => redis.ExecLuaSha(sha1, "key:*", "10"));
@@ -107,7 +106,7 @@ return cjson.encode(keyAttrs)";
         [Test]
         public void Can_call_Cached_Lua_even_after_script_is_flushed() {
             using (var redis = new RedisClient(Config.MasterHost)) {
-                RedisText r = redis.ExecCachedLua(_luaScript, sha1 => redis.ExecLuaSha(sha1, "key:*", "10"));
+                var r = redis.ExecCachedLua(_luaScript, sha1 => redis.ExecLuaSha(sha1, "key:*", "10"));
                 Assert.That(r.Children.Count, Is.EqualTo(10));
 
                 redis.ScriptFlush();
@@ -122,7 +121,7 @@ return cjson.encode(keyAttrs)";
             using (var redis = new RedisClient(Config.MasterHost)) {
                 AddTestKeys(redis, 20);
 
-                RedisText r = redis.ExecLua(_luaScript, "key:*", "10");
+                var r = redis.ExecLua(_luaScript, "key:*", "10");
                 Assert.That(r.Children.Count, Is.EqualTo(10));
 
                 r = redis.ExecLua(_luaScript, "key:*", "40");
@@ -141,7 +140,7 @@ return cjson.encode(keyAttrs)";
 
                 Assert.That(results.Count, Is.EqualTo(10));
 
-                SearchResult result = results[0];
+                var result = results[0];
                 Assert.That(result.Id.StartsWith("key:"));
                 Assert.That(result.Type, Is.EqualTo("string"));
                 Assert.That(result.Size, Is.GreaterThan("value:".Length));
@@ -155,14 +154,14 @@ return cjson.encode(keyAttrs)";
             var limit = 10;
             var query = "key:*";
 
-            List<string> keys = redis.ScanAllKeys(query, limit).Take(limit).ToList();
+            var keys = redis.ScanAllKeys(query, limit).Take(limit).ToList();
 
             var keyTypes = new Dictionary<string, string>();
             var keyTtls = new Dictionary<string, long>();
             var keySizes = new Dictionary<string, long>();
 
             if (keys.Count > 0) {
-                using (IRedisPipeline pipeline = redis.CreatePipeline()) {
+                using (var pipeline = redis.CreatePipeline()) {
                     foreach (var value in keys) {
                         pipeline.QueueCommand(r => r.Type(value), x => keyTypes[value] = x);
                     }
@@ -174,8 +173,8 @@ return cjson.encode(keyAttrs)";
                     pipeline.Flush();
                 }
 
-                using (IRedisPipeline pipeline = redis.CreatePipeline()) {
-                    foreach (KeyValuePair<string, string> entry in keyTypes) {
+                using (var pipeline = redis.CreatePipeline()) {
+                    foreach (var entry in keyTypes) {
                         var key = entry.Key;
                         switch (entry.Value) {
                             case "string":
@@ -200,7 +199,7 @@ return cjson.encode(keyAttrs)";
                 }
             }
 
-            List<SearchResult> results = keys.Select(x => new SearchResult {
+            var results = keys.Select(x => new SearchResult {
                 Id = x,
                 Type = keyTypes.ContainsKey(x) ? keyTypes[x] : default,
                 Ttl = keyTtls.ContainsKey(x) ? keyTtls[x] : default,
@@ -209,7 +208,7 @@ return cjson.encode(keyAttrs)";
 
             Assert.That(results.Count, Is.EqualTo(limit));
 
-            SearchResult result = results[0];
+            var result = results[0];
             Assert.That(result.Id.StartsWith("key:"));
             Assert.That(result.Type, Is.EqualTo("string"));
             Assert.That(result.Size, Is.GreaterThan("value:".Length));

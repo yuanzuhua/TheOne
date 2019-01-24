@@ -26,12 +26,12 @@ namespace TheOne.Redis.Tests.Examples {
             /// <param name="userId" >The user global id.</param>
             /// <param name="clientSessionIds" >The client session ids.</param>
             public void RemoveClientSession(Guid userId, ICollection<Guid> clientSessionIds) {
-                UserSession userSession = this.GetUserSession(userId);
+                var userSession = this.GetUserSession(userId);
                 if (userSession == null) {
                     return;
                 }
 
-                foreach (Guid clientSessionId in clientSessionIds) {
+                foreach (var clientSessionId in clientSessionIds) {
                     userSession.RemoveClientSession(clientSessionId);
                 }
 
@@ -50,14 +50,14 @@ namespace TheOne.Redis.Tests.Examples {
             /// <param name="userClientGlobalId" >The user client global id.</param>
             public UserClientSession StoreClientSession(Guid userId, string userName, string shardId, string ipAddress,
                 string base64ClientModulus, Guid userClientGlobalId) {
-                UserSession userSession = this.GetOrCreateSession(userId, userName, shardId);
+                var userSession = this.GetOrCreateSession(userId, userName, shardId);
 
-                UserClientSession existingClientSession = userSession.GetClientSessionWithClientId(userClientGlobalId);
+                var existingClientSession = userSession.GetClientSessionWithClientId(userClientGlobalId);
                 if (existingClientSession != null) {
                     userSession.RemoveClientSession(existingClientSession.Id);
                 }
 
-                UserClientSession newClientSession = userSession.CreateNewClientSession(
+                var newClientSession = userSession.CreateNewClientSession(
                     ipAddress,
                     base64ClientModulus,
                     userClientGlobalId);
@@ -104,7 +104,7 @@ namespace TheOne.Redis.Tests.Examples {
             /// <param name="userName" >Title of the user.</param>
             /// <param name="shardId" >shardId</param>
             public UserSession GetOrCreateSession(Guid userId, string userName, string shardId) {
-                UserSession userSession = this.GetUserSession(userId);
+                var userSession = this.GetUserSession(userId);
                 if (userSession == null) {
                     userSession = new UserSession {
                         ShardId = shardId,
@@ -126,7 +126,7 @@ namespace TheOne.Redis.Tests.Examples {
             /// <param name="userId" >The user global id.</param>
             /// <param name="clientSessionId" >The client session id.</param>
             public UserClientSession GetUserClientSession(Guid userId, Guid clientSessionId) {
-                UserSession userSession = this.GetUserSession(userId);
+                var userSession = this.GetUserSession(userId);
                 return userSession?.GetClientSession(clientSessionId);
             }
 
@@ -182,7 +182,7 @@ namespace TheOne.Redis.Tests.Examples {
                 get {
                     DateTime? maxExpiryDate = null;
 
-                    foreach (UserClientSession session in this.PublicClientSessions.Values) {
+                    foreach (var session in this.PublicClientSessions.Values) {
                         if (maxExpiryDate == null || session.ExpiryDate > maxExpiryDate) {
                             maxExpiryDate = session.ExpiryDate;
                         }
@@ -227,7 +227,7 @@ namespace TheOne.Redis.Tests.Examples {
             }
 
             public UserClientSession GetClientSessionWithClientId(Guid userClientId) {
-                foreach (KeyValuePair<Guid, UserClientSession> entry in this.PublicClientSessions) {
+                foreach (var entry in this.PublicClientSessions) {
                     if (entry.Value.UserClientGlobalId == userClientId) {
                         return entry.Value;
                     }
@@ -257,13 +257,13 @@ namespace TheOne.Redis.Tests.Examples {
             private static void RemoveExpiredSessions(IDictionary<Guid, UserClientSession> clientSessions) {
                 var expiredSessionKeys = new List<Guid>();
 
-                foreach (KeyValuePair<Guid, UserClientSession> clientSession in clientSessions) {
+                foreach (var clientSession in clientSessions) {
                     if (clientSession.Value.ExpiryDate < DateTime.UtcNow) {
                         expiredSessionKeys.Add(clientSession.Key);
                     }
                 }
 
-                foreach (Guid sessionKey in expiredSessionKeys) {
+                foreach (var sessionKey in expiredSessionKeys) {
                     clientSessions.Remove(sessionKey);
                 }
             }
@@ -274,7 +274,7 @@ namespace TheOne.Redis.Tests.Examples {
 
             public UserClientSession GetClientSession(Guid clientSessionId) {
 
-                if (this.PublicClientSessions.TryGetValue(clientSessionId, out UserClientSession session)) {
+                if (this.PublicClientSessions.TryGetValue(clientSessionId, out var session)) {
                     return session;
                 }
 
@@ -331,9 +331,9 @@ namespace TheOne.Redis.Tests.Examples {
 
         [Test]
         public void Can_add_multiple_UserClientSessions() {
-            CachedUserSessionManager cacheManager = this.GetCacheManager(this._redisCache);
+            var cacheManager = this.GetCacheManager(this._redisCache);
 
-            UserClientSession clientSession1 = cacheManager.StoreClientSession(
+            var clientSession1 = cacheManager.StoreClientSession(
                 _userId,
                 _userName,
                 _shardId,
@@ -341,7 +341,7 @@ namespace TheOne.Redis.Tests.Examples {
                 _userClientKey,
                 _userClientGlobalId1);
 
-            UserClientSession clientSession2 = cacheManager.StoreClientSession(
+            var clientSession2 = cacheManager.StoreClientSession(
                 _userId,
                 _userName,
                 _shardId,
@@ -349,11 +349,11 @@ namespace TheOne.Redis.Tests.Examples {
                 _userClientKey,
                 _userClientGlobalId2);
 
-            UserClientSession resolvedClientSession1 = cacheManager.GetUserClientSession(
+            var resolvedClientSession1 = cacheManager.GetUserClientSession(
                 clientSession1.UserId,
                 clientSession1.Id);
 
-            UserClientSession resolvedClientSession2 = cacheManager.GetUserClientSession(
+            var resolvedClientSession2 = cacheManager.GetUserClientSession(
                 clientSession2.UserId,
                 clientSession2.Id);
 
@@ -363,9 +363,9 @@ namespace TheOne.Redis.Tests.Examples {
 
         [Test]
         public void Can_add_single_UserSession() {
-            CachedUserSessionManager cacheManager = this.GetCacheManager(this._redisCache);
+            var cacheManager = this.GetCacheManager(this._redisCache);
 
-            UserClientSession clientSession = cacheManager.StoreClientSession(
+            var clientSession = cacheManager.StoreClientSession(
                 _userId,
                 _userName,
                 _shardId,
@@ -373,16 +373,16 @@ namespace TheOne.Redis.Tests.Examples {
                 _userClientKey,
                 _userClientGlobalId1);
 
-            UserClientSession resolvedClientSession = cacheManager.GetUserClientSession(clientSession.UserId, clientSession.Id);
+            var resolvedClientSession = cacheManager.GetUserClientSession(clientSession.UserId, clientSession.Id);
 
             AssertClientSessionsAreEqual(clientSession, resolvedClientSession);
         }
 
         [Test]
         public void Does_remove_UserClientSession() {
-            CachedUserSessionManager cacheManager = this.GetCacheManager(this._redisCache);
+            var cacheManager = this.GetCacheManager(this._redisCache);
 
-            UserClientSession clientSession1 = cacheManager.StoreClientSession(
+            var clientSession1 = cacheManager.StoreClientSession(
                 _userId,
                 _userName,
                 _shardId,
@@ -390,8 +390,8 @@ namespace TheOne.Redis.Tests.Examples {
                 _userClientKey,
                 _userClientGlobalId1);
 
-            UserSession userSession = cacheManager.GetUserSession(_userId);
-            UserClientSession resolvedClientSession1 = userSession.GetClientSession(clientSession1.Id);
+            var userSession = cacheManager.GetUserSession(_userId);
+            var resolvedClientSession1 = userSession.GetClientSession(clientSession1.Id);
             AssertClientSessionsAreEqual(resolvedClientSession1, clientSession1);
 
             resolvedClientSession1.ExpiryDate = DateTime.UtcNow.AddSeconds(-1);

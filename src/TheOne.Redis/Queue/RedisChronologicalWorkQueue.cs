@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using TheOne.Redis.Client;
-using TheOne.Redis.ClientManager;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Queue {
 
@@ -18,11 +16,11 @@ namespace TheOne.Redis.Queue {
         ///     Enqueue incoming messages
         /// </summary>
         public void Enqueue(string workItemId, T workItem, double time) {
-            using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =
+            using (var disposableClient =
                 this.ClientManager.GetDisposableClient<SerializingRedisClient>()) {
-                SerializingRedisClient client = disposableClient.Client;
-                byte[] workItemIdRaw = client.Serialize(workItemId);
-                using (IRedisPipeline pipe = client.CreatePipeline()) {
+                var client = disposableClient.Client;
+                var workItemIdRaw = client.Serialize(workItemId);
+                using (var pipe = client.CreatePipeline()) {
                     pipe.QueueCommand(r => ((RedisNativeClient)r).HSet(this.WorkQueue, workItemIdRaw, client.Serialize(workItem)));
                     pipe.QueueCommand(r => ((RedisNativeClient)r).ZAdd(this.PendingWorkItemIdQueue, time, workItemIdRaw));
                     pipe.Flush();
@@ -35,16 +33,16 @@ namespace TheOne.Redis.Queue {
         ///     Dequeue next batch of work items
         /// </summary>
         public IList<KeyValuePair<string, T>> Dequeue(double minTime, double maxTime, int maxBatchSize) {
-            using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =
+            using (var disposableClient =
                 this.ClientManager.GetDisposableClient<SerializingRedisClient>()) {
-                SerializingRedisClient client = disposableClient.Client;
+                var client = disposableClient.Client;
 
                 // 1. get next work item batch 
                 var dequeueItems = new List<KeyValuePair<string, T>>();
-                byte[][] itemIds = client.ZRangeByScore(this.PendingWorkItemIdQueue, minTime, maxTime, null, maxBatchSize);
+                var itemIds = client.ZRangeByScore(this.PendingWorkItemIdQueue, minTime, maxTime, null, maxBatchSize);
                 if (itemIds != null && itemIds.Length > 0) {
 
-                    byte[][] rawItems = client.HMGet(this.WorkQueue, itemIds);
+                    var rawItems = client.HMGet(this.WorkQueue, itemIds);
                     IList<byte[]> toDelete = new List<byte[]>();
                     for (var i = 0; i < itemIds.Length; ++i) {
                         dequeueItems.Add(new KeyValuePair<string, T>(client.Deserialize(itemIds[i]) as string,
@@ -53,9 +51,9 @@ namespace TheOne.Redis.Queue {
                     }
 
                     // delete batch of keys
-                    using (IRedisPipeline pipe = client.CreatePipeline()) {
-                        foreach (byte[] rawId in toDelete) {
-                            byte[] myRawId = rawId;
+                    using (var pipe = client.CreatePipeline()) {
+                        foreach (var rawId in toDelete) {
+                            var myRawId = rawId;
                             pipe.QueueCommand(r => ((RedisNativeClient)r).HDel(this.WorkQueue, myRawId));
                             pipe.QueueCommand(r => ((RedisNativeClient)r).ZRem(this.PendingWorkItemIdQueue, myRawId));
                         }

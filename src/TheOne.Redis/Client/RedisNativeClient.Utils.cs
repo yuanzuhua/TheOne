@@ -8,7 +8,6 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using TheOne.Logging;
 using TheOne.Redis.Client.Internal;
@@ -38,7 +37,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(luaBody));
             }
 
-            byte[][] cmdArgs = MergeCommandWithArgs(Commands.Eval, luaBody.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
+            var cmdArgs = MergeCommandWithArgs(Commands.Eval, luaBody.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
             return this.SendExpectLong(cmdArgs);
         }
 
@@ -48,7 +47,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(sha1));
             }
 
-            byte[][] cmdArgs = MergeCommandWithArgs(Commands.EvalSha, sha1.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
+            var cmdArgs = MergeCommandWithArgs(Commands.EvalSha, sha1.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
             return this.SendExpectLong(cmdArgs);
         }
 
@@ -58,7 +57,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(luaBody));
             }
 
-            byte[][] cmdArgs = MergeCommandWithArgs(Commands.Eval, luaBody.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
+            var cmdArgs = MergeCommandWithArgs(Commands.Eval, luaBody.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
             return this.SendExpectData(cmdArgs).FromUtf8Bytes();
         }
 
@@ -68,7 +67,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(sha1));
             }
 
-            byte[][] cmdArgs = MergeCommandWithArgs(Commands.EvalSha, sha1.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
+            var cmdArgs = MergeCommandWithArgs(Commands.EvalSha, sha1.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
             return this.SendExpectData(cmdArgs).FromUtf8Bytes();
         }
 
@@ -78,7 +77,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(luaBody));
             }
 
-            byte[][] cmdArgs = MergeCommandWithArgs(Commands.Eval, luaBody.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
+            var cmdArgs = MergeCommandWithArgs(Commands.Eval, luaBody.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
             return this.SendExpectMultiData(cmdArgs);
         }
 
@@ -88,7 +87,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(sha1));
             }
 
-            byte[][] cmdArgs = MergeCommandWithArgs(Commands.EvalSha, sha1.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
+            var cmdArgs = MergeCommandWithArgs(Commands.EvalSha, sha1.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
             return this.SendExpectMultiData(cmdArgs);
         }
 
@@ -98,7 +97,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(sha1));
             }
 
-            byte[][] cmdArgs = MergeCommandWithArgs(Commands.EvalSha, sha1.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
+            var cmdArgs = MergeCommandWithArgs(Commands.EvalSha, sha1.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
             return this.RawCommand(cmdArgs);
         }
 
@@ -108,10 +107,10 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(luaBody));
             }
 
-            byte[] buffer = luaBody.ToUtf8Bytes();
+            var buffer = luaBody.ToUtf8Bytes();
             byte[] sha1Hash;
 
-            using (SHA1 sha1 = SHA1.Create()) {
+            using (var sha1 = SHA1.Create()) {
                 sha1Hash = sha1.ComputeHash(buffer);
             }
 
@@ -124,13 +123,13 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(luaBody));
             }
 
-            byte[][] cmdArgs = MergeCommandWithArgs(Commands.Script, Commands.Load, luaBody.ToUtf8Bytes());
+            var cmdArgs = MergeCommandWithArgs(Commands.Script, Commands.Load, luaBody.ToUtf8Bytes());
             return this.SendExpectData(cmdArgs);
         }
 
         /// <inheritdoc />
         public byte[][] ScriptExists(params byte[][] sha1Refs) {
-            byte[][] keysAndValues = MergeCommandWithArgs(Commands.Script, Commands.Exists, sha1Refs);
+            var keysAndValues = MergeCommandWithArgs(Commands.Script, Commands.Exists, sha1Refs);
             return this.SendExpectMultiData(keysAndValues);
         }
 
@@ -149,7 +148,7 @@ namespace TheOne.Redis.Client {
                 throw new ArgumentNullException(nameof(luaBody));
             }
 
-            byte[][] cmdArgs = MergeCommandWithArgs(Commands.Eval, luaBody.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
+            var cmdArgs = MergeCommandWithArgs(Commands.Eval, luaBody.ToUtf8Bytes(), keys.PrependInt(numberKeysInArgs));
             return this.RawCommand(cmdArgs);
         }
 
@@ -167,7 +166,7 @@ namespace TheOne.Redis.Client {
                 ReceiveTimeout = this.ReceiveTimeout
             };
             try {
-                IPAddress[] addresses = Dns.GetHostAddressesAsync(this.Host).Result;
+                var addresses = Dns.GetHostAddressesAsync(this.Host).Result;
                 this.Socket.Connect(addresses.First(a => a.AddressFamily == AddressFamily.InterNetwork), this.Port);
 
                 if (!this.Socket.Connected) {
@@ -213,7 +212,7 @@ namespace TheOne.Redis.Client {
                     if (ServerVersionNumber == 0) {
                         ServerVersionNumber = RedisConfig.AssumeServerVersion.GetValueOrDefault(0);
                         if (ServerVersionNumber <= 0) {
-                            string[] parts = this.ServerVersion.Split('.');
+                            var parts = this.ServerVersion.Split('.');
                             var version = int.Parse(parts[0]) * 1000;
                             if (parts.Length > 1) {
                                 version += int.Parse(parts[1]) * 100;
@@ -251,7 +250,7 @@ namespace TheOne.Redis.Client {
         protected virtual void OnConnected() { }
 
         protected string ReadLine() {
-            StringBuilder sb = StringBuilderCache.Acquire();
+            var sb = StringBuilderCache.Acquire();
 
             int c;
             while ((c = this.BStream.ReadByte()) != -1) {
@@ -416,7 +415,7 @@ namespace TheOne.Redis.Client {
                 Buffer.BlockCopy(bytes1, 0, to, 0, bytes1.Length);
                 var pos = bytes1.Length;
 
-                foreach (byte[] b in withBytes1) {
+                foreach (var b in withBytes1) {
                     Buffer.BlockCopy(b, 0, to, pos, b.Length);
                     pos += b.Length;
                 }
@@ -424,9 +423,9 @@ namespace TheOne.Redis.Client {
                 return to;
             }
 
-            byte[] bytes = GetCmdBytes('*', cmdWithBinaryArgs.Length);
+            var bytes = GetCmdBytes('*', cmdWithBinaryArgs.Length);
 
-            foreach (byte[] safeBinaryValue in cmdWithBinaryArgs) {
+            foreach (var safeBinaryValue in cmdWithBinaryArgs) {
                 bytes = Combine(bytes, GetCmdBytes('$', safeBinaryValue.Length), safeBinaryValue, this._endData);
             }
 
@@ -438,7 +437,7 @@ namespace TheOne.Redis.Client {
         public void WriteAllToSendBuffer(params byte[][] cmdWithBinaryArgs) {
             this.WriteToSendBuffer(GetCmdBytes('*', cmdWithBinaryArgs.Length));
 
-            foreach (byte[] safeBinaryValue in cmdWithBinaryArgs) {
+            foreach (var safeBinaryValue in cmdWithBinaryArgs) {
                 this.WriteToSendBuffer(GetCmdBytes('$', safeBinaryValue.Length));
                 this.WriteToSendBuffer(safeBinaryValue);
                 this.WriteToSendBuffer(this._endData);
@@ -458,7 +457,7 @@ namespace TheOne.Redis.Client {
 
             var bytesCopied = 0;
             while (bytesCopied < cmdBytes.Length) {
-                byte[] copyOfBytes = BufferPool.GetBuffer(cmdBytes.Length);
+                var copyOfBytes = BufferPool.GetBuffer(cmdBytes.Length);
                 var bytesToCopy = Math.Min(cmdBytes.Length - bytesCopied, copyOfBytes.Length);
                 Buffer.BlockCopy(cmdBytes, bytesCopied, copyOfBytes, 0, bytesToCopy);
                 this._cmdBuffer.Add(new ArraySegment<byte>(copyOfBytes, 0, bytesToCopy));
@@ -500,8 +499,8 @@ namespace TheOne.Redis.Client {
                     this.Socket.Send(this._cmdBuffer); // Optimized for Windows
                 } else {
                     // Sending IList<ArraySegment> Throws 'Message to Large' SocketException in Mono
-                    foreach (ArraySegment<byte> segment in this._cmdBuffer) {
-                        byte[] buffer = segment.Array;
+                    foreach (var segment in this._cmdBuffer) {
+                        var buffer = segment.Array;
 
                         if (buffer == null) {
                             throw new InvalidOperationException("buffer is null");
@@ -523,7 +522,7 @@ namespace TheOne.Redis.Client {
         public void ResetSendBuffer() {
             this._currentBufferIndex = 0;
             for (var i = this._cmdBuffer.Count - 1; i >= 0; i--) {
-                byte[] buffer = this._cmdBuffer[i].Array;
+                var buffer = this._cmdBuffer[i].Array;
                 BufferPool.ReleaseBufferToPool(ref buffer);
                 this._cmdBuffer.RemoveAt(i);
             }
@@ -544,7 +543,7 @@ namespace TheOne.Redis.Client {
             var i = 0;
             var didWriteToBuffer = false;
             Exception originalEx = null;
-            DateTime firstAttempt = DateTime.UtcNow;
+            var firstAttempt = DateTime.UtcNow;
 
             while (true) {
                 try {
@@ -595,7 +594,7 @@ namespace TheOne.Redis.Client {
                         throw;
                     }
 
-                    Exception ex = retryableEx ?? this.GetRetryableException(outerEx);
+                    var ex = retryableEx ?? this.GetRetryableException(outerEx);
                     if (ex == null) {
                         throw this.CreateConnectionError(originalEx ?? outerEx);
                     }
@@ -629,8 +628,8 @@ namespace TheOne.Redis.Client {
 
         private Exception GetRetryableException(Exception outerEx) {
             // several stream commands wrap SocketException in IOException
-            SocketException socketEx = outerEx.InnerException as SocketException
-                                       ?? outerEx as SocketException;
+            var socketEx = outerEx.InnerException as SocketException
+                           ?? outerEx as SocketException;
 
             if (socketEx == null) {
                 return null;
@@ -656,7 +655,7 @@ namespace TheOne.Redis.Client {
 
         protected void SendExpectSuccess(params byte[][] cmdWithBinaryArgs) {
             // Turn Action into Func Hack
-            Action<Func<long>> completePipelineFn = this.Pipeline != null
+            var completePipelineFn = this.Pipeline != null
                 ? f => this.Pipeline.CompleteVoidQueuedCommand(() => f())
                 : (Action<Func<long>>)null;
 
@@ -705,11 +704,11 @@ namespace TheOne.Redis.Client {
         }
 
         protected List<Dictionary<string, string>> SendExpectStringDictionaryList(params byte[][] cmdWithBinaryArgs) {
-            RedisData results = this.SendExpectComplexResponse(cmdWithBinaryArgs);
+            var results = this.SendExpectComplexResponse(cmdWithBinaryArgs);
             var to = new List<Dictionary<string, string>>();
-            foreach (RedisData data in results.Children) {
+            foreach (var data in results.Children) {
                 if (data.Children != null) {
-                    Dictionary<string, string> map = ToDictionary(data);
+                    var map = ToDictionary(data);
                     to.Add(map);
                 }
             }
@@ -726,7 +725,7 @@ namespace TheOne.Redis.Client {
             }
 
             for (var i = 0; i < data.Children.Count; i++) {
-                byte[] bytes = data.Children[i].Data;
+                var bytes = data.Children[i].Data;
                 if (i % 2 == 0) {
                     key = bytes.FromUtf8Bytes();
                 } else {
@@ -744,7 +743,7 @@ namespace TheOne.Redis.Client {
         }
 
         protected string SendExpectString(params byte[][] cmdWithBinaryArgs) {
-            byte[] bytes = this.SendExpectData(cmdWithBinaryArgs);
+            var bytes = this.SendExpectData(cmdWithBinaryArgs);
             return bytes.FromUtf8Bytes();
         }
 
@@ -757,8 +756,8 @@ namespace TheOne.Redis.Client {
         }
 
         protected void CmdLog(byte[][] args) {
-            StringBuilder sb = StringBuilderCache.Acquire();
-            foreach (byte[] arg in args) {
+            var sb = StringBuilderCache.Acquire();
+            foreach (var arg in args) {
                 var strArg = arg.FromUtf8Bytes();
                 if (strArg == this.Password) {
                     continue;
@@ -881,7 +880,7 @@ namespace TheOne.Redis.Client {
         }
 
         public double ReadDouble() {
-            byte[] bytes = this.ReadData();
+            var bytes = this.ReadData();
             return bytes == null ? double.NaN : ParseDouble(bytes);
         }
 
@@ -991,7 +990,7 @@ namespace TheOne.Redis.Client {
         }
 
         private object[] ReadDeeplyNestedMultiData() {
-            object result = this.ReadDeeplyNestedMultiDataItem();
+            var result = this.ReadDeeplyNestedMultiDataItem();
             return (object[])result;
         }
 
@@ -1149,7 +1148,7 @@ namespace TheOne.Redis.Client {
         }
 
         private static byte[][] MergeCommandWithArgs(byte[] cmd, params string[] args) {
-            byte[][] byteArgs = args.ToMultiByteArray();
+            var byteArgs = args.ToMultiByteArray();
             return MergeCommandWithArgs(cmd, byteArgs);
         }
 

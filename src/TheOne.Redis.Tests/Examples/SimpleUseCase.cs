@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
-using TheOne.Redis.Client;
 using TheOne.Redis.ClientManager;
 using TheOne.Redis.Common;
 
@@ -26,8 +25,8 @@ namespace TheOne.Redis.Tests.Examples {
         [Test]
         public void Can_Add_Update_and_Delete_Todo_item() {
             using (var redisManager = new PooledRedisClientManager(Config.MasterHost)) {
-                using (IRedisClient redis = redisManager.GetClient()) {
-                    IRedisTypedClient<Todo> redisTodos = redis.As<Todo>();
+                using (var redis = redisManager.GetClient()) {
+                    var redisTodos = redis.As<Todo>();
                     var todo = new Todo {
                         Id = redisTodos.GetNextSequence(),
                         Content = "Learn Redis",
@@ -36,7 +35,7 @@ namespace TheOne.Redis.Tests.Examples {
 
                     redisTodos.Store(todo);
 
-                    Todo savedTodo = redisTodos.GetById(todo.Id);
+                    var savedTodo = redisTodos.GetById(todo.Id);
                     savedTodo.Done = true;
                     redisTodos.Store(savedTodo);
 

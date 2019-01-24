@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using TheOne.Redis.Client;
@@ -29,9 +28,9 @@ namespace TheOne.Redis.Tests.Examples {
             var text = entity.ToJson();
 
             // make it a little easier on the eyes
-            List<string> prettyLines = text.Split(new[] { "[", "},{", "]" },
-                                               StringSplitOptions.RemoveEmptyEntries)
-                                           .ToList().ConvertAll(x => x.Replace("{", "").Replace("}", ""));
+            var prettyLines = text.Split(new[] { "[", "},{", "]" },
+                                      StringSplitOptions.RemoveEmptyEntries)
+                                  .ToList().ConvertAll(x => x.Replace("{", "").Replace("}", ""));
 
             Console.WriteLine("\n" + message);
             foreach (var l in prettyLines) {
@@ -43,11 +42,11 @@ namespace TheOne.Redis.Tests.Examples {
         public void Shippers_UseCase() {
             using (var redisClient = new RedisClient(Config.MasterHost)) {
                 // Create a 'strongly-typed' API that makes all Redis Value operations to apply against Shippers
-                IRedisTypedClient<Shipper> redis = redisClient.As<Shipper>();
+                var redis = redisClient.As<Shipper>();
 
                 // Redis lists implement IList<T> while Redis sets implement ICollection<T>
-                IRedisList<Shipper> currentShippers = redis.Lists["urn:shippers:current"];
-                IRedisList<Shipper> prospectiveShippers = redis.Lists["urn:shippers:prospective"];
+                var currentShippers = redis.Lists["urn:shippers:current"];
+                var prospectiveShippers = redis.Lists["urn:shippers:prospective"];
 
                 currentShippers.Add(
                     new Shipper {
@@ -99,7 +98,7 @@ namespace TheOne.Redis.Tests.Examples {
                 Dump("CURRENT SHIPPERS AFTER POP n' PUSH:", currentShippers);
                 Dump("PROSPECTIVE SHIPPERS AFTER POP n' PUSH:", prospectiveShippers);
 
-                Shipper poppedShipper = redis.PopItemFromList(currentShippers);
+                var poppedShipper = redis.PopItemFromList(currentShippers);
                 Dump("POPPED a SHIPPER:", poppedShipper);
                 Dump("CURRENT SHIPPERS AFTER POP:", currentShippers);
 

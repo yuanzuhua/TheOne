@@ -54,12 +54,12 @@ namespace TheOne.Redis.Tests.Sentinel {
             hasResolver.RedisResolver.ResetMasters(masters);
             hasResolver.RedisResolver.ResetSlaves(slaves);
 
-            using (IRedisClient master = redisManager.GetClient()) {
+            using (var master = redisManager.GetClient()) {
                 Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                 master.SetValue("KEY", "1");
             }
 
-            using (IRedisClient slave = redisManager.GetReadOnlyClient()) {
+            using (var slave = redisManager.GetReadOnlyClient()) {
                 Assert.That(slave.GetHostString(), Is.EqualTo(Config.Sentinel6380).Or.EqualTo(Config.Sentinel6381));
                 Assert.That(slave.GetValue("KEY"), Is.EqualTo("1"));
             }
@@ -68,24 +68,24 @@ namespace TheOne.Redis.Tests.Sentinel {
         [Test]
         public void BasicRedisClientManager_alternates_hosts() {
             using (var redisManager = new BasicRedisClientManager(Config.MasterHosts, Config.SlaveHosts)) {
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                     master.SetValue("KEY", "1");
                 }
 
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                     master.Increment("KEY", 1);
                 }
 
                 for (var i = 0; i < 5; i++) {
-                    using (IRedisClient readOnly = redisManager.GetReadOnlyClient()) {
+                    using (var readOnly = redisManager.GetReadOnlyClient()) {
                         Assert.That(readOnly.GetHostString(), Is.EqualTo(Config.Sentinel6381).Or.EqualTo(Config.Sentinel6382));
                         Assert.That(readOnly.GetValue("KEY"), Is.EqualTo("2"));
                     }
                 }
 
-                using (ICacheClient cache = redisManager.GetCacheClient()) {
+                using (var cache = redisManager.GetCacheClient()) {
                     Assert.That(cache.Get<string>("KEY"), Is.EqualTo("2"));
                 }
             }
@@ -101,24 +101,24 @@ namespace TheOne.Redis.Tests.Sentinel {
         [Test]
         public void PooledRedisClientManager_alternates_hosts() {
             using (var redisManager = new PooledRedisClientManager(Config.MasterHosts, Config.SlaveHosts)) {
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                     master.SetValue("KEY", "1");
                 }
 
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                     master.Increment("KEY", 1);
                 }
 
                 for (var i = 0; i < 5; i++) {
-                    using (IRedisClient readOnly = redisManager.GetReadOnlyClient()) {
+                    using (var readOnly = redisManager.GetReadOnlyClient()) {
                         Assert.That(readOnly.GetHostString(), Is.EqualTo(Config.Sentinel6381).Or.EqualTo(Config.Sentinel6382));
                         Assert.That(readOnly.GetValue("KEY"), Is.EqualTo("2"));
                     }
                 }
 
-                using (ICacheClient cache = redisManager.GetCacheClient()) {
+                using (var cache = redisManager.GetCacheClient()) {
                     Assert.That(cache.Get<string>("KEY"), Is.EqualTo("2"));
                 }
             }
@@ -130,12 +130,12 @@ namespace TheOne.Redis.Tests.Sentinel {
             using (var redisManager = new PooledRedisClientManager("127.0.0.1:8888") {
                 RedisResolver = resolver
             }) {
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                     master.SetValue("KEY", "1");
                 }
 
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                     master.Increment("KEY", 1);
                 }
@@ -143,7 +143,7 @@ namespace TheOne.Redis.Tests.Sentinel {
                 Assert.That(resolver.NewClientsInitialized, Is.EqualTo(1));
 
                 for (var i = 0; i < 5; i++) {
-                    using (IRedisClient slave = redisManager.GetReadOnlyClient()) {
+                    using (var slave = redisManager.GetReadOnlyClient()) {
                         Assert.That(slave.GetHostString(), Is.EqualTo(Config.Sentinel6381));
                         Assert.That(slave.GetValue("KEY"), Is.EqualTo("2"));
                     }
@@ -154,12 +154,12 @@ namespace TheOne.Redis.Tests.Sentinel {
                 redisManager.FailoverTo("127.0.0.1:9999", "127.0.0.1:9999");
 
                 for (var i = 0; i < 5; i++) {
-                    using (IRedisClient master = redisManager.GetClient()) {
+                    using (var master = redisManager.GetClient()) {
                         Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                         Assert.That(master.GetValue("KEY"), Is.EqualTo("2"));
                     }
 
-                    using (IRedisClient slave = redisManager.GetReadOnlyClient()) {
+                    using (var slave = redisManager.GetReadOnlyClient()) {
                         Assert.That(slave.GetHostString(), Is.EqualTo(Config.Sentinel6381));
                         Assert.That(slave.GetValue("KEY"), Is.EqualTo("2"));
                     }
@@ -172,24 +172,24 @@ namespace TheOne.Redis.Tests.Sentinel {
         [Test]
         public void RedisManagerPool_alternates_hosts() {
             using (var redisManager = new RedisManagerPool(Config.MasterHosts)) {
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                     master.SetValue("KEY", "1");
                 }
 
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                     master.Increment("KEY", 1);
                 }
 
                 for (var i = 0; i < 5; i++) {
-                    using (IRedisClient readOnly = redisManager.GetReadOnlyClient()) {
+                    using (var readOnly = redisManager.GetReadOnlyClient()) {
                         Assert.That(readOnly.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                         Assert.That(readOnly.GetValue("KEY"), Is.EqualTo("2"));
                     }
                 }
 
-                using (ICacheClient cache = redisManager.GetCacheClient()) {
+                using (var cache = redisManager.GetCacheClient()) {
                     Assert.That(cache.Get<string>("KEY"), Is.EqualTo("2"));
                 }
             }
@@ -199,12 +199,12 @@ namespace TheOne.Redis.Tests.Sentinel {
         public void RedisManagerPool_can_execute_CustomResolver() {
             var resolver = new FixedResolver(RedisEndpoint.Create(Config.Sentinel6380), RedisEndpoint.Create(Config.Sentinel6381));
             using (var redisManager = new RedisManagerPool("127.0.0.1:8888") { RedisResolver = resolver }) {
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                     master.SetValue("KEY", "1");
                 }
 
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                     master.Increment("KEY", 1);
                 }
@@ -212,7 +212,7 @@ namespace TheOne.Redis.Tests.Sentinel {
                 Assert.That(resolver.NewClientsInitialized, Is.EqualTo(1));
 
                 for (var i = 0; i < 5; i++) {
-                    using (IRedisClient slave = redisManager.GetReadOnlyClient()) {
+                    using (var slave = redisManager.GetReadOnlyClient()) {
                         Assert.That(slave.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                         Assert.That(slave.GetValue("KEY"), Is.EqualTo("2"));
                     }
@@ -223,12 +223,12 @@ namespace TheOne.Redis.Tests.Sentinel {
                 redisManager.FailoverTo("127.0.0.1:9999", "127.0.0.1:9999");
 
                 for (var i = 0; i < 5; i++) {
-                    using (IRedisClient master = redisManager.GetClient()) {
+                    using (var master = redisManager.GetClient()) {
                         Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                         Assert.That(master.GetValue("KEY"), Is.EqualTo("2"));
                     }
 
-                    using (IRedisClient slave = redisManager.GetReadOnlyClient()) {
+                    using (var slave = redisManager.GetReadOnlyClient()) {
                         Assert.That(slave.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                         Assert.That(slave.GetValue("KEY"), Is.EqualTo("2"));
                     }
@@ -246,12 +246,12 @@ namespace TheOne.Redis.Tests.Sentinel {
             using (var redisManager = new PooledRedisClientManager(invalidMaster, invalidSlaves)) {
                 var resolver = (RedisResolver)redisManager.RedisResolver;
 
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     master.SetValue("KEY", "1");
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                 }
 
-                using (IRedisClient master = redisManager.GetClient()) {
+                using (var master = redisManager.GetClient()) {
                     master.Increment("KEY", 1);
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 using TheOne.Redis.ClientManager;
 
@@ -34,14 +33,14 @@ namespace TheOne.Redis.Tests.Examples {
 
                 redisTodos.Store(todo);
 
-                Todo savedTodo = redisTodos.GetById(todo.Id);
+                var savedTodo = redisTodos.GetById(todo.Id);
                 savedTodo.Done = true;
 
                 redisTodos.Store(savedTodo);
 
                 redisTodos.DeleteById(savedTodo.Id);
 
-                IList<Todo> allTodos = redisTodos.GetAll();
+                var allTodos = redisTodos.GetAll();
 
                 Assert.That(allTodos.Count, Is.EqualTo(0));
             });

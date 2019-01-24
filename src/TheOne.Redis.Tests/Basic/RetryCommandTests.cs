@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using NUnit.Framework;
@@ -51,7 +50,7 @@ namespace TheOne.Redis.Tests.Basic {
             var redis = new RedisClient(Config.MasterHost);
             redis.SetClient("redisRetry");
 
-            List<Dictionary<string, string>> clientInfo = redisCtrl.GetClientsInfo();
+            var clientInfo = redisCtrl.GetClientsInfo();
             var redisId = clientInfo.First(m => m["name"] == "redisRetry")["id"];
             Assert.That(redisId.Length, Is.GreaterThan(0));
 

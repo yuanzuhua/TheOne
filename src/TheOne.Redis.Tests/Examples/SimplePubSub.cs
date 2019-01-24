@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using NUnit.Framework;
 using TheOne.Redis.Client;
-using TheOne.Redis.PubSub;
 
 namespace TheOne.Redis.Tests.Examples {
 
@@ -28,7 +27,7 @@ namespace TheOne.Redis.Tests.Examples {
                 var clientNo = i;
                 ThreadPool.QueueUserWorkItem(x => {
                     using (var redisConsumer = new RedisClient(Config.MasterHost)) {
-                        using (IRedisSubscription subscription = redisConsumer.CreateSubscription()) {
+                        using (var subscription = redisConsumer.CreateSubscription()) {
                             var messagesReceived = 0;
                             subscription.OnSubscribe = channel => {
                                 Console.WriteLine("Client #{0} Subscribed to '{1}'", clientNo, channel);
@@ -72,7 +71,7 @@ namespace TheOne.Redis.Tests.Examples {
             var messagesReceived = 0;
 
             using (var redisConsumer = new RedisClient(Config.MasterHost)) {
-                using (IRedisSubscription subscription = redisConsumer.CreateSubscription()) {
+                using (var subscription = redisConsumer.CreateSubscription()) {
                     subscription.OnSubscribe = channel => {
                         Console.WriteLine("Subscribed to '{0}'", channel);
                     };

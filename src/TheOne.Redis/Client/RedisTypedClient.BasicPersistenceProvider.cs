@@ -17,7 +17,7 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public IList<T> GetByIds(IEnumerable ids) {
             if (ids != null) {
-                List<string> urnKeys = ids.Cast<object>().Select(x => this._client.UrnKey<T>(x)).ToList();
+                var urnKeys = ids.Cast<object>().Select(x => this._client.UrnKey<T>(x)).ToList();
                 if (urnKeys.Count != 0) {
                     return this.GetValues(urnKeys);
                 }
@@ -28,7 +28,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public IList<T> GetAll() {
-            HashSet<string> allKeys = this._client.GetAllItemsFromSet(this.TypeIdsSetKey);
+            var allKeys = this._client.GetAllItemsFromSet(this.TypeIdsSetKey);
             return this.GetByIds(allKeys.ToArray());
         }
 
@@ -52,7 +52,7 @@ namespace TheOne.Redis.Client {
                 return;
             }
 
-            List<T> entitiesList = entities.ToList();
+            var entitiesList = entities.ToList();
             var len = entitiesList.Count;
 
             var keys = new byte[len][];
@@ -84,8 +84,8 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void DeleteByIds(IEnumerable ids) {
-            List<object> cast = ids?.Cast<object>().ToList() ?? new List<object>();
-            List<string> urnKeys = cast.Select(t => this._client.UrnKey<T>(t)).ToList();
+            var cast = ids?.Cast<object>().ToList() ?? new List<object>();
+            var urnKeys = cast.Select(t => this._client.UrnKey<T>(t)).ToList();
             if (urnKeys.Count > 0) {
                 this.RemoveEntry(urnKeys.ToArray());
                 this._client.RemoveTypeIds<T>(cast.Select(x => x.ToString()).ToArray());
@@ -94,8 +94,8 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void DeleteAll() {
-            HashSet<string> ids = this._client.GetAllItemsFromSet(this.TypeIdsSetKey);
-            List<string> urnKeys = ids.Select(t => this._client.UrnKey<T>(t)).ToList();
+            var ids = this._client.GetAllItemsFromSet(this.TypeIdsSetKey);
+            var urnKeys = ids.Select(t => this._client.UrnKey<T>(t)).ToList();
             if (urnKeys.Count > 0) {
                 this.RemoveEntry(urnKeys.ToArray());
                 this.RemoveEntry(this.TypeIdsSetKey);

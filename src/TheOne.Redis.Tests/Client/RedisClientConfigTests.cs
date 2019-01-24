@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using TheOne.Redis.Client;
@@ -12,7 +11,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_get_Role_Info() {
-            RedisText result = this.Redis.Role();
+            var result = this.Redis.Role();
             Console.WriteLine(result.ToJson());
             Assert.That(result.Children[0].Text, Is.EqualTo("master"));
             Assert.That(this.Redis.GetServerRole(), Is.EqualTo(RedisServerRole.Master));
@@ -27,13 +26,13 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_GetClientsInfo() {
-            List<Dictionary<string, string>> clientList = this.Redis.GetClientsInfo();
+            var clientList = this.Redis.GetClientsInfo();
             Console.WriteLine(clientList.ToJson());
         }
 
         [Test]
         public void Can_Kill_Client() {
-            List<Dictionary<string, string>> clientList = this.Redis.GetClientsInfo();
+            var clientList = this.Redis.GetClientsInfo();
             var firstAddr = clientList.First()["addr"];
             this.Redis.KillClient(firstAddr);
         }

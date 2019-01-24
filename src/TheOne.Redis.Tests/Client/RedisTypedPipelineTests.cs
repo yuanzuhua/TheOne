@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using TheOne.Redis.Client;
-using TheOne.Redis.Pipeline;
 using TheOne.Redis.Tests.Shared;
 
 namespace TheOne.Redis.Tests.Client {
@@ -31,10 +30,10 @@ namespace TheOne.Redis.Tests.Client {
 
             var results = new List<Shipper>();
 
-            IRedisList<Shipper> typedList = this._typedClient.Lists[_listKey];
+            var typedList = this._typedClient.Lists[_listKey];
             Assert.That(typedList.Count, Is.EqualTo(0));
 
-            using (IRedisTypedPipeline<Shipper> pipeline = this._typedClient.CreatePipeline()) {
+            using (var pipeline = this._typedClient.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(1)));
                 pipeline.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(2)));
                 pipeline.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(3)));
@@ -60,10 +59,10 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_call_single_operation_3_Times_in_pipeline() {
-            IRedisList<Shipper> typedList = this._typedClient.Lists[_listKey];
+            var typedList = this._typedClient.Lists[_listKey];
             Assert.That(typedList.Count, Is.EqualTo(0));
 
-            using (IRedisTypedPipeline<Shipper> pipeline = this._typedClient.CreatePipeline()) {
+            using (var pipeline = this._typedClient.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(1)));
                 pipeline.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(2)));
                 pipeline.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(3)));
@@ -79,7 +78,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_call_single_operation_in_pipeline() {
             Assert.That(this._typedClient.GetValue(_key), Is.Null);
 
-            using (IRedisTypedPipeline<Shipper> pipeline = this._typedClient.CreatePipeline()) {
+            using (var pipeline = this._typedClient.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.SetValue(_key, this._model));
 
                 pipeline.Flush();
@@ -92,10 +91,10 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_call_single_operation_with_callback_3_Times_in_pipeline() {
             var results = new List<int>();
 
-            IRedisList<Shipper> typedList = this._typedClient.Lists[_listKey];
+            var typedList = this._typedClient.Lists[_listKey];
             Assert.That(typedList.Count, Is.EqualTo(0));
 
-            using (IRedisTypedPipeline<Shipper> pipeline = this._typedClient.CreatePipeline()) {
+            using (var pipeline = this._typedClient.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(1)), () => results.Add(1));
                 pipeline.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(2)), () => results.Add(2));
                 pipeline.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(3)), () => results.Add(3));
@@ -111,7 +110,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Exception_in_atomic_pipelines_discards_all_commands() {
             Assert.That(this._typedClient.GetValue(_key), Is.Null);
             try {
-                using (IRedisTypedPipeline<Shipper> pipeline = this._typedClient.CreatePipeline()) {
+                using (var pipeline = this._typedClient.CreatePipeline()) {
                     pipeline.QueueCommand(r => r.SetValue(_key, this._model));
                     throw new NotSupportedException();
                 }
@@ -124,7 +123,7 @@ namespace TheOne.Redis.Tests.Client {
         public void No_commit_of_atomic_pipelines_discards_all_commands() {
             Assert.That(this._typedClient.GetValue(_key), Is.Null);
 
-            using (IRedisTypedPipeline<Shipper> pipeline = this._typedClient.CreatePipeline()) {
+            using (var pipeline = this._typedClient.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.SetValue(_key, this._model));
             }
 
@@ -136,7 +135,7 @@ namespace TheOne.Redis.Tests.Client {
             const string keySquared = _key + _key;
             Assert.That(this.Redis.GetValue(_key), Is.Null);
             Assert.That(this.Redis.GetValue(keySquared), Is.Null);
-            using (IRedisTypedPipeline<Shipper> pipeline = this._typedClient.CreatePipeline()) {
+            using (var pipeline = this._typedClient.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.IncrementValue(_key));
                 pipeline.QueueCommand(r => r.IncrementValue(keySquared));
                 pipeline.Flush();
@@ -162,12 +161,12 @@ namespace TheOne.Redis.Tests.Client {
             var collectionCounts = new List<long>();
             var containsItem = false;
 
-            IRedisList<Shipper> typedList = this._typedClient.Lists[_listKey];
-            IRedisSet<Shipper> typedSet = this._typedClient.Sets[_setKey];
-            IRedisSortedSet<Shipper> typedSortedSet = this._typedClient.SortedSets[_sortedSetKey];
+            var typedList = this._typedClient.Lists[_listKey];
+            var typedSet = this._typedClient.Sets[_setKey];
+            var typedSortedSet = this._typedClient.SortedSets[_sortedSetKey];
 
             Assert.That(this._typedClient.GetValue(_key), Is.Null);
-            using (IRedisTypedPipeline<Shipper> pipeline = this._typedClient.CreatePipeline()) {
+            using (var pipeline = this._typedClient.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.IncrementValue(_key), intResult => incrementResults.Add(intResult));
                 pipeline.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(1)));
                 pipeline.QueueCommand(r => r.AddItemToList(typedList, this._modelFactory.CreateInstance(2)));

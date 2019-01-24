@@ -34,44 +34,44 @@ namespace TheOne.Redis.ClientManager {
         }
 
         public static void Exec(this IRedisClientManager redisManager, Action<IRedisClient> lambda) {
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 lambda(redis);
             }
         }
 
         public static string Exec(this IRedisClientManager redisManager, Func<IRedisClient, string> lambda) {
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 return lambda(redis);
             }
         }
 
         public static long Exec(this IRedisClientManager redisManager, Func<IRedisClient, long> lambda) {
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 return lambda(redis);
             }
         }
 
         public static int Exec(this IRedisClientManager redisManager, Func<IRedisClient, int> lambda) {
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 return lambda(redis);
             }
         }
 
         public static double Exec(this IRedisClientManager redisManager, Func<IRedisClient, double> lambda) {
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 return lambda(redis);
             }
         }
 
         public static bool Exec(this IRedisClientManager redisManager, Func<IRedisClient, bool> lambda) {
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 return lambda(redis);
             }
         }
 
         public static void ExecTrans(this IRedisClientManager redisManager, Action<IRedisTransaction> lambda) {
-            using (IRedisClient redis = redisManager.GetClient()) {
-                using (IRedisTransaction trans = redis.CreateTransaction()) {
+            using (var redis = redisManager.GetClient()) {
+                using (var trans = redis.CreateTransaction()) {
                     lambda(trans);
 
                     trans.Commit();
@@ -80,25 +80,25 @@ namespace TheOne.Redis.ClientManager {
         }
 
         public static void ExecAs<T>(this IRedisClientManager redisManager, Action<IRedisTypedClient<T>> lambda) {
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 lambda(redis.As<T>());
             }
         }
 
         public static T ExecAs<T>(this IRedisClientManager redisManager, Func<IRedisTypedClient<T>, T> lambda) {
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 return lambda(redis.As<T>());
             }
         }
 
         public static IList<T> ExecAs<T>(this IRedisClientManager redisManager, Func<IRedisTypedClient<T>, IList<T>> lambda) {
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 return lambda(redis.As<T>());
             }
         }
 
         public static List<T> ExecAs<T>(this IRedisClientManager redisManager, Func<IRedisTypedClient<T>, List<T>> lambda) {
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 return lambda(redis.As<T>());
             }
         }

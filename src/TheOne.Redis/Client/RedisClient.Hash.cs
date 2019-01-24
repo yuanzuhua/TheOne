@@ -22,7 +22,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void SetRangeInHash(string hashId, IEnumerable<KeyValuePair<string, string>> keyValuePairs) {
-            List<KeyValuePair<string, string>> keyValuePairsList = keyValuePairs.ToList();
+            var keyValuePairsList = keyValuePairs.ToList();
             if (keyValuePairsList.Count == 0) {
                 return;
             }
@@ -31,7 +31,7 @@ namespace TheOne.Redis.Client {
             var values = new byte[keyValuePairsList.Count][];
 
             for (var i = 0; i < keyValuePairsList.Count; i++) {
-                KeyValuePair<string, string> kvp = keyValuePairsList[i];
+                var kvp = keyValuePairsList[i];
                 keys[i] = kvp.Key.ToUtf8Bytes();
                 values[i] = kvp.Value.ToUtf8Bytes();
             }
@@ -71,19 +71,19 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public List<string> GetHashKeys(string hashId) {
-            byte[][] multiDataList = this.HKeys(hashId);
+            var multiDataList = this.HKeys(hashId);
             return multiDataList.ToStringList();
         }
 
         /// <inheritdoc />
         public List<string> GetHashValues(string hashId) {
-            byte[][] multiDataList = this.HVals(hashId);
+            var multiDataList = this.HVals(hashId);
             return multiDataList.ToStringList();
         }
 
         /// <inheritdoc />
         public Dictionary<string, string> GetAllEntriesFromHash(string hashId) {
-            byte[][] multiDataList = this.HGetAll(hashId);
+            var multiDataList = this.HGetAll(hashId);
             return multiDataList.ToStringDictionary();
         }
 
@@ -93,8 +93,8 @@ namespace TheOne.Redis.Client {
                 return new List<string>();
             }
 
-            byte[][] keyBytes = this.ConvertToBytes(keys);
-            byte[][] multiDataList = this.HMGet(hashId, keyBytes);
+            var keyBytes = this.ConvertToBytes(keys);
+            var multiDataList = this.HMGet(hashId, keyBytes);
             return multiDataList.ToStringList();
         }
 
@@ -116,7 +116,7 @@ namespace TheOne.Redis.Client {
             public IRedisHash this[string hashId] {
                 get => new RedisClientHash(this._client, hashId);
                 set {
-                    IRedisHash hash = this[hashId];
+                    var hash = this[hashId];
                     hash.Clear();
                     hash.CopyTo(value.ToArray(), 0);
                 }

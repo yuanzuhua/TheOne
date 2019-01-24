@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
-using TheOne.Redis.Client;
 using TheOne.Redis.ClientManager;
 using TheOne.Redis.PubSub;
 
@@ -14,7 +12,7 @@ namespace TheOne.Redis.Tests.Basic {
 
         private RedisPubSubServer CreatePubSubServer(int intervalSecs = 1, int timeoutSecs = 3) {
             var clientsManager = new PooledRedisClientManager(Config.MasterHost);
-            using (IRedisClient redis = clientsManager.GetClient()) {
+            using (var redis = clientsManager.GetClient()) {
                 redis.FlushAll();
             }
 
@@ -36,7 +34,7 @@ namespace TheOne.Redis.Tests.Basic {
             var startCount = 0;
             var stopCount = 0;
 
-            using (RedisPubSubServer pubSub = this.CreatePubSubServer()) {
+            using (var pubSub = this.CreatePubSubServer()) {
                 pubSub.OnStart = () => Console.WriteLine("start #{0}", ++startCount);
                 pubSub.OnStop = () => Console.WriteLine("stop #{0}", ++stopCount);
                 pubSub.OnHeartbeatReceived = () => Console.WriteLine("pulse #{0}", ++pulseCount);
@@ -61,7 +59,7 @@ namespace TheOne.Redis.Tests.Basic {
         [Test]
         public void Does_send_heartbeat_pulses() {
             var pulseCount = 0;
-            using (RedisPubSubServer pubSub = this.CreatePubSubServer(1, 3)) {
+            using (var pubSub = this.CreatePubSubServer(1, 3)) {
                 pubSub.OnHeartbeatReceived = () => {
                     Console.WriteLine("pulse #{0}", pulseCount++);
                 };
@@ -78,8 +76,8 @@ namespace TheOne.Redis.Tests.Basic {
             var count = 15;
 
             var pulseCount = 0;
-            List<RedisPubSubServer> pubSubs = Enumerable.Range(0, count).Select(i => {
-                RedisPubSubServer pubSub = this.CreatePubSubServer(3, 30);
+            var pubSubs = Enumerable.Range(0, count).Select(i => {
+                var pubSub = this.CreatePubSubServer(3, 30);
                 pubSub.OnHeartbeatReceived = () => {
                     Console.WriteLine("{0}: pulse #{1}", i, pulseCount++);
                 };
@@ -94,7 +92,7 @@ namespace TheOne.Redis.Tests.Basic {
             Assert.That(pulseCount, Is.GreaterThan(2 * count));
             Assert.That(pulseCount, Is.LessThan(8 * count));
 
-            foreach (RedisPubSubServer value in pubSubs) {
+            foreach (var value in pubSubs) {
                 value?.Dispose();
             }
         }

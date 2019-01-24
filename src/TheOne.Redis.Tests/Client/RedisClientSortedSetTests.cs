@@ -50,7 +50,7 @@ namespace TheOne.Redis.Tests.Client {
         public void AddToSet_with_same_score_is_still_returned_in_lexical_order_score() {
             this._storeMembers.ForEach(x => this.Redis.AddItemToSortedSet(this.SetId, x, 1));
 
-            List<string> members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
+            var members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
 
             this._storeMembers.Sort((x, y) => string.Compare(x, y, StringComparison.Ordinal));
             Assert.That(members.EquivalentTo(this._storeMembers));
@@ -60,7 +60,7 @@ namespace TheOne.Redis.Tests.Client {
         public void AddToSet_without_score_adds_an_implicit_lexical_order_score() {
             this._storeMembers.ForEach(x => this.Redis.AddItemToSortedSet(this.SetId, x));
 
-            List<string> members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
+            var members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
 
             this._storeMembers.Sort((x, y) => string.Compare(x, y, StringComparison.Ordinal));
             Assert.That(members.EquivalentTo(this._storeMembers), Is.True);
@@ -76,10 +76,10 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Add_to_ICollection_Set() {
-            IRedisSortedSet list = this.Redis.SortedSets[this.SetId];
+            var list = this.Redis.SortedSets[this.SetId];
             this._storeMembers.ForEach(list.Add);
 
-            List<string> members = list.ToList();
+            var members = list.ToList();
             Assert.That(members, Is.EquivalentTo(this._storeMembers));
         }
 
@@ -88,7 +88,7 @@ namespace TheOne.Redis.Tests.Client {
             var i = 0;
             this._storeMembers.ForEach(x => this.Redis.AddItemToSortedSet(this.SetId, x, i++));
 
-            List<string> members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
+            var members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
             Assert.That(members.EquivalentTo(this._storeMembers), Is.True);
         }
 
@@ -97,13 +97,13 @@ namespace TheOne.Redis.Tests.Client {
             var success = this.Redis.AddRangeToSortedSet(this.SetId, this._storeMembers, 1);
             Assert.That(success, Is.True);
 
-            List<string> members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
+            var members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
             Assert.That(members, Is.EquivalentTo(this._storeMembers));
         }
 
         [Test]
         public void Can_Clear_ICollection_Set() {
-            IRedisSortedSet list = this.Redis.SortedSets[this.SetId];
+            var list = this.Redis.SortedSets[this.SetId];
             this._storeMembers.ForEach(list.Add);
 
             Assert.That(list.Count, Is.EqualTo(this._storeMembers.Count));
@@ -183,11 +183,11 @@ namespace TheOne.Redis.Tests.Client {
             this._storeMembers.ForEach(x => this.Redis.AddItemToSortedSet(this.SetId, x));
 
             this._storeMembers.Sort((x, y) => string.Compare(y, x, StringComparison.Ordinal));
-            List<string> memberRage = this._storeMembers.Where(x =>
+            var memberRage = this._storeMembers.Where(x =>
                 string.Compare(x, "four", StringComparison.Ordinal) >= 0 &&
                 string.Compare(x, "three", StringComparison.Ordinal) <= 0).ToList();
 
-            List<string> range = this.Redis.GetRangeFromSortedSetByHighestScore(this.SetId, "four", "three");
+            var range = this.Redis.GetRangeFromSortedSetByHighestScore(this.SetId, "four", "three");
             Assert.That(range.EquivalentTo(memberRage));
         }
 
@@ -196,12 +196,12 @@ namespace TheOne.Redis.Tests.Client {
             this._storeMembers.ForEach(x => this.Redis.AddItemToSortedSet(this.SetId, x));
 
             this._storeMembers.Sort((x, y) => string.Compare(x, y, StringComparison.Ordinal));
-            List<string> memberRage = this._storeMembers.Where(x =>
-                                              string.Compare(x, "four", StringComparison.Ordinal) >= 0 &&
-                                              string.Compare(x, "three", StringComparison.Ordinal) <= 0)
-                                          .ToList();
+            var memberRage = this._storeMembers.Where(x =>
+                                     string.Compare(x, "four", StringComparison.Ordinal) >= 0 &&
+                                     string.Compare(x, "three", StringComparison.Ordinal) <= 0)
+                                 .ToList();
 
-            List<string> range = this.Redis.GetRangeFromSortedSetByLowestScore(this.SetId, "four", "three");
+            var range = this.Redis.GetRangeFromSortedSetByLowestScore(this.SetId, "four", "three");
             Assert.That(range.EquivalentTo(memberRage));
         }
 
@@ -229,7 +229,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_IncrementItemInSortedSet() {
-            foreach (KeyValuePair<string, double> value in this._stringDoubleMap) {
+            foreach (var value in this._stringDoubleMap) {
                 this.Redis.AddItemToSortedSet(this.SetId, value.Key, value.Value);
             }
 
@@ -241,7 +241,7 @@ namespace TheOne.Redis.Tests.Client {
             this._stringDoubleMap["four"] = this._stringDoubleMap["four"] - 3;
             Assert.That(currentScore, Is.EqualTo(this._stringDoubleMap["four"]));
 
-            IDictionary<string, double> map = this.Redis.GetAllWithScoresFromSortedSet(this.SetId);
+            var map = this.Redis.GetAllWithScoresFromSortedSet(this.SetId);
 
             bool UnorderedEquivalentTo<TKey, TValue>(IDictionary<TKey, TValue> thisMap, IDictionary<TKey, TValue> otherMap) {
                 if (thisMap == null || otherMap == null) {
@@ -252,8 +252,8 @@ namespace TheOne.Redis.Tests.Client {
                     return false;
                 }
 
-                foreach (KeyValuePair<TKey, TValue> entry in thisMap) {
-                    if (!otherMap.TryGetValue(entry.Key, out TValue otherValue)) {
+                foreach (var entry in thisMap) {
+                    if (!otherMap.TryGetValue(entry.Key, out var otherValue)) {
                         return false;
                     }
 
@@ -293,13 +293,13 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Remove_value_from_ICollection_Set() {
-            IRedisSortedSet list = this.Redis.SortedSets[this.SetId];
+            var list = this.Redis.SortedSets[this.SetId];
             this._storeMembers.ForEach(list.Add);
 
             this._storeMembers.Remove("two");
             list.Remove("two");
 
-            List<string> members = list.ToList();
+            var members = list.ToList();
 
             Assert.That(members, Is.EquivalentTo(this._storeMembers));
         }
@@ -314,7 +314,7 @@ namespace TheOne.Redis.Tests.Client {
 
             this._storeMembers.Remove(removeMember);
 
-            List<string> members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
+            var members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
             Assert.That(members, Is.EquivalentTo(this._storeMembers));
         }
 
@@ -331,7 +331,7 @@ namespace TheOne.Redis.Tests.Client {
                 this._storeMembers.Remove(value);
             }
 
-            List<string> members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
+            var members = this.Redis.GetAllItemsFromSortedSet(this.SetId);
             Assert.That(members, Is.EquivalentTo(this._storeMembers));
         }
 
@@ -348,7 +348,7 @@ namespace TheOne.Redis.Tests.Client {
 
             this.Redis.StoreIntersectFromSortedSets(storeSetName, set1Name, set2Name);
 
-            List<string> intersectingMembers = this.Redis.GetAllItemsFromSortedSet(storeSetName);
+            var intersectingMembers = this.Redis.GetAllItemsFromSortedSet(storeSetName);
 
             Assert.That(intersectingMembers, Is.EquivalentTo(new List<string> { "four", "five" }));
         }
@@ -366,7 +366,7 @@ namespace TheOne.Redis.Tests.Client {
 
             this.Redis.StoreUnionFromSortedSets(storeSetName, set1Name, set2Name);
 
-            List<string> unionMembers = this.Redis.GetAllItemsFromSortedSet(storeSetName);
+            var unionMembers = this.Redis.GetAllItemsFromSortedSet(storeSetName);
 
             Assert.That(unionMembers,
                 Is.EquivalentTo(
@@ -375,7 +375,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Test_Contains_in_ICollection_Set() {
-            IRedisSortedSet list = this.Redis.SortedSets[this.SetId];
+            var list = this.Redis.SortedSets[this.SetId];
             this._storeMembers.ForEach(list.Add);
 
             Assert.That(list.Contains("two"), Is.True);
@@ -384,7 +384,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_use_SortedIndex_to_store_articles_by_Date() {
-            IRedisTypedClient<Article> redisArticles = this.Redis.As<Article>();
+            var redisArticles = this.Redis.As<Article>();
 
             var articles = new[] {
                 new Article { Id = 1, Title = "Article 1", ModifiedDate = new DateTime(2015, 01, 02) },
@@ -396,14 +396,14 @@ namespace TheOne.Redis.Tests.Client {
 
             const string latestArticlesSet = "urn:Article:modified";
 
-            foreach (Article article in articles) {
+            foreach (var article in articles) {
                 this.Redis.AddItemToSortedSet(latestArticlesSet, article.Id.ToString(), article.ModifiedDate.Ticks);
             }
 
-            List<string> articleIds = this.Redis.GetAllItemsFromSortedSetDesc(latestArticlesSet);
+            var articleIds = this.Redis.GetAllItemsFromSortedSetDesc(latestArticlesSet);
             Console.WriteLine(articleIds.ToJson());
 
-            IList<Article> latestArticles = redisArticles.GetByIds(articleIds);
+            var latestArticles = redisArticles.GetByIds(articleIds);
             Console.WriteLine(latestArticles.ToJson());
         }
 
@@ -413,14 +413,14 @@ namespace TheOne.Redis.Tests.Client {
             CultureInfo prevCulture = CultureInfo.CurrentCulture;
             CultureInfo.CurrentCulture = new CultureInfo("ru-RU");
 #elif NET46
-            CultureInfo prevCulture = Thread.CurrentThread.CurrentCulture;
+            var prevCulture = Thread.CurrentThread.CurrentCulture;
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("ru-RU");
 #else
 #error undefined TargetFramework
 #endif
             this.Redis.AddItemToSortedSet(this.SetId, "key", 123.22);
 
-            IDictionary<string, double> map = this.Redis.GetAllWithScoresFromSortedSet(this.SetId);
+            var map = this.Redis.GetAllWithScoresFromSortedSet(this.SetId);
 
             Assert.AreEqual(123.22, map["key"]);
 

@@ -15,7 +15,7 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public List<string> GetSortedEntryValues(string setId, int startingFrom, int endingAt) {
             var sortOptions = new SortOptions { Skip = startingFrom, Take = endingAt };
-            byte[][] multiDataList = this.Sort(setId, sortOptions);
+            var multiDataList = this.Sort(setId, sortOptions);
             return multiDataList.ToStringList();
         }
 
@@ -46,7 +46,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public string[] FindGeoMembersInRadius(string key, double longitude, double latitude, double radius, string unit) {
-            List<RedisGeoResult> results = this.GeoRadius(key, longitude, latitude, radius, unit);
+            var results = this.GeoRadius(key, longitude, latitude, radius, unit);
             var to = new string[results.Count];
             for (var i = 0; i < results.Count; i++) {
                 to[i] = results[i].Member;
@@ -63,7 +63,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public string[] FindGeoMembersInRadius(string key, string member, double radius, string unit) {
-            List<RedisGeoResult> results = this.GeoRadiusByMember(key, member, radius, unit);
+            var results = this.GeoRadiusByMember(key, member, radius, unit);
             var to = new string[results.Count];
             for (var i = 0; i < results.Count; i++) {
                 to[i] = results[i].Member;
@@ -80,7 +80,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public HashSet<string> GetAllItemsFromSet(string setId) {
-            byte[][] multiDataList = this.SMembers(setId);
+            var multiDataList = this.SMembers(setId);
             return CreateHashSet(multiDataList);
         }
 
@@ -104,8 +104,8 @@ namespace TheOne.Redis.Client {
             }
 
             if (this.Transaction != null || this.Pipeline != null) {
-                IRedisQueueableOperation queueable = this.Transaction as IRedisQueueableOperation
-                                                     ?? this.Pipeline as IRedisQueueableOperation;
+                var queueable = this.Transaction as IRedisQueueableOperation
+                                ?? this.Pipeline as IRedisQueueableOperation;
 
                 if (queueable == null) {
                     throw new NotSupportedException("Cannot AddRangeToSet() when Transaction is: " +
@@ -121,8 +121,8 @@ namespace TheOne.Redis.Client {
                     queueable.QueueCommand(c => c.AddItemToSet(setId, item));
                 }
             } else {
-                byte[] uSetId = setId.ToUtf8Bytes();
-                RedisPipelineCommand pipeline = this.CreatePipelineCommand();
+                var uSetId = setId.ToUtf8Bytes();
+                var pipeline = this.CreatePipelineCommand();
                 foreach (var item in items) {
                     pipeline.WriteCommand(Commands.SAdd, uSetId, item.ToUtf8Bytes());
                 }
@@ -171,7 +171,7 @@ namespace TheOne.Redis.Client {
                 return new HashSet<string>();
             }
 
-            byte[][] multiDataList = this.SInter(setIds);
+            var multiDataList = this.SInter(setIds);
             return CreateHashSet(multiDataList);
         }
 
@@ -190,7 +190,7 @@ namespace TheOne.Redis.Client {
                 return new HashSet<string>();
             }
 
-            byte[][] multiDataList = this.SUnion(setIds);
+            var multiDataList = this.SUnion(setIds);
             return CreateHashSet(multiDataList);
         }
 
@@ -209,7 +209,7 @@ namespace TheOne.Redis.Client {
                 return new HashSet<string>();
             }
 
-            byte[][] multiDataList = this.SDiff(fromSetId, withSetIds);
+            var multiDataList = this.SDiff(fromSetId, withSetIds);
             return CreateHashSet(multiDataList);
         }
 
@@ -234,7 +234,7 @@ namespace TheOne.Redis.Client {
 
         private static HashSet<string> CreateHashSet(byte[][] multiDataList) {
             var results = new HashSet<string>();
-            foreach (byte[] multiData in multiDataList) {
+            foreach (var multiData in multiDataList) {
                 results.Add(multiData.FromUtf8Bytes());
             }
 
@@ -255,7 +255,7 @@ namespace TheOne.Redis.Client {
             public IRedisSet this[string setId] {
                 get => new RedisClientSet(this._client, setId);
                 set {
-                    IRedisSet col = this[setId];
+                    var col = this[setId];
                     col.Clear();
                     col.CopyTo(value.ToArray(), 0);
                 }

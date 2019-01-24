@@ -7,7 +7,6 @@ using NUnit.Framework;
 using TheOne.Redis.Client;
 using TheOne.Redis.ClientManager;
 using TheOne.Redis.Common;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Tests.Client {
 
@@ -21,7 +20,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_call_AddRangeToSet_in_pipeline() {
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 var key = "pipeline-test";
 
                 pipeline.QueueCommand(r => r.Remove(key));
@@ -49,7 +48,7 @@ namespace TheOne.Redis.Tests.Client {
             }
 
             byte[][] members = null;
-            IRedisPipeline pipeline = this.Redis.CreatePipeline();
+            var pipeline = this.Redis.CreatePipeline();
 
 
             pipeline.QueueCommand(r => ((RedisNativeClient)r).HMSet(_key, fieldBytes, valueBytes));
@@ -72,7 +71,7 @@ namespace TheOne.Redis.Tests.Client {
 
             var results = new List<string>();
             Assert.That(this.Redis.GetListCount(_listKey), Is.EqualTo(0));
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.AddItemToList(_listKey, "listitem1"));
                 pipeline.QueueCommand(r => r.AddItemToList(_listKey, "listitem2"));
                 pipeline.QueueCommand(r => r.AddItemToList(_listKey, "listitem3"));
@@ -94,7 +93,7 @@ namespace TheOne.Redis.Tests.Client {
             Assert.That(this.Redis.GetValue(_key), Is.Null);
             string[] keys = { _key + "key1", _key + "key2", _key + "key3" };
             var values = new[] { "1", "2", "3" };
-            IRedisPipeline pipeline = this.Redis.CreatePipeline();
+            var pipeline = this.Redis.CreatePipeline();
 
             for (var i = 0; i < 3; ++i) {
                 var index0 = i;
@@ -117,7 +116,7 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void Can_call_operation_not_supported_on_older_servers_in_pipeline() {
             var temp = new byte[1];
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 pipeline.QueueCommand(r => ((RedisNativeClient)r).SetEx(_key + "key", 5, temp));
                 pipeline.Flush();
             }
@@ -126,7 +125,7 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void Can_call_single_operation_3_Times_in_pipeline() {
             Assert.That(this.Redis.GetValue(_key), Is.Null);
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.IncrementValue(_key));
                 pipeline.QueueCommand(r => r.IncrementValue(_key));
                 pipeline.QueueCommand(r => r.IncrementValue(_key));
@@ -140,7 +139,7 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void Can_call_single_operation_in_pipeline() {
             Assert.That(this.Redis.GetValue(_key), Is.Null);
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.IncrementValue(_key));
                 var map = new Dictionary<string, int>();
                 pipeline.QueueCommand(r => r.Get<int>(_key), y => map[_key] = y);
@@ -156,7 +155,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_call_single_operation_with_callback_3_Times_in_pipeline() {
             var results = new List<long>();
             Assert.That(this.Redis.GetValue(_key), Is.Null);
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.IncrementValue(_key), results.Add);
                 pipeline.QueueCommand(r => r.IncrementValue(_key), results.Add);
                 pipeline.QueueCommand(r => r.IncrementValue(_key), results.Add);
@@ -179,7 +178,7 @@ namespace TheOne.Redis.Tests.Client {
 
             var highestPriorityMessage = this.Redis.PopItemWithHighestScoreFromSortedSet("prioritymsgs");
 
-            using (IRedisPipeline trans = this.Redis.CreatePipeline()) {
+            using (var trans = this.Redis.CreatePipeline()) {
                 trans.QueueCommand(r => r.RemoveItemFromSortedSet("prioritymsgs", highestPriorityMessage));
                 trans.QueueCommand(r => r.AddItemToList("workq", highestPriorityMessage));
 
@@ -194,11 +193,11 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Set_and_Expire_key_in_atomic_transaction() {
-            TimeSpan oneSec = TimeSpan.FromSeconds(1);
+            var oneSec = TimeSpan.FromSeconds(1);
 
             Assert.That(this.Redis.GetValue("key"), Is.Null);
             // Calls 'MULTI'
-            using (IRedisPipeline trans = this.Redis.CreatePipeline()) {
+            using (var trans = this.Redis.CreatePipeline()) {
                 trans.QueueCommand(r => r.SetValue("key", "a"));         // Queues 'SET key a'
                 trans.QueueCommand(r => r.ExpireEntryIn("key", oneSec)); // Queues 'EXPIRE key 1'
                 trans.Flush();                                           // Calls 'EXEC'
@@ -219,14 +218,14 @@ namespace TheOne.Redis.Tests.Client {
                 var key = $"key:{value}";
 
                 // Set key with pipeline (batching many requests)
-                using (IRedisClient redis = clientManager.GetClient()) {
-                    using (IRedisPipeline pipeline = redis.CreatePipeline()) {
+                using (var redis = clientManager.GetClient()) {
+                    using (var pipeline = redis.CreatePipeline()) {
                         // Only atomic operations can be called within a Transaction or Pipeline
                         Assert.Throws<NotSupportedException>(() =>
                             pipeline.QueueCommand(r => r.Set(key, value, DateTime.Now.AddMinutes(1)), r => result = r));
                     }
 
-                    using (IRedisPipeline pipeline = redis.CreatePipeline()) {
+                    using (var pipeline = redis.CreatePipeline()) {
                         pipeline.QueueCommand(r => r.Set(key, value), r => result = r);
                         pipeline.QueueCommand(r => r.ExpireEntryAt(key, DateTime.Now.AddMinutes(1)));
                         pipeline.Flush();
@@ -234,7 +233,7 @@ namespace TheOne.Redis.Tests.Client {
                 }
 
                 // Get key
-                using (IRedisClient redis = clientManager.GetClient()) {
+                using (var redis = clientManager.GetClient()) {
                     var res = redis.Get<int>(key);
                     Assert.That(res, Is.EqualTo(value));
                 }
@@ -244,7 +243,7 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void Can_SetAll_and_Publish_in_atomic_transaction() {
             var messages = new Dictionary<string, string> { { "a", "a" }, { "b", "b" } };
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 pipeline.QueueCommand(c => c.SetAll(messages.ToDictionary(t => t.Key, t => t.Value)));
                 pipeline.QueueCommand(c => c.PublishMessage("uc", "b"));
 
@@ -256,12 +255,12 @@ namespace TheOne.Redis.Tests.Client {
         public void Disposing_Client_Clears_Pipeline() {
             var clientMgr = new PooledRedisClientManager(Config.MasterHost);
 
-            using (IRedisClient client = clientMgr.GetClient()) {
+            using (var client = clientMgr.GetClient()) {
                 client.Set("k1", "v1");
                 client.Set("k2", "v2");
                 client.Set("k3", "v3");
 
-                using (IRedisPipeline pipe = client.CreatePipeline()) {
+                using (var pipe = client.CreatePipeline()) {
                     pipe.QueueCommand(c => c.Get<string>("k1"), p => throw new Exception());
                     pipe.QueueCommand(c => c.Get<string>("k2"));
 
@@ -273,7 +272,7 @@ namespace TheOne.Redis.Tests.Client {
                 }
             }
 
-            using (IRedisClient client = clientMgr.GetClient()) {
+            using (var client = clientMgr.GetClient()) {
                 Assert.AreEqual("v3", client.Get<string>("k3"));
             }
         }
@@ -282,7 +281,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Exception_in_atomic_pipelines_discards_all_commands() {
             Assert.That(this.Redis.GetValue(_key), Is.Null);
             try {
-                using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+                using (var pipeline = this.Redis.CreatePipeline()) {
                     pipeline.QueueCommand(r => r.IncrementValue(_key));
                     throw new NotSupportedException();
                 }
@@ -294,7 +293,7 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void No_commit_of_atomic_pipelines_discards_all_commands() {
             Assert.That(this.Redis.GetValue(_key), Is.Null);
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.IncrementValue(_key));
             }
 
@@ -306,7 +305,7 @@ namespace TheOne.Redis.Tests.Client {
             var KeySquared = _key + _key;
             Assert.That(this.Redis.GetValue(_key), Is.Null);
             Assert.That(this.Redis.GetValue(KeySquared), Is.Null);
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.IncrementValue(_key));
                 pipeline.QueueCommand(r => r.IncrementValue(KeySquared));
                 pipeline.QueueCommand(r => ((RedisNativeClient)r).Watch(_key + "FOO"));
@@ -322,7 +321,7 @@ namespace TheOne.Redis.Tests.Client {
             var KeySquared = _key + _key;
             Assert.That(this.Redis.GetValue(_key), Is.Null);
             Assert.That(this.Redis.GetValue(KeySquared), Is.Null);
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.IncrementValue(_key));
                 pipeline.QueueCommand(r => r.IncrementValue(KeySquared));
                 pipeline.Flush();
@@ -348,7 +347,7 @@ namespace TheOne.Redis.Tests.Client {
             var containsItem = false;
 
             Assert.That(this.Redis.GetValue(_key), Is.Null);
-            using (IRedisPipeline pipeline = this.Redis.CreatePipeline()) {
+            using (var pipeline = this.Redis.CreatePipeline()) {
                 pipeline.QueueCommand(r => r.IncrementValue(_key), intResult => incrementResults.Add(intResult));
                 pipeline.QueueCommand(r => r.AddItemToList(_listKey, "listitem1"));
                 pipeline.QueueCommand(r => r.AddItemToList(_listKey, "listitem2"));

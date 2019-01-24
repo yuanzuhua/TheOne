@@ -14,13 +14,13 @@ namespace TheOne.Redis.Tests.Basic {
             InvalidAccessException poolEx = null;
 
             using (var redisManager = new RedisManagerPool(Config.MasterHost)) {
-                using (IRedisClient redis = redisManager.GetClient()) {
+                using (var redis = redisManager.GetClient()) {
                     var threadId = Thread.CurrentThread.ManagedThreadId.ToString();
                     var key = $"Thread#{threadId}";
                     redis.SetValue(key, threadId);
 
                     ThreadPool.QueueUserWorkItem(_ => {
-                        using (IRedisClient poolRedis = redisManager.GetClient()) {
+                        using (var poolRedis = redisManager.GetClient()) {
                             var poolThreadId = Thread.CurrentThread.ManagedThreadId.ToString();
                             var poolKey = $"Thread#{poolThreadId}";
                             poolRedis.SetValue(poolKey, poolThreadId);
@@ -56,14 +56,14 @@ namespace TheOne.Redis.Tests.Basic {
             InvalidAccessException poolEx = null;
 
             using (var redisManager = new RedisManagerPool(Config.MasterHost)) {
-                using (IRedisClient redis = redisManager.GetClient()) {
+                using (var redis = redisManager.GetClient()) {
                     var threadId = Thread.CurrentThread.ManagedThreadId.ToString();
                     var key = $"Thread#{threadId}";
                     redis.SetValue(key, threadId);
 
                     ThreadPool.QueueUserWorkItem(_ => {
                         try {
-                            using (IRedisClient poolRedis = redisManager.GetClient()) {
+                            using (var poolRedis = redisManager.GetClient()) {
                                 var poolThreadId = Thread.CurrentThread.ManagedThreadId.ToString();
                                 var poolKey = $"Thread#{poolThreadId}";
                                 poolRedis.SetValue(poolKey, poolThreadId);

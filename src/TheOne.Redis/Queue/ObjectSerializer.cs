@@ -38,7 +38,7 @@ namespace TheOne.Redis.Queue {
             var memoryStream = new MemoryStream();
             memoryStream.Write(someBytes, 0, someBytes.Length);
             memoryStream.Seek(0, 0);
-            object de = this.Formatter.Deserialize(memoryStream);
+            var de = this.Formatter.Deserialize(memoryStream);
             return de;
         }
 

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using TheOne.Redis.Client;
 
 namespace TheOne.Redis.Tests.Client {
 
@@ -22,10 +21,10 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Add_to_ICollection_Set() {
-            IRedisSet list = this.Redis.Sets[this.SetId];
+            var list = this.Redis.Sets[this.SetId];
             this._storeMembers.ForEach(list.Add);
 
-            List<string> members = list.ToList();
+            var members = list.ToList();
             Assert.That(members, Is.EquivalentTo(this._storeMembers));
         }
 
@@ -33,7 +32,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_AddRangeToSet_and_GetAllFromSet() {
             this.Redis.AddRangeToSet(this.SetId, this._storeMembers);
 
-            HashSet<string> members = this.Redis.GetAllItemsFromSet(this.SetId);
+            var members = this.Redis.GetAllItemsFromSet(this.SetId);
             Assert.That(members, Is.EquivalentTo(this._storeMembers));
         }
 
@@ -41,13 +40,13 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_AddToSet_and_GetAllFromSet() {
             this._storeMembers.ForEach(x => this.Redis.AddItemToSet(this.SetId, x));
 
-            HashSet<string> members = this.Redis.GetAllItemsFromSet(this.SetId);
+            var members = this.Redis.GetAllItemsFromSet(this.SetId);
             Assert.That(members, Is.EquivalentTo(this._storeMembers));
         }
 
         [Test]
         public void Can_Clear_ICollection_Set() {
-            IRedisSet list = this.Redis.Sets[this.SetId];
+            var list = this.Redis.Sets[this.SetId];
             this._storeMembers.ForEach(list.Add);
 
             Assert.That(list.Count, Is.EqualTo(this._storeMembers.Count));
@@ -70,7 +69,7 @@ namespace TheOne.Redis.Tests.Client {
             set2Members.ForEach(x => this.Redis.AddItemToSet(set2Name, x));
             set3Members.ForEach(x => this.Redis.AddItemToSet(set3Name, x));
 
-            HashSet<string> diffMembers = this.Redis.GetDifferencesFromSet(set1Name, set2Name, set3Name);
+            var diffMembers = this.Redis.GetDifferencesFromSet(set1Name, set2Name, set3Name);
 
             Assert.That(diffMembers, Is.EquivalentTo(new List<string> { "two", "three" }));
         }
@@ -139,7 +138,7 @@ namespace TheOne.Redis.Tests.Client {
             set1Members.ForEach(x => this.Redis.AddItemToSet(set1Name, x));
             set2Members.ForEach(x => this.Redis.AddItemToSet(set2Name, x));
 
-            HashSet<string> intersectingMembers = this.Redis.GetIntersectFromSets(set1Name, set2Name);
+            var intersectingMembers = this.Redis.GetIntersectFromSets(set1Name, set2Name);
 
             Assert.That(intersectingMembers, Is.EquivalentTo(new List<string> { "four", "five" }));
         }
@@ -160,8 +159,8 @@ namespace TheOne.Redis.Tests.Client {
             fromSetIdMembers.Remove(moveMember);
             toSetIdMembers.Add(moveMember);
 
-            HashSet<string> readFromSetId = this.Redis.GetAllItemsFromSet(fromSetId);
-            HashSet<string> readToSetId = this.Redis.GetAllItemsFromSet(toSetId);
+            var readFromSetId = this.Redis.GetAllItemsFromSet(fromSetId);
+            var readToSetId = this.Redis.GetAllItemsFromSet(toSetId);
 
             Assert.That(readFromSetId, Is.EquivalentTo(fromSetIdMembers));
             Assert.That(readToSetId, Is.EquivalentTo(toSetIdMembers));
@@ -178,13 +177,13 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Remove_value_from_ICollection_Set() {
-            IRedisSet list = this.Redis.Sets[this.SetId];
+            var list = this.Redis.Sets[this.SetId];
             this._storeMembers.ForEach(list.Add);
 
             this._storeMembers.Remove("two");
             list.Remove("two");
 
-            List<string> members = list.ToList();
+            var members = list.ToList();
 
             Assert.That(members, Is.EquivalentTo(this._storeMembers));
         }
@@ -199,7 +198,7 @@ namespace TheOne.Redis.Tests.Client {
 
             this._storeMembers.Remove(removeMember);
 
-            HashSet<string> members = this.Redis.GetAllItemsFromSet(this.SetId);
+            var members = this.Redis.GetAllItemsFromSet(this.SetId);
             Assert.That(members, Is.EquivalentTo(this._storeMembers));
         }
 
@@ -219,7 +218,7 @@ namespace TheOne.Redis.Tests.Client {
 
             this.Redis.StoreDifferencesFromSet(storeSetName, set1Name, set2Name, set3Name);
 
-            HashSet<string> diffMembers = this.Redis.GetAllItemsFromSet(storeSetName);
+            var diffMembers = this.Redis.GetAllItemsFromSet(storeSetName);
 
             Assert.That(diffMembers,
                 Is.EquivalentTo(
@@ -239,7 +238,7 @@ namespace TheOne.Redis.Tests.Client {
 
             this.Redis.StoreIntersectFromSets(storeSetName, set1Name, set2Name);
 
-            HashSet<string> intersectingMembers = this.Redis.GetAllItemsFromSet(storeSetName);
+            var intersectingMembers = this.Redis.GetAllItemsFromSet(storeSetName);
 
             Assert.That(intersectingMembers, Is.EquivalentTo(new List<string> { "four", "five" }));
         }
@@ -257,7 +256,7 @@ namespace TheOne.Redis.Tests.Client {
 
             this.Redis.StoreUnionFromSets(storeSetName, set1Name, set2Name);
 
-            HashSet<string> unionMembers = this.Redis.GetAllItemsFromSet(storeSetName);
+            var unionMembers = this.Redis.GetAllItemsFromSet(storeSetName);
 
             Assert.That(unionMembers,
                 Is.EquivalentTo(
@@ -266,7 +265,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Test_Contains_in_ICollection_Set() {
-            IRedisSet list = this.Redis.Sets[this.SetId];
+            var list = this.Redis.Sets[this.SetId];
             this._storeMembers.ForEach(list.Add);
 
             Assert.That(list.Contains("two"), Is.True);
@@ -283,7 +282,7 @@ namespace TheOne.Redis.Tests.Client {
             set1Members.ForEach(x => this.Redis.AddItemToSet(set1Name, x));
             set2Members.ForEach(x => this.Redis.AddItemToSet(set2Name, x));
 
-            HashSet<string> unionMembers = this.Redis.GetUnionFromSets(set1Name, set2Name);
+            var unionMembers = this.Redis.GetUnionFromSets(set1Name, set2Name);
 
             Assert.That(unionMembers,
                 Is.EquivalentTo(

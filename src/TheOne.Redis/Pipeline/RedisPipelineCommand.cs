@@ -28,7 +28,7 @@ namespace TheOne.Redis.Pipeline {
         }
 
         public bool ReadAllAsIntsHaveSuccess() {
-            List<long> allResults = this.ReadAllAsInts();
+            var allResults = this.ReadAllAsInts();
             return allResults.All(x => x == RedisNativeClient.Success);
         }
 

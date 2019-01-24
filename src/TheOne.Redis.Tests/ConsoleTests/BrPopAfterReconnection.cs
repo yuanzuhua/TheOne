@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using TheOne.Redis.Client;
 using TheOne.Redis.ClientManager;
 
 namespace TheOne.Redis.Tests.ConsoleTests {
@@ -18,7 +17,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             var queue = "FormSaved";
 
             Task.Run(() => {
-                using (IRedisClient client = basicRedisClientManager.GetReadOnlyClient()) {
+                using (var client = basicRedisClientManager.GetReadOnlyClient()) {
                     Console.WriteLine($"Listening to {queue}");
 
                     var fromList = client.BlockingPopItemFromList(queue, TimeSpan.FromSeconds(60));
@@ -30,7 +29,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
             Console.WriteLine("Enter something:");
 
-            using (IRedisClient client = basicRedisClientManager.GetClient()) {
+            using (var client = basicRedisClientManager.GetClient()) {
                 client.AddItemToList(queue, "something");
             }
 

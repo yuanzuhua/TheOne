@@ -78,8 +78,8 @@ namespace TheOne.Redis.ClientManager {
                 ? config.DefaultDb ?? initialDb
                 : initialDb;
 
-            string[] masters = readWriteHosts?.ToArray() ?? Array.Empty<string>();
-            string[] slaves = readOnlyHosts?.ToArray() ?? Array.Empty<string>();
+            var masters = readWriteHosts?.ToArray() ?? Array.Empty<string>();
+            var slaves = readOnlyHosts?.ToArray() ?? Array.Empty<string>();
 
             this.RedisResolver = new RedisResolver(masters, slaves);
 
@@ -126,7 +126,7 @@ namespace TheOne.Redis.ClientManager {
         public void DisposeClient(RedisNativeClient client) {
             lock (this._readClients) {
                 for (var i = 0; i < this._readClients.Length; i++) {
-                    RedisClient readClient = this._readClients[i];
+                    var readClient = this._readClients[i];
                     if (client != readClient) {
                         continue;
                     }
@@ -145,7 +145,7 @@ namespace TheOne.Redis.ClientManager {
 
             lock (this._writeClients) {
                 for (var i = 0; i < this._writeClients.Length; i++) {
-                    RedisClient writeClient = this._writeClients[i];
+                    var writeClient = this._writeClients[i];
                     if (client != writeClient) {
                         continue;
                     }
@@ -219,12 +219,12 @@ namespace TheOne.Redis.ClientManager {
                 // Reaches here when there's no Valid InActive Clients
                 try {
                     // inactivePoolIndex = index of reservedSlot || index of invalid client
-                    RedisClient existingClient = this._writeClients[inactivePoolIndex];
+                    var existingClient = this._writeClients[inactivePoolIndex];
                     if (existingClient != null && existingClient != _reservedSlot && existingClient.HadExceptions) {
                         RedisState.DeactivateClient(existingClient);
                     }
 
-                    RedisClient newClient = this.InitNewClient(this.RedisResolver.CreateMasterClient(inactivePoolIndex));
+                    var newClient = this.InitNewClient(this.RedisResolver.CreateMasterClient(inactivePoolIndex));
 
                     // Put all blocking I/O or potential Exceptions before lock
                     lock (this._writeClients) {
@@ -300,12 +300,12 @@ namespace TheOne.Redis.ClientManager {
                 // Reaches here when there's no Valid InActive Clients
                 try {
                     // inactivePoolIndex = index of reservedSlot || index of invalid client
-                    RedisClient existingClient = this._readClients[inactivePoolIndex];
+                    var existingClient = this._readClients[inactivePoolIndex];
                     if (existingClient != null && existingClient != _reservedSlot && existingClient.HadExceptions) {
                         RedisState.DeactivateClient(existingClient);
                     }
 
-                    RedisClient newClient = this.InitNewClient(this.RedisResolver.CreateSlaveClient(inactivePoolIndex));
+                    var newClient = this.InitNewClient(this.RedisResolver.CreateSlaveClient(inactivePoolIndex));
 
                     // Put all blocking I/O or potential Exceptions before lock
                     lock (this._readClients) {
@@ -370,7 +370,7 @@ namespace TheOne.Redis.ClientManager {
 
             lock (this._readClients) {
                 for (var i = 0; i < this._readClients.Length; i++) {
-                    RedisClient redis = this._readClients[i];
+                    var redis = this._readClients[i];
                     if (redis != null) {
                         RedisState.DeactivateClient(redis);
                     }
@@ -383,7 +383,7 @@ namespace TheOne.Redis.ClientManager {
 
             lock (this._writeClients) {
                 for (var i = 0; i < this._writeClients.Length; i++) {
-                    RedisClient redis = this._writeClients[i];
+                    var redis = this._writeClients[i];
                     if (redis != null) {
                         RedisState.DeactivateClient(redis);
                     }
@@ -395,7 +395,7 @@ namespace TheOne.Redis.ClientManager {
             }
 
             if (this.OnFailover != null) {
-                foreach (Action<IRedisClientManager> callback in this.OnFailover) {
+                foreach (var callback in this.OnFailover) {
                     try {
                         callback(this);
                     } catch (Exception ex) {
@@ -557,7 +557,7 @@ namespace TheOne.Redis.ClientManager {
             var writeClientsInUse = 0;
             var writeClientsConnected = 0;
 
-            foreach (RedisClient client in this._writeClients) {
+            foreach (var client in this._writeClients) {
                 if (client == null) {
                     writeClientsCreated++;
                     continue;
@@ -582,7 +582,7 @@ namespace TheOne.Redis.ClientManager {
             var readClientsInUse = 0;
             var readClientsConnected = 0;
 
-            foreach (RedisClient client in this._readClients) {
+            foreach (var client in this._readClients) {
                 if (client == null) {
                     readClientsCreated++;
                     continue;
@@ -680,11 +680,11 @@ namespace TheOne.Redis.ClientManager {
 
             try {
                 // get rid of unmanaged resources
-                foreach (RedisClient t in this._writeClients) {
+                foreach (var t in this._writeClients) {
                     this.Dispose(t);
                 }
 
-                foreach (RedisClient t in this._readClients) {
+                foreach (var t in this._readClients) {
                     this.Dispose(t);
                 }
             } catch (Exception ex) {

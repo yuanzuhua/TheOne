@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using TheOne.Redis.Client;
-using TheOne.Redis.ClientManager;
-using TheOne.Redis.Pipeline;
 using TheOne.Redis.Queue.Locking;
 
 namespace TheOne.Redis.Queue {
@@ -40,12 +38,12 @@ namespace TheOne.Redis.Queue {
         ///     Queue incoming messages
         /// </summary>
         public void Enqueue(string workItemId, T workItem) {
-            using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =
+            using (var disposableClient =
                 this.ClientManager.GetDisposableClient<SerializingRedisClient>()) {
-                SerializingRedisClient client = disposableClient.Client;
+                var client = disposableClient.Client;
                 var lockKey = this.QueueNamespace.GlobalLockKey(workItemId);
                 using (new DisposableDistributedLock(client, lockKey, this._lockAcquisitionTimeout, this._lockTimeout)) {
-                    using (IRedisPipeline pipe = client.CreatePipeline()) {
+                    using (var pipe = client.CreatePipeline()) {
                         pipe.QueueCommand(r =>
                             ((RedisNativeClient)r).RPush(this.QueueNamespace.GlobalCacheKey(workItemId), client.Serialize(workItem)));
                         pipe.QueueCommand(r =>
@@ -61,19 +59,19 @@ namespace TheOne.Redis.Queue {
         /// </summary>
         public bool PrepareNextWorkItem() {
             // harvest zombies every 5 minutes
-            DateTime now = DateTime.UtcNow;
-            TimeSpan ts = now - this._harvestTime;
+            var now = DateTime.UtcNow;
+            var ts = now - this._harvestTime;
             if (ts.TotalMinutes > 5) {
                 this.HarvestZombies();
                 this._harvestTime = now;
             }
 
-            using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =
+            using (var disposableClient =
                 this.ClientManager.GetDisposableClient<SerializingRedisClient>()) {
-                SerializingRedisClient client = disposableClient.Client;
+                var client = disposableClient.Client;
 
                 // 1. get next workItemId, or return if there isn't one
-                byte[][] smallest = client.ZRangeWithScores(this._workItemIdPriorityQueue, 0, 0);
+                var smallest = client.ZRangeWithScores(this._workItemIdPriorityQueue, 0, 0);
                 if (smallest == null || smallest.Length <= 1 ||
                     RedisNativeClient.ParseDouble(smallest[1]) == ConvenientlySizedFloat) {
                     return false;
@@ -92,8 +90,8 @@ namespace TheOne.Redis.Queue {
                         return false;
                     }
 
-                    using (IRedisPipeline pipe = client.CreatePipeline()) {
-                        byte[] rawWorkItemId = client.Serialize(workItemId);
+                    using (var pipe = client.CreatePipeline()) {
+                        var rawWorkItemId = client.Serialize(workItemId);
 
                         // lock work item id in priority queue
                         pipe.QueueCommand(
@@ -117,18 +115,18 @@ namespace TheOne.Redis.Queue {
         /// <inheritdoc />
         public ISequentialData<T> Dequeue(int maxBatchSize) {
 
-            using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =
+            using (var disposableClient =
                 this.ClientManager.GetDisposableClient<SerializingRedisClient>()) {
-                SerializingRedisClient client = disposableClient.Client;
+                var client = disposableClient.Client;
 
                 // 1. get next workItemId 
                 var workItems = new List<T>();
                 DequeueManager workItemDequeueManager = null;
                 try {
-                    byte[] rawWorkItemId = client.RPop(this.PendingWorkItemIdQueue);
+                    var rawWorkItemId = client.RPop(this.PendingWorkItemIdQueue);
                     var workItemId = client.Deserialize(rawWorkItemId) as string;
                     if (rawWorkItemId != null) {
-                        using (IRedisPipeline pipe = client.CreatePipeline()) {
+                        using (var pipe = client.CreatePipeline()) {
                             // dequeue items
                             var key = this.QueueNamespace.GlobalCacheKey(workItemId);
 
@@ -174,9 +172,9 @@ namespace TheOne.Redis.Queue {
         ///     Replace existing work item in workItemId queue
         /// </summary>
         public void Update(string workItemId, int index, T newWorkItem) {
-            using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =
+            using (var disposableClient =
                 this.ClientManager.GetDisposableClient<SerializingRedisClient>()) {
-                SerializingRedisClient client = disposableClient.Client;
+                var client = disposableClient.Client;
                 var key = this.QueueNamespace.GlobalCacheKey(workItemId);
                 client.LSet(key, index, client.Serialize(newWorkItem));
             }
@@ -187,10 +185,10 @@ namespace TheOne.Redis.Queue {
         /// </summary>
         public bool HarvestZombies() {
             var rc = false;
-            using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =
+            using (var disposableClient =
                 this.ClientManager.GetDisposableClient<SerializingRedisClient>()) {
-                SerializingRedisClient client = disposableClient.Client;
-                byte[][] dequeueWorkItemIds = client.SMembers(this._dequeueIdSet);
+                var client = disposableClient.Client;
+                var dequeueWorkItemIds = client.SMembers(this._dequeueIdSet);
                 if (dequeueWorkItemIds.Length == 0) {
                     return false;
                 }
@@ -200,9 +198,9 @@ namespace TheOne.Redis.Queue {
                     keys[i] = this.GlobalDequeueLockKey(client.Deserialize(dequeueWorkItemIds[i]));
                 }
 
-                byte[][] dequeueLockVals = client.MGet(keys);
+                var dequeueLockVals = client.MGet(keys);
 
-                TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
+                var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
                 for (var i = 0; i < dequeueLockVals.Length; ++i) {
                     double lockValue = dequeueLockVals[i] != null ? BitConverter.ToInt64(dequeueLockVals[i], 0) : 0;
                     if (lockValue < ts.TotalSeconds) {
@@ -222,10 +220,10 @@ namespace TheOne.Redis.Queue {
                 return;
             }
 
-            using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =
+            using (var disposableClient =
                 this.ClientManager.GetDisposableClient<SerializingRedisClient>()) {
-                SerializingRedisClient client = disposableClient.Client;
-                using (IRedisPipeline pipe = client.CreatePipeline()) {
+                var client = disposableClient.Client;
+                using (var pipe = client.CreatePipeline()) {
                     var key = this.QueueNamespace.GlobalCacheKey(workItemId);
                     for (var i = 0; i < itemCount; ++i) {
                         pipe.QueueCommand(r => ((RedisNativeClient)r).LPop(key));
@@ -250,7 +248,7 @@ namespace TheOne.Redis.Queue {
             var dequeueLockKey = this.GlobalDequeueLockKey(workItemId);
             // handle possibility of crashed client still holding the lock
             long lockValue = 0;
-            using (IRedisPipeline pipe = client.CreatePipeline()) {
+            using (var pipe = client.CreatePipeline()) {
 
                 pipe.QueueCommand(r => ((RedisNativeClient)r).Watch(dequeueLockKey));
                 pipe.QueueCommand(r => ((RedisNativeClient)r).Get(dequeueLockKey),
@@ -258,7 +256,7 @@ namespace TheOne.Redis.Queue {
                 pipe.Flush();
             }
 
-            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
+            var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
             // no lock to release
             if (lockValue == 0) {
                 client.UnWatch();
@@ -269,7 +267,7 @@ namespace TheOne.Redis.Queue {
             } else {
                 // lock value is expired; try to release it, and other associated resources
                 var len = client.LLen(this.QueueNamespace.GlobalCacheKey(workItemId));
-                using (IRedisTransaction trans = client.CreateTransaction()) {
+                using (var trans = client.CreateTransaction()) {
                     // untrack dequeue lock
                     trans.QueueCommand(r => ((RedisNativeClient)r).SRem(this._dequeueIdSet, client.Serialize(workItemId)));
 
@@ -303,12 +301,12 @@ namespace TheOne.Redis.Queue {
             var key = this.QueueNamespace.GlobalCacheKey(workItemId);
             var lockKey = this.QueueNamespace.GlobalLockKey(workItemId);
 
-            using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =
+            using (var disposableClient =
                 this.ClientManager.GetDisposableClient<SerializingRedisClient>()) {
-                SerializingRedisClient client = disposableClient.Client;
+                var client = disposableClient.Client;
                 using (new DisposableDistributedLock(client, lockKey, this._lockAcquisitionTimeout, this._lockTimeout)) {
                     var len = client.LLen(key);
-                    using (IRedisPipeline pipe = client.CreatePipeline()) {
+                    using (var pipe = client.CreatePipeline()) {
                         // untrack dequeue lock
                         pipe.QueueCommand(r => ((RedisNativeClient)r).SRem(this._dequeueIdSet, client.Serialize(workItemId)));
 

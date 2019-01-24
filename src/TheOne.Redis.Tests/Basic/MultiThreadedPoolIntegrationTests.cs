@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using TheOne.Redis.Client;
 using TheOne.Redis.ClientManager;
 using TheOne.Redis.Common;
 
@@ -21,7 +20,7 @@ namespace TheOne.Redis.Tests.Basic {
 
             const int noOfConcurrentClients = 64;
 
-            using (IRedisClientManager manager = clientManagerFactory()) {
+            using (var manager = clientManagerFactory()) {
                 var tasks = new List<Task>();
                 for (var i = 0; i < noOfConcurrentClients; i++) {
                     var clientNo = i;
@@ -44,7 +43,7 @@ namespace TheOne.Redis.Tests.Basic {
             }
 
             var hostCount = 0;
-            foreach (KeyValuePair<string, int> entry in hostCountMap) {
+            foreach (var entry in hostCountMap) {
                 if (entry.Value < 5) {
                     Console.WriteLine("ERROR: Host has unproportianate distrobution: " + entry.Value);
                 }
@@ -62,7 +61,7 @@ namespace TheOne.Redis.Tests.Basic {
         }
 
         private static void UseClient(IRedisClientManager manager, int clientNo) {
-            using (IRedisClient client = manager.GetReadOnlyClient()) {
+            using (var client = manager.GetReadOnlyClient()) {
                 lock (_hostCountMap) {
                     if (!_hostCountMap.TryGetValue(client.Host, out var hostCount)) {
                         hostCount = 0;

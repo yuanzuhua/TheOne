@@ -36,25 +36,25 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Add_to_ICollection_Set() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
 
-            List<T> members = this._set.ToList();
+            var members = this._set.ToList();
             Assert.That(members, Is.EquivalentTo(storeMembers));
         }
 
         [Test]
         public void Can_AddToSet_and_GetAllFromSet() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
 
-            HashSet<T> members = this._redis.GetAllItemsFromSet(this._set);
+            var members = this._redis.GetAllItemsFromSet(this._set);
             Assert.That(members, Is.EquivalentTo(storeMembers));
         }
 
         [Test]
         public void Can_Clear_ICollection_Set() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
 
             Assert.That(this._set.Count, Is.EqualTo(storeMembers.Count));
@@ -66,10 +66,10 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_DiffBetweenSets() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.Add(this._factory.CreateInstance(1));
 
-            List<T> storeMembers2 = this._factory.CreateList2();
+            var storeMembers2 = this._factory.CreateList2();
             storeMembers2.Insert(0, this._factory.CreateInstance(4));
 
             var storeMembers3 = new List<T> {
@@ -83,7 +83,7 @@ namespace TheOne.Redis.Tests.Client {
             storeMembers2.ForEach(x => this._redis.AddItemToSet(this._set2, x));
             storeMembers3.ForEach(x => this._redis.AddItemToSet(this._set3, x));
 
-            HashSet<T> diffMembers = this._redis.GetDifferencesFromSet(this._set, this._set2, this._set3);
+            var diffMembers = this._redis.GetDifferencesFromSet(this._set, this._set2, this._set3);
 
             Assert.That(diffMembers,
                 Is.EquivalentTo(
@@ -101,7 +101,7 @@ namespace TheOne.Redis.Tests.Client {
             }
 
             var members = new List<T>();
-            foreach (T item in this._set) {
+            foreach (var item in this._set) {
                 members.Add(item);
             }
 
@@ -113,11 +113,11 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_enumerate_small_ICollection_Set() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
 
             var members = new List<T>();
-            foreach (T item in this._set) {
+            foreach (var item in this._set) {
                 members.Add(item);
             }
 
@@ -127,17 +127,17 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_GetRandomEntryFromSet() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
 
-            T randomEntry = this._redis.GetRandomItemFromSet(this._set);
+            var randomEntry = this._redis.GetRandomItemFromSet(this._set);
 
             Assert.That(storeMembers.Contains(randomEntry), Is.True);
         }
 
         [Test]
         public void Can_GetSetCount() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
 
             var setCount = this._redis.GetSetCount(this._set);
@@ -147,8 +147,8 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_IntersectBetweenSets() {
-            List<T> storeMembers = this._factory.CreateList();
-            List<T> storeMembers2 = this._factory.CreateList2();
+            var storeMembers = this._factory.CreateList();
+            var storeMembers2 = this._factory.CreateList2();
 
             storeMembers.Add(storeMembers2.First());
             storeMembers2.Add(storeMembers.First());
@@ -156,17 +156,17 @@ namespace TheOne.Redis.Tests.Client {
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
             storeMembers2.ForEach(x => this._redis.AddItemToSet(this._set2, x));
 
-            HashSet<T> intersectingMembers = this._redis.GetIntersectFromSets(this._set, this._set2);
+            var intersectingMembers = this._redis.GetIntersectFromSets(this._set, this._set2);
 
-            List<T> intersect = this._set.ToList().Intersect(this._set2.ToList()).ToList();
+            var intersect = this._set.ToList().Intersect(this._set2.ToList()).ToList();
 
             Assert.That(intersectingMembers, Is.EquivalentTo(intersect));
         }
 
         [Test]
         public void Can_MoveBetweenSets() {
-            List<T> fromSetMembers = this._factory.CreateList();
-            List<T> toSetMembers = this._factory.CreateList2();
+            var fromSetMembers = this._factory.CreateList();
+            var toSetMembers = this._factory.CreateList2();
 
             fromSetMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
             toSetMembers.ForEach(x => this._redis.AddItemToSet(this._set2, x));
@@ -176,8 +176,8 @@ namespace TheOne.Redis.Tests.Client {
             fromSetMembers.Remove(this._factory.ExistingValue);
             toSetMembers.Add(this._factory.ExistingValue);
 
-            HashSet<T> readFromSetId = this._redis.GetAllItemsFromSet(this._set);
-            HashSet<T> readToSetId = this._redis.GetAllItemsFromSet(this._set2);
+            var readFromSetId = this._redis.GetAllItemsFromSet(this._set);
+            var readToSetId = this._redis.GetAllItemsFromSet(this._set2);
 
             Assert.That(readFromSetId, Is.EquivalentTo(fromSetMembers));
             Assert.That(readToSetId, Is.EquivalentTo(toSetMembers));
@@ -185,30 +185,30 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_PopFromSet() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
 
-            T member = this._redis.PopItemFromSet(this._set);
+            var member = this._redis.PopItemFromSet(this._set);
 
             Assert.That(storeMembers.Contains(member), Is.True);
         }
 
         [Test]
         public void Can_Remove_value_from_ICollection_Set() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
 
             storeMembers.Remove(this._factory.ExistingValue);
             this._set.Remove(this._factory.ExistingValue);
 
-            List<T> members = this._set.ToList();
+            var members = this._set.ToList();
 
             Assert.That(members, Is.EquivalentTo(storeMembers));
         }
 
         [Test]
         public void Can_RemoveFromSet() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
 
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
 
@@ -216,16 +216,16 @@ namespace TheOne.Redis.Tests.Client {
 
             storeMembers.Remove(this._factory.ExistingValue);
 
-            HashSet<T> members = this._redis.GetAllItemsFromSet(this._set);
+            var members = this._redis.GetAllItemsFromSet(this._set);
             Assert.That(members, Is.EquivalentTo(storeMembers));
         }
 
         [Test]
         public void Can_Store_DiffBetweenSets() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.Add(this._factory.CreateInstance(1));
 
-            List<T> storeMembers2 = this._factory.CreateList2();
+            var storeMembers2 = this._factory.CreateList2();
             storeMembers2.Insert(0, this._factory.CreateInstance(4));
 
             var storeMembers3 = new List<T> {
@@ -239,7 +239,7 @@ namespace TheOne.Redis.Tests.Client {
             storeMembers2.ForEach(x => this._redis.AddItemToSet(this._set2, x));
             storeMembers3.ForEach(x => this._redis.AddItemToSet(this._set3, x));
 
-            IRedisSet<T> storeSet = this._redis.Sets["testdiffsetstore"];
+            var storeSet = this._redis.Sets["testdiffsetstore"];
 
             this._redis.StoreDifferencesFromSet(storeSet, this._set, this._set2, this._set3);
 
@@ -251,37 +251,37 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Store_IntersectBetweenSets() {
-            List<T> storeMembers = this._factory.CreateList();
-            List<T> storeMembers2 = this._factory.CreateList2();
+            var storeMembers = this._factory.CreateList();
+            var storeMembers2 = this._factory.CreateList2();
 
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
             storeMembers2.ForEach(x => this._redis.AddItemToSet(this._set2, x));
 
             this._redis.StoreIntersectFromSets(this._set3, this._set, this._set2);
 
-            List<T> intersect = this._set.ToList().Intersect(this._set2).ToList();
+            var intersect = this._set.ToList().Intersect(this._set2).ToList();
 
             Assert.That(this._set3, Is.EquivalentTo(intersect));
         }
 
         [Test]
         public void Can_Store_UnionBetweenSets() {
-            List<T> storeMembers = this._factory.CreateList();
-            List<T> storeMembers2 = this._factory.CreateList2();
+            var storeMembers = this._factory.CreateList();
+            var storeMembers2 = this._factory.CreateList2();
 
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
             storeMembers2.ForEach(x => this._redis.AddItemToSet(this._set2, x));
 
             this._redis.StoreUnionFromSets(this._set3, this._set, this._set2);
 
-            List<T> union = this._set.ToList().Union(this._set2).ToList();
+            var union = this._set.ToList().Union(this._set2).ToList();
 
             Assert.That(this._set3, Is.EquivalentTo(union));
         }
 
         [Test]
         public void Can_Test_Contains_in_ICollection_Set() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
 
             Assert.That(this._set.Contains(this._factory.ExistingValue), Is.True);
@@ -290,22 +290,22 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_UnionBetweenSets() {
-            List<T> storeMembers = this._factory.CreateList();
-            List<T> storeMembers2 = this._factory.CreateList2();
+            var storeMembers = this._factory.CreateList();
+            var storeMembers2 = this._factory.CreateList2();
 
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
             storeMembers2.ForEach(x => this._redis.AddItemToSet(this._set2, x));
 
-            HashSet<T> unionMembers = this._redis.GetUnionFromSets(this._set, this._set2);
+            var unionMembers = this._redis.GetUnionFromSets(this._set, this._set2);
 
-            List<T> union = this._set.Union(this._set2).ToList();
+            var union = this._set.Union(this._set2).ToList();
 
             Assert.That(unionMembers, Is.EquivalentTo(union));
         }
 
         [Test]
         public void Does_SetContainsValue() {
-            List<T> storeMembers = this._factory.CreateList();
+            var storeMembers = this._factory.CreateList();
             storeMembers.ForEach(x => this._redis.AddItemToSet(this._set, x));
 
             Assert.That(this._redis.SetContainsItem(this._set, this._factory.ExistingValue), Is.True);

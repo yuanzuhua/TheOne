@@ -43,7 +43,7 @@ namespace TheOne.Redis.Client.Internal {
         /// <inheritdoc />
         public bool Contains(T item) {
             // TODO replace with native implementation when exists
-            foreach (T existingItem in this) {
+            foreach (var existingItem in this) {
                 if (Equals(existingItem, item)) {
                     return true;
                 }
@@ -54,7 +54,7 @@ namespace TheOne.Redis.Client.Internal {
 
         /// <inheritdoc />
         public void CopyTo(T[] array, int arrayIndex) {
-            List<T> allItemsInList = this._client.GetAllItemsFromList(this);
+            var allItemsInList = this._client.GetAllItemsFromList(this);
             allItemsInList.CopyTo(array, arrayIndex);
         }
 
@@ -79,7 +79,7 @@ namespace TheOne.Redis.Client.Internal {
         public int IndexOf(T item) {
             // TODO replace with native implementation when exists
             var i = 0;
-            foreach (T existingItem in this) {
+            foreach (var existingItem in this) {
                 if (Equals(existingItem, item)) {
                     return i;
                 }
@@ -216,7 +216,7 @@ namespace TheOne.Redis.Client.Internal {
             List<T> pageResults;
             do {
                 pageResults = this._client.GetRangeFromList(this, skip, PageLimit);
-                foreach (T result in pageResults) {
+                foreach (var result in pageResults) {
                     yield return result;
                 }
 

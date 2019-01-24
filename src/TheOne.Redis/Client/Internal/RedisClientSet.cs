@@ -46,7 +46,7 @@ namespace TheOne.Redis.Client.Internal {
 
         /// <inheritdoc />
         public void CopyTo(string[] array, int arrayIndex) {
-            HashSet<string> allItemsInSet = this._client.GetAllItemsFromSet(this.Id);
+            var allItemsInSet = this._client.GetAllItemsFromSet(this.Id);
             allItemsInSet.CopyTo(array, arrayIndex);
         }
 
@@ -87,37 +87,37 @@ namespace TheOne.Redis.Client.Internal {
 
         /// <inheritdoc />
         public HashSet<string> Intersect(params IRedisSet[] withSets) {
-            List<string> allSetIds = this.MergeSetIds(withSets);
+            var allSetIds = this.MergeSetIds(withSets);
             return this._client.GetIntersectFromSets(allSetIds.ToArray());
         }
 
         /// <inheritdoc />
         public void StoreIntersect(params IRedisSet[] withSets) {
-            string[] withSetIds = withSets.ToList().ConvertAll(x => x.Id).ToArray();
+            var withSetIds = withSets.ToList().ConvertAll(x => x.Id).ToArray();
             this._client.StoreIntersectFromSets(this.Id, withSetIds);
         }
 
         /// <inheritdoc />
         public HashSet<string> Union(params IRedisSet[] withSets) {
-            List<string> allSetIds = this.MergeSetIds(withSets);
+            var allSetIds = this.MergeSetIds(withSets);
             return this._client.GetUnionFromSets(allSetIds.ToArray());
         }
 
         /// <inheritdoc />
         public void StoreUnion(params IRedisSet[] withSets) {
-            string[] withSetIds = withSets.ToList().ConvertAll(x => x.Id).ToArray();
+            var withSetIds = withSets.ToList().ConvertAll(x => x.Id).ToArray();
             this._client.StoreUnionFromSets(this.Id, withSetIds);
         }
 
         /// <inheritdoc />
         public HashSet<string> Diff(IRedisSet[] withSets) {
-            string[] withSetIds = withSets.ToList().ConvertAll(x => x.Id).ToArray();
+            var withSetIds = withSets.ToList().ConvertAll(x => x.Id).ToArray();
             return this._client.GetDifferencesFromSet(this.Id, withSetIds);
         }
 
         /// <inheritdoc />
         public void StoreDiff(IRedisSet fromSet, params IRedisSet[] withSets) {
-            string[] withSetIds = withSets.ToList().ConvertAll(x => x.Id).ToArray();
+            var withSetIds = withSets.ToList().ConvertAll(x => x.Id).ToArray();
             this._client.StoreDifferencesFromSet(this.Id, fromSet.Id, withSetIds);
         }
 

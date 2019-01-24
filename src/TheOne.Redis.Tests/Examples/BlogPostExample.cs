@@ -72,9 +72,9 @@ namespace TheOne.Redis.Tests.Examples {
         private readonly RedisClient _redis = new RedisClient(Config.MasterHost);
 
         public void InsertTestData() {
-            IRedisTypedClient<User> redisUsers = this._redis.As<User>();
-            IRedisTypedClient<Blog> redisBlogs = this._redis.As<Blog>();
-            IRedisTypedClient<BlogPost> redisBlogPosts = this._redis.As<BlogPost>();
+            var redisUsers = this._redis.As<User>();
+            var redisBlogs = this._redis.As<Blog>();
+            var redisBlogPosts = this._redis.As<BlogPost>();
 
             var ayende = new User { Id = redisUsers.GetNextSequence(), Name = "Oren Eini" };
             var mythz = new User { Id = redisUsers.GetNextSequence(), Name = "Demis Bellot" };
@@ -158,13 +158,13 @@ namespace TheOne.Redis.Tests.Examples {
         [Test]
         public void Add_comment_to_existing_post() {
             var postId = 1;
-            IRedisTypedClient<BlogPost> redisBlogPosts = this._redis.As<BlogPost>();
-            BlogPost blogPost = redisBlogPosts.GetById(postId.ToString());
+            var redisBlogPosts = this._redis.As<BlogPost>();
+            var blogPost = redisBlogPosts.GetById(postId.ToString());
             blogPost.Comments.Add(
                 new BlogPostComment { Content = "Third Post!", CreatedDate = DateTime.UtcNow });
             redisBlogPosts.Store(blogPost);
 
-            BlogPost refreshBlogPost = redisBlogPosts.GetById(postId.ToString());
+            var refreshBlogPost = redisBlogPosts.GetById(postId.ToString());
             Console.WriteLine(refreshBlogPost.ToJson());
             /* Output:
             {
@@ -204,25 +204,25 @@ namespace TheOne.Redis.Tests.Examples {
 
         [Test]
         public void Show_a_list_of_blogs() {
-            IRedisTypedClient<Blog> redisBlogs = this._redis.As<Blog>();
-            IList<Blog> blogs = redisBlogs.GetAll();
+            var redisBlogs = this._redis.As<Blog>();
+            var blogs = redisBlogs.GetAll();
             Console.WriteLine(blogs.ToJson());
         }
 
         [Test]
         public void Show_a_list_of_recent_posts_and_comments() {
             // Get strongly-typed clients
-            IRedisTypedClient<BlogPost> redisBlogPosts = this._redis.As<BlogPost>();
-            IRedisTypedClient<BlogPostComment> redisComments = this._redis.As<BlogPostComment>();
+            var redisBlogPosts = this._redis.As<BlogPost>();
+            var redisComments = this._redis.As<BlogPostComment>();
             {
                 // To keep this example let's pretend this is a new list of blog posts
-                IList<BlogPost> newIncomingBlogPosts = redisBlogPosts.GetAll();
+                var newIncomingBlogPosts = redisBlogPosts.GetAll();
 
                 // Let's get back an IList<BlogPost> wrapper around a Redis server-side List.
-                IRedisList<BlogPost> recentPosts = redisBlogPosts.Lists["urn:BlogPost:RecentPosts"];
-                IRedisList<BlogPostComment> recentComments = redisComments.Lists["urn:BlogPostComment:RecentComments"];
+                var recentPosts = redisBlogPosts.Lists["urn:BlogPost:RecentPosts"];
+                var recentComments = redisComments.Lists["urn:BlogPostComment:RecentComments"];
 
-                foreach (BlogPost newBlogPost in newIncomingBlogPosts) {
+                foreach (var newBlogPost in newIncomingBlogPosts) {
                     // Prepend the new blog posts to the start of the 'RecentPosts' list
                     recentPosts.Prepend(newBlogPost);
 
@@ -243,48 +243,48 @@ namespace TheOne.Redis.Tests.Examples {
         [Test]
         public void Show_a_TagCloud() {
             // Get strongly-typed clients
-            IRedisTypedClient<BlogPost> redisBlogPosts = this._redis.As<BlogPost>();
-            IList<BlogPost> newIncomingBlogPosts = redisBlogPosts.GetAll();
+            var redisBlogPosts = this._redis.As<BlogPost>();
+            var newIncomingBlogPosts = redisBlogPosts.GetAll();
 
-            foreach (BlogPost newBlogPost in newIncomingBlogPosts) {
+            foreach (var newBlogPost in newIncomingBlogPosts) {
                 // For every tag in each new blog post, increment the number of times each Tag has occurred 
                 newBlogPost.Tags.ForEach(x => this._redis.IncrementItemInSortedSet("urn:TagCloud", x, 1));
             }
 
             // Show top 5 most popular tags with their scores
-            IDictionary<string, double> tagCloud = this._redis.GetRangeWithScoresFromSortedSetDesc("urn:TagCloud", 0, 4);
+            var tagCloud = this._redis.GetRangeWithScoresFromSortedSetDesc("urn:TagCloud", 0, 4);
             Console.WriteLine(tagCloud.ToJson());
         }
 
         [Test]
         public void Show_all_Categories() {
-            IRedisTypedClient<BlogPost> redisBlogPosts = this._redis.As<BlogPost>();
-            IList<BlogPost> blogPosts = redisBlogPosts.GetAll();
+            var redisBlogPosts = this._redis.As<BlogPost>();
+            var blogPosts = redisBlogPosts.GetAll();
 
-            foreach (BlogPost blogPost in blogPosts) {
+            foreach (var blogPost in blogPosts) {
                 blogPost.Categories.ForEach(x => this._redis.AddItemToSet("urn:Categories", x));
             }
 
-            HashSet<string> uniqueCategories = this._redis.GetAllItemsFromSet("urn:Categories");
+            var uniqueCategories = this._redis.GetAllItemsFromSet("urn:Categories");
             Console.WriteLine(uniqueCategories.ToJson());
         }
 
         [Test]
         public void Show_all_Posts_for_the_DocumentDB_Category() {
-            IRedisTypedClient<BlogPost> redisBlogPosts = this._redis.As<BlogPost>();
-            IList<BlogPost> newIncomingBlogPosts = redisBlogPosts.GetAll();
+            var redisBlogPosts = this._redis.As<BlogPost>();
+            var newIncomingBlogPosts = redisBlogPosts.GetAll();
 
-            foreach (BlogPost newBlogPost in newIncomingBlogPosts) {
+            foreach (var newBlogPost in newIncomingBlogPosts) {
                 // For each post add it's Id into each of it's 'Category > Posts' index
                 newBlogPost.Categories.ForEach(x => this._redis.AddItemToSet("urn:Category:" + x, newBlogPost.Id.ToString()));
             }
 
             // Retrieve all the post ids for the category you want to view
-            HashSet<string> documentDbPostIds = this._redis.GetAllItemsFromSet("urn:Category:DocumentDB");
+            var documentDbPostIds = this._redis.GetAllItemsFromSet("urn:Category:DocumentDB");
 
             // Make a batch call to retrieve all the posts containing the matching ids 
             // (i.e. the DocumentDB Category posts)
-            IList<BlogPost> documentDbPosts = redisBlogPosts.GetByIds(documentDbPostIds);
+            var documentDbPosts = redisBlogPosts.GetByIds(documentDbPostIds);
 
             Console.WriteLine(documentDbPosts.ToJson());
         }
@@ -294,8 +294,8 @@ namespace TheOne.Redis.Tests.Examples {
             // There is nothing special required here as since comments are Key Value Objects 
             // they are stored and retrieved with the post
             var postId = 1;
-            IRedisTypedClient<BlogPost> redisBlogPosts = this._redis.As<BlogPost>();
-            BlogPost selectedBlogPost = redisBlogPosts.GetById(postId.ToString());
+            var redisBlogPosts = this._redis.As<BlogPost>();
+            var selectedBlogPost = redisBlogPosts.GetById(postId.ToString());
 
             Console.WriteLine(selectedBlogPost.ToJson());
         }
@@ -303,8 +303,8 @@ namespace TheOne.Redis.Tests.Examples {
         [Test]
         public void Store_and_retrieve_some_blogs() {
             // Retrieve strongly-typed Redis clients that let's you natively persist POCO's
-            IRedisTypedClient<User> redisUsers = this._redis.As<User>();
-            IRedisTypedClient<Blog> redisBlogs = this._redis.As<Blog>();
+            var redisUsers = this._redis.As<User>();
+            var redisBlogs = this._redis.As<Blog>();
             // Create the user, getting a unique User Id from the User sequence.
             var mythz = new User { Id = redisUsers.GetNextSequence(), Name = "Demis Bellot" };
 
@@ -331,18 +331,18 @@ namespace TheOne.Redis.Tests.Examples {
             redisBlogs.StoreAll(mythzBlogs);
 
             // retrieve all blogs
-            IList<Blog> blogs = redisBlogs.GetAll();
+            var blogs = redisBlogs.GetAll();
 
             Console.WriteLine(blogs.ToJson());
         }
 
         [Test]
         public void Store_and_retrieve_users() {
-            IRedisTypedClient<User> redisUsers = this._redis.As<User>();
+            var redisUsers = this._redis.As<User>();
             redisUsers.Store(new User { Id = redisUsers.GetNextSequence(), Name = "ayende" });
             redisUsers.Store(new User { Id = redisUsers.GetNextSequence(), Name = "mythz" });
 
-            IList<User> allUsers = redisUsers.GetAll();
+            var allUsers = redisUsers.GetAll();
             Console.WriteLine(allUsers.ToJson());
         }
 

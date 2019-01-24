@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using TheOne.Redis.Client;
 using TheOne.Redis.ClientManager;
 using TheOne.Redis.Tests.Extensions;
 using TheOne.Redis.Tests.Shared;
@@ -88,17 +87,17 @@ namespace TheOne.Redis.Tests.ClientManager {
 
         [Test]
         public void Can_ExecAs_ModelWithIdAndName_Action() {
-            ModelWithIdAndName expected = ModelWithIdAndName.Create(1);
+            var expected = ModelWithIdAndName.Create(1);
             this._redisManager.ExecAs<ModelWithIdAndName>(m => {
                 m.Store(expected);
-                ModelWithIdAndName actual = m.GetById(expected.Id);
+                var actual = m.GetById(expected.Id);
                 Assert.That(actual, Is.EqualTo(expected));
             });
         }
 
         [Test]
         public void Can_ExecAs_ModelWithIdAndName_Func() {
-            ModelWithIdAndName expected = ModelWithIdAndName.Create(1);
+            var expected = ModelWithIdAndName.Create(1);
             var actual = this._redisManager.ExecAs<ModelWithIdAndName>(m => {
                 m.Store(expected);
                 return m.GetById(expected.Id);
@@ -113,8 +112,8 @@ namespace TheOne.Redis.Tests.ClientManager {
                 ModelWithIdAndName.Create(2),
                 ModelWithIdAndName.Create(3)
             };
-            IList<ModelWithIdAndName> actual = this._redisManager.ExecAs<ModelWithIdAndName>(m => {
-                IRedisList<ModelWithIdAndName> list = m.Lists["typed-list"];
+            var actual = this._redisManager.ExecAs<ModelWithIdAndName>(m => {
+                var list = m.Lists["typed-list"];
                 list.AddRange(expected);
                 return (IList<ModelWithIdAndName>)list.GetAll();
             });
@@ -128,8 +127,8 @@ namespace TheOne.Redis.Tests.ClientManager {
                 ModelWithIdAndName.Create(2),
                 ModelWithIdAndName.Create(3)
             };
-            List<ModelWithIdAndName> actual = this._redisManager.ExecAs<ModelWithIdAndName>(m => {
-                IRedisList<ModelWithIdAndName> list = m.Lists["typed-list"];
+            var actual = this._redisManager.ExecAs<ModelWithIdAndName>(m => {
+                var list = m.Lists["typed-list"];
                 list.AddRange(expected);
                 return list.GetAll();
             });

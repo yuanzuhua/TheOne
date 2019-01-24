@@ -10,7 +10,7 @@ namespace TheOne.Redis.Tests.Queue {
         public void Can_serialize_object_with_default_serializer() {
             var ser = new ObjectSerializer();
             var test = "test";
-            byte[] serialized = ser.Serialize(test);
+            var serialized = ser.Serialize(test);
             Assert.AreEqual(test, ser.Deserialize(serialized));
         }
 
@@ -18,7 +18,7 @@ namespace TheOne.Redis.Tests.Queue {
         public void Can_serialize_object_with_optimized_serializer() {
             var ser = new OptimizedObjectSerializer();
             var test = "test";
-            byte[] serialized = ser.Serialize(test);
+            var serialized = ser.Serialize(test);
             Assert.AreEqual(test, ser.Deserialize(serialized));
 
             var testFloat = 320.0f;

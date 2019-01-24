@@ -70,9 +70,9 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
             BlogPostBestPractice.InsertTestData(repository);
 
             // Create a typed-client based on the new schema
-            IRedisTypedClient<New.BlogPost> redisBlogPosts = this._redisClient.As<New.BlogPost>();
+            var redisBlogPosts = this._redisClient.As<New.BlogPost>();
             // Automatically retrieve blog posts
-            IList<New.BlogPost> allBlogPosts = redisBlogPosts.GetAll();
+            var allBlogPosts = redisBlogPosts.GetAll();
 
             // Print out the data in the list of 'New.BlogPost' populated from old 'BlogPost' type
             // Note: renamed fields are lost 
@@ -87,13 +87,13 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
             BlogPostBestPractice.InsertTestData(repository);
 
             // Create a typed-client based on the new schema
-            IRedisTypedClient<BlogPost> redisBlogPosts = this._redisClient.As<BlogPost>();
-            IRedisTypedClient<New.BlogPost> redisNewBlogPosts = this._redisClient.As<New.BlogPost>();
+            var redisBlogPosts = this._redisClient.As<BlogPost>();
+            var redisNewBlogPosts = this._redisClient.As<New.BlogPost>();
             // Automatically retrieve blog posts
-            IList<BlogPost> oldBlogPosts = redisBlogPosts.GetAll();
+            var oldBlogPosts = redisBlogPosts.GetAll();
 
             // Write a custom translation layer to migrate to the new schema
-            List<New.BlogPost> migratedBlogPosts = oldBlogPosts.Select(old => new New.BlogPost {
+            var migratedBlogPosts = oldBlogPosts.Select(old => new New.BlogPost {
                 Id = old.Id,
                 BlogId = old.BlogId,
                 Title = old.Title,
@@ -113,7 +113,7 @@ namespace TheOne.Redis.Tests.Examples.BestPractice {
             redisNewBlogPosts.StoreAll(migratedBlogPosts);
 
             // Read out the newly stored blog posts
-            IList<New.BlogPost> refreshedNewBlogPosts = redisNewBlogPosts.GetAll();
+            var refreshedNewBlogPosts = redisNewBlogPosts.GetAll();
             // Note: data renamed fields are successfully migrated to the new schema
             Console.WriteLine(refreshedNewBlogPosts.ToJson());
         }

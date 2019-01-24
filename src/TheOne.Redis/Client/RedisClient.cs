@@ -73,8 +73,8 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public RedisText Custom(params object[] cmdWithArgs) {
-            RedisData data = this.RawCommand(cmdWithArgs);
-            RedisText ret = data.ToRedisText();
+            var data = this.RawCommand(cmdWithArgs);
+            var ret = data.ToRedisText();
             return ret;
         }
 
@@ -90,13 +90,13 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public void SetValue(string key, string value) {
-            byte[] bytesValue = value?.ToUtf8Bytes();
+            var bytesValue = value?.ToUtf8Bytes();
             base.Set(key, bytesValue);
         }
 
         /// <inheritdoc />
         public void SetValue(string key, string value, TimeSpan expireIn) {
-            byte[] bytesValue = value?.ToUtf8Bytes();
+            var bytesValue = value?.ToUtf8Bytes();
 
             if (this.AssertServerVersionNumber() >= 2610) {
                 if (expireIn.Milliseconds > 0) {
@@ -111,13 +111,13 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public bool SetValueIfExists(string key, string value) {
-            byte[] bytesValue = value?.ToUtf8Bytes();
+            var bytesValue = value?.ToUtf8Bytes();
             return base.Set(key, bytesValue, true);
         }
 
         /// <inheritdoc />
         public bool SetValueIfNotExists(string key, string value) {
-            byte[] bytesValue = value?.ToUtf8Bytes();
+            var bytesValue = value?.ToUtf8Bytes();
             return base.Set(key, bytesValue, false);
         }
 
@@ -132,8 +132,8 @@ namespace TheOne.Redis.Client {
                 return;
             }
 
-            string[] keyArray = keys.ToArray();
-            string[] valueArray = values.ToArray();
+            var keyArray = keys.ToArray();
+            var valueArray = values.ToArray();
 
             if (keyArray.Length != valueArray.Length) {
                 throw new Exception(string.Format("Key length != Value Length. {0}/{1}", keyArray.Length, valueArray.Length));
@@ -175,7 +175,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public string GetValue(string key) {
-            byte[] bytes = this.Get(key);
+            var bytes = this.Get(key);
             return bytes?.FromUtf8Bytes();
         }
 
@@ -320,7 +320,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public List<string> SearchKeys(string pattern) {
-            byte[][] multiDataList = this.Keys(pattern);
+            var multiDataList = this.Keys(pattern);
             return multiDataList.ToStringList();
         }
 
@@ -334,10 +334,10 @@ namespace TheOne.Redis.Client {
                 return new List<string>();
             }
 
-            byte[][] resultBytesArray = this.MGet(keys.ToArray());
+            var resultBytesArray = this.MGet(keys.ToArray());
 
             var results = new List<string>();
-            foreach (byte[] resultBytes in resultBytesArray) {
+            foreach (var resultBytes in resultBytesArray) {
                 if (resultBytes == null) {
                     continue;
                 }
@@ -359,10 +359,10 @@ namespace TheOne.Redis.Client {
                 return new List<T>();
             }
 
-            byte[][] resultBytesArray = this.MGet(keys.ToArray());
+            var resultBytesArray = this.MGet(keys.ToArray());
 
             var results = new List<T>();
-            foreach (byte[] resultBytes in resultBytesArray) {
+            foreach (var resultBytes in resultBytesArray) {
                 if (resultBytes == null) {
                     continue;
                 }
@@ -385,14 +385,14 @@ namespace TheOne.Redis.Client {
                 return new Dictionary<string, string>();
             }
 
-            string[] keysArray = keys.ToArray();
-            byte[][] resultBytesArray = this.MGet(keysArray);
+            var keysArray = keys.ToArray();
+            var resultBytesArray = this.MGet(keysArray);
 
             var results = new Dictionary<string, string>();
             for (var i = 0; i < resultBytesArray.Length; i++) {
                 var key = keysArray[i];
 
-                byte[] resultBytes = resultBytesArray[i];
+                var resultBytes = resultBytesArray[i];
                 if (resultBytes == null) {
                     results.Add(key, null);
                 } else {
@@ -414,14 +414,14 @@ namespace TheOne.Redis.Client {
                 return new Dictionary<string, T>();
             }
 
-            string[] keysArray = keys.ToArray();
-            byte[][] resultBytesArray = this.MGet(keysArray);
+            var keysArray = keys.ToArray();
+            var resultBytesArray = this.MGet(keysArray);
 
             var results = new Dictionary<string, T>();
             for (var i = 0; i < resultBytesArray.Length; i++) {
                 var key = keysArray[i];
 
-                byte[] resultBytes = resultBytesArray[i];
+                var resultBytes = resultBytesArray[i];
                 if (resultBytes == null) {
                     results.Add(key, default);
                 } else {
@@ -451,7 +451,7 @@ namespace TheOne.Redis.Client {
                     ? this.Scan(ret.Cursor, pageSize, pattern)
                     : this.Scan(ret.Cursor, pageSize);
 
-                foreach (byte[] key in ret.Results) {
+                foreach (var key in ret.Results) {
                     yield return key.FromUtf8Bytes();
                 }
 
@@ -469,7 +469,7 @@ namespace TheOne.Redis.Client {
                     ? this.SScan(setId, ret.Cursor, pageSize, pattern)
                     : this.SScan(setId, ret.Cursor, pageSize);
 
-                foreach (byte[] key in ret.Results) {
+                foreach (var key in ret.Results) {
                     yield return key.FromUtf8Bytes();
                 }
 
@@ -487,7 +487,7 @@ namespace TheOne.Redis.Client {
                     ? this.ZScan(setId, ret.Cursor, pageSize, pattern)
                     : this.ZScan(setId, ret.Cursor, pageSize);
 
-                foreach (KeyValuePair<string, double> entry in ret.AsItemsWithScores()) {
+                foreach (var entry in ret.AsItemsWithScores()) {
                     yield return entry;
                 }
 
@@ -505,7 +505,7 @@ namespace TheOne.Redis.Client {
                     ? this.HScan(hashId, ret.Cursor, pageSize, pattern)
                     : this.HScan(hashId, ret.Cursor, pageSize);
 
-                foreach (KeyValuePair<string, string> entry in ret.AsKeyValues()) {
+                foreach (var entry in ret.AsKeyValues()) {
                     yield return entry;
                 }
 
@@ -533,7 +533,7 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public RedisServerRole GetServerRole() {
             if (this.AssertServerVersionNumber() >= 2812) {
-                RedisText text = this.Role();
+                var text = this.Role();
                 var roleName = text.Children[0].Text;
                 return ToServerRole(roleName);
             }
@@ -586,7 +586,7 @@ namespace TheOne.Redis.Client {
         }
 
         public bool SetValueIfExists(string key, string value, TimeSpan expireIn) {
-            byte[] bytesValue = value?.ToUtf8Bytes();
+            var bytesValue = value?.ToUtf8Bytes();
 
             if (expireIn.Milliseconds > 0) {
                 return base.Set(key, bytesValue, true, expiryMs: (long)expireIn.TotalMilliseconds);
@@ -596,7 +596,7 @@ namespace TheOne.Redis.Client {
         }
 
         public bool SetValueIfNotExists(string key, string value, TimeSpan expireIn) {
-            byte[] bytesValue = value?.ToUtf8Bytes();
+            var bytesValue = value?.ToUtf8Bytes();
 
             if (expireIn.Milliseconds > 0) {
                 return base.Set(key, bytesValue, false, expiryMs: (long)expireIn.TotalMilliseconds);

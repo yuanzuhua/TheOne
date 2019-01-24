@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using NUnit.Framework;
@@ -54,7 +53,7 @@ namespace TheOne.Redis.Tests.Basic {
         public void Can_connect_to_redis_with_password_with_equals() {
             var connString = Config.Localhost + "?password=" + WebUtility.UrlEncode(Config.LocalhostPassword);
             var redisManager = new PooledRedisClientManager(connString);
-            using (IRedisClient redis = redisManager.GetClient()) {
+            using (var redis = redisManager.GetClient()) {
                 Assert.That(redis.Password, Is.EqualTo(Config.LocalhostPassword));
             }
         }
@@ -63,8 +62,8 @@ namespace TheOne.Redis.Tests.Basic {
         public void Can_connect_to_Slaves_and_Masters_with_Password() {
             var factory = new PooledRedisClientManager(new[] { Config.MasterHost }, new[] { Config.SlaveHost });
 
-            using (IRedisClient readWrite = factory.GetClient()) {
-                using (IRedisClient readOnly = factory.GetReadOnlyClient()) {
+            using (var readWrite = factory.GetClient()) {
+                using (var readOnly = factory.GetReadOnlyClient()) {
                     readWrite.SetValue("Foo", "Bar");
                     var value = readOnly.GetValue("Foo");
 
@@ -76,10 +75,10 @@ namespace TheOne.Redis.Tests.Basic {
         [Test]
         public void Can_Parse_Host() {
             var hosts = new[] { "pass@host.com:6123" };
-            List<RedisEndpoint> endPoints = RedisEndpoint.Create(hosts);
+            var endPoints = RedisEndpoint.Create(hosts);
 
             Assert.AreEqual(1, endPoints.Count);
-            RedisEndpoint ep = endPoints[0];
+            var ep = endPoints[0];
 
             Assert.AreEqual("host.com", ep.Host);
             Assert.AreEqual(6123, ep.Port);
@@ -90,7 +89,7 @@ namespace TheOne.Redis.Tests.Basic {
         public void Can_use_password_with_equals() {
             var connString = "127.0.0.1?password=" + WebUtility.UrlEncode("p@55w0rd=");
 
-            RedisEndpoint config = RedisEndpoint.Create(connString);
+            var config = RedisEndpoint.Create(connString);
             Assert.That(config.Password, Is.EqualTo("p@55w0rd="));
         }
 
@@ -105,7 +104,7 @@ namespace TheOne.Redis.Tests.Basic {
             var connString = config.ToString();
             Assert.That(connString, Is.EqualTo("host:1?Password=p%4055W0rd%3D"));
 
-            RedisEndpoint fromConfig = RedisEndpoint.Create(connString);
+            var fromConfig = RedisEndpoint.Create(connString);
             Assert.That(fromConfig.Host, Is.EqualTo(config.Host));
             Assert.That(fromConfig.Port, Is.EqualTo(config.Port));
             Assert.That(fromConfig.Password, Is.EqualTo(config.Password));
@@ -122,7 +121,7 @@ namespace TheOne.Redis.Tests.Basic {
             var redis = new RedisClient(Config.MasterHost);
             redis.SetClient("redisRetry");
 
-            List<Dictionary<string, string>> clientInfo = redisCtrl.GetClientsInfo();
+            var clientInfo = redisCtrl.GetClientsInfo();
             var redisId = clientInfo.First(m => m["name"] == "redisRetry")["id"];
             Assert.That(redisId.Length, Is.GreaterThan(0));
 
@@ -156,7 +155,7 @@ namespace TheOne.Redis.Tests.Basic {
             "redis://nunit:pass@host:1?ssl=true&db=1&connectTimeout=2&sendtimeout=3&receiveTimeout=4&idletimeoutsecs=5&NamespacePrefix=prefix.",
             "host:1?Client=nunit&Password=pass&Db=1&Ssl=true&ConnectTimeout=2&SendTimeout=3&ReceiveTimeout=4&IdleTimeoutSecs=5&NamespacePrefix=prefix.")]
         public void Does_Serialize_RedisEndpoint(string connString, string expectedString) {
-            RedisEndpoint actual = RedisEndpoint.Create(connString);
+            var actual = RedisEndpoint.Create(connString);
             Assert.That(actual.ToString(), Is.EqualTo(expectedString));
         }
 
@@ -203,7 +202,7 @@ namespace TheOne.Redis.Tests.Basic {
         [Test]
         public void Does_set_Client_on_Pooled_Connection() {
             using (var redisManager = new PooledRedisClientManager(Config.MasterHost + "?Client=nunit")) {
-                using (IRedisClient redis = redisManager.GetClient()) {
+                using (var redis = redisManager.GetClient()) {
                     var clientName = redis.GetClient();
 
                     Assert.That(clientName, Is.EqualTo("nunit"));
@@ -214,10 +213,10 @@ namespace TheOne.Redis.Tests.Basic {
         [Test]
         public void Host_May_Contain_AtChar() {
             var hosts = new[] { "@pa1@ss@localhost:6123" };
-            List<RedisEndpoint> endPoints = RedisEndpoint.Create(hosts);
+            var endPoints = RedisEndpoint.Create(hosts);
 
             Assert.AreEqual(1, endPoints.Count);
-            RedisEndpoint ep = endPoints[0];
+            var ep = endPoints[0];
 
             Assert.AreEqual("@pa1@ss", ep.Password);
             Assert.AreEqual("localhost", ep.Host);
@@ -232,7 +231,7 @@ namespace TheOne.Redis.Tests.Basic {
                 try {
                     // redis will throw when using password and it's not configured
                     var factory = new PooledRedisClientManager(password + "@" + Config.MasterHost);
-                    using (IRedisClient redis = factory.GetClient()) {
+                    using (var redis = factory.GetClient()) {
                         redis.SetValue("Foo", "Bar");
                     }
                 } catch (RedisResponseException ex) {

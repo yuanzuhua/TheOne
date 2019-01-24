@@ -18,7 +18,7 @@ namespace TheOne.Redis.ClientManager {
             }
 
             var pools = new List<KeyValuePair<ShardedConnectionPool, int>>();
-            foreach (ShardedConnectionPool connectionPool in connectionPools) {
+            foreach (var connectionPool in connectionPools) {
                 pools.Add(new KeyValuePair<ShardedConnectionPool, int>(connectionPool, connectionPool.Weight));
             }
 

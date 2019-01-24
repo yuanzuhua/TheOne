@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using TheOne.Redis.Client;
@@ -42,7 +41,7 @@ namespace TheOne.Redis.Tests.Basic {
             var removed = this.Redis.RemoveRangeFromSortedSetBySearch("zset", "[aaa", "(g");
             Assert.That(removed, Is.EqualTo(5));
 
-            List<string> remainder = this.Redis.SearchSortedSet("zset");
+            var remainder = this.Redis.SearchSortedSet("zset");
             Assert.That(remainder, Is.EqualTo(new[] { "a", "g" }));
         }
 
@@ -89,7 +88,7 @@ namespace TheOne.Redis.Tests.Basic {
 
         [Test]
         public void Can_ZRangeByLex_all_entries() {
-            byte[][] results = this.Redis.ZRangeByLex("zset", "-", "+");
+            var results = this.Redis.ZRangeByLex("zset", "-", "+");
 
             Assert.That(results.Select(x => x.FromUtf8Bytes()).ToArray(), Is.EquivalentTo(this._values));
 
@@ -99,16 +98,16 @@ namespace TheOne.Redis.Tests.Basic {
 
         [Test]
         public void Can_ZRangeByLex_Desc() {
-            byte[][] descInclusive = this.Redis.ZRangeByLex("zset", "-", "[c");
+            var descInclusive = this.Redis.ZRangeByLex("zset", "-", "[c");
             Assert.That(descInclusive.Select(x => x.FromUtf8Bytes()).ToArray(), Is.EquivalentTo(new[] { "a", "b", "c" }));
 
-            byte[][] descExclusive = this.Redis.ZRangeByLex("zset", "-", "(c");
+            var descExclusive = this.Redis.ZRangeByLex("zset", "-", "(c");
             Assert.That(descExclusive.Select(x => x.FromUtf8Bytes()).ToArray(), Is.EquivalentTo(new[] { "a", "b" }));
         }
 
         [Test]
         public void Can_ZRangeByLex_Min_and_Max() {
-            byte[][] range = this.Redis.ZRangeByLex("zset", "[aaa", "(g");
+            var range = this.Redis.ZRangeByLex("zset", "[aaa", "(g");
             Assert.That(range.Select(x => x.FromUtf8Bytes()).ToArray(),
                 Is.EquivalentTo(new[] { "b", "c", "d", "e", "f" }));
         }
@@ -118,7 +117,7 @@ namespace TheOne.Redis.Tests.Basic {
             var removed = this.Redis.ZRemRangeByLex("zset", "[aaa", "(g");
             Assert.That(removed, Is.EqualTo(5));
 
-            byte[][] remainder = this.Redis.ZRangeByLex("zset", "-", "+");
+            var remainder = this.Redis.ZRangeByLex("zset", "-", "+");
             Assert.That(remainder.Select(x => x.FromUtf8Bytes()).ToArray(), Is.EqualTo(new[] { "a", "g" }));
         }
 

@@ -125,13 +125,13 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys) {
             return this.Exec(r => {
-                string[] keysArray = keys.ToArray();
-                byte[][] keyValues = r.MGet(keysArray);
+                var keysArray = keys.ToArray();
+                var keyValues = r.MGet(keysArray);
                 var results = new Dictionary<string, T>();
                 var isBytes = typeof(T) == typeof(byte[]);
 
                 var i = 0;
-                foreach (byte[] keyValue in keyValues) {
+                foreach (var keyValue in keyValues) {
                     var key = keysArray[i++];
 
                     if (keyValue == null) {
@@ -154,12 +154,12 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public void SetAll<T>(IDictionary<string, T> values) {
             this.Exec(r => {
-                string[] keys = values.Keys.ToArray();
+                var keys = values.Keys.ToArray();
                 var valBytes = new byte[values.Count][];
                 var isBytes = typeof(T) == typeof(byte[]);
 
                 var i = 0;
-                foreach (T value in values.Values) {
+                foreach (var value in values.Values) {
                     if (!isBytes) {
                         var t = value.ToJson();
                         if (t != null) {

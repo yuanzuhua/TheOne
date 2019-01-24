@@ -4,7 +4,6 @@ using System.Threading;
 using NUnit.Framework;
 using TheOne.Redis.Client;
 using TheOne.Redis.Common;
-using TheOne.Redis.PubSub;
 
 namespace TheOne.Redis.Tests.Basic {
 
@@ -34,7 +33,7 @@ namespace TheOne.Redis.Tests.Basic {
 
             this.Redis.IncrementValue(key);
 
-            using (IRedisSubscription subscription = this.Redis.CreateSubscription()) {
+            using (var subscription = this.Redis.CreateSubscription()) {
                 subscription.OnSubscribe = channel => {
                     Console.WriteLine("Subscribed to '{0}'", channel);
                     Assert.That(channel, Is.EqualTo(channelPrefix + channelsSubscribed++));
@@ -85,7 +84,7 @@ namespace TheOne.Redis.Tests.Basic {
 
             this.Redis.IncrementValue(key);
 
-            using (IRedisSubscription subscription = this.Redis.CreateSubscription()) {
+            using (var subscription = this.Redis.CreateSubscription()) {
                 subscription.OnSubscribe = channel => {
                     Console.WriteLine("Subscribed to '{0}'", channel);
                     Assert.That(channel, Is.EqualTo(channelName));
@@ -135,7 +134,7 @@ namespace TheOne.Redis.Tests.Basic {
 
             this.Redis.IncrementValue(key);
 
-            using (IRedisSubscription subscription = this.Redis.CreateSubscription()) {
+            using (var subscription = this.Redis.CreateSubscription()) {
                 subscription.OnSubscribe = channel => {
                     Console.WriteLine("Subscribed to '{0}'", channel);
                     Assert.That(channel, Is.EqualTo(channelName));
@@ -177,7 +176,7 @@ namespace TheOne.Redis.Tests.Basic {
 
             this.Redis.IncrementValue(key);
 
-            using (IRedisSubscription subscription = this.Redis.CreateSubscription()) {
+            using (var subscription = this.Redis.CreateSubscription()) {
                 subscription.OnSubscribe = channel => {
                     Console.WriteLine("Subscribed to '{0}'", channelWildcard);
                     Assert.That(channel, Is.EqualTo(channelWildcard));
@@ -213,7 +212,7 @@ namespace TheOne.Redis.Tests.Basic {
         [Test]
         public void Can_Subscribe_to_channel_pattern() {
             var msgs = 0;
-            using (IRedisSubscription subscription = this.Redis.CreateSubscription()) {
+            using (var subscription = this.Redis.CreateSubscription()) {
                 subscription.OnMessage = (channel, msg) => {
                     Console.WriteLine("{0}: {1}", channel, msg + msgs++);
                     subscription.UnSubscribeFromChannelsMatching(this.PrefixedKey("CHANNEL4:TITLE*"));
@@ -237,7 +236,7 @@ namespace TheOne.Redis.Tests.Basic {
         public void Can_Subscribe_to_MultipleChannel_pattern() {
             string[] channels = { this.PrefixedKey("CHANNEL5:TITLE*"), this.PrefixedKey("CHANNEL5:BODY*") };
             var msgs = 0;
-            using (IRedisSubscription subscription = this.Redis.CreateSubscription()) {
+            using (var subscription = this.Redis.CreateSubscription()) {
                 subscription.OnMessage = (channel, msg) => {
                     Console.WriteLine("{0}: {1}", channel, msg + msgs++);
                     subscription.UnSubscribeFromChannelsMatching(channels);

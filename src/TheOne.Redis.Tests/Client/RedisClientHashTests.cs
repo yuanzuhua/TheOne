@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,7 +30,7 @@ namespace TheOne.Redis.Tests.Client {
 
         private static Dictionary<string, string> ToStringMap(Dictionary<string, int> stringIntMap) {
             var map = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, int> kvp in stringIntMap) {
+            foreach (var kvp in stringIntMap) {
                 map[kvp.Key] = kvp.Value.ToString();
             }
 
@@ -56,18 +55,18 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Add_to_IDictionary_Hash() {
-            IRedisHash hash = this.Redis.Hashes[_hashId];
+            var hash = this.Redis.Hashes[_hashId];
             foreach (var key in this._stringMap.Keys) {
                 hash.Add(key, this._stringMap[key]);
             }
 
-            Dictionary<string, string> members = this.Redis.GetAllEntriesFromHash(_hashId);
+            var members = this.Redis.GetAllEntriesFromHash(_hashId);
             Assert.That(members, Is.EquivalentTo(this._stringMap));
         }
 
         [Test]
         public void Can_Clear_IDictionary_Hash() {
-            IRedisHash hash = this.Redis.Hashes[_hashId];
+            var hash = this.Redis.Hashes[_hashId];
             foreach (var key in this._stringMap.Keys) {
                 hash.Add(key, this._stringMap[key]);
             }
@@ -81,12 +80,12 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_enumerate_small_IDictionary_Hash() {
-            foreach (KeyValuePair<string, string> value in this._stringMap) {
+            foreach (var value in this._stringMap) {
                 this.Redis.SetEntryInHash(_hashId, value.Key, value.Value);
             }
 
             var members = new List<string>();
-            foreach (KeyValuePair<string, string> item in this.Redis.Hashes[_hashId]) {
+            foreach (var item in this.Redis.Hashes[_hashId]) {
                 Assert.That(this._stringMap.ContainsKey(item.Key), Is.True);
                 members.Add(item.Key);
             }
@@ -96,7 +95,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_GetHashCount() {
-            foreach (KeyValuePair<string, string> value in this._stringMap) {
+            foreach (var value in this._stringMap) {
                 this.Redis.SetEntryInHash(_hashId, value.Key, value.Value);
             }
 
@@ -107,33 +106,33 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_GetHashKeys() {
-            foreach (KeyValuePair<string, string> value in this._stringMap) {
+            foreach (var value in this._stringMap) {
                 this.Redis.SetEntryInHash(_hashId, value.Key, value.Value);
             }
 
-            List<string> expectedKeys = this._stringMap.Select(x => x.Key).ToList();
+            var expectedKeys = this._stringMap.Select(x => x.Key).ToList();
 
-            List<string> hashKeys = this.Redis.GetHashKeys(_hashId);
+            var hashKeys = this.Redis.GetHashKeys(_hashId);
 
             Assert.That(hashKeys, Is.EquivalentTo(expectedKeys));
         }
 
         [Test]
         public void Can_GetHashValues() {
-            foreach (KeyValuePair<string, string> value in this._stringMap) {
+            foreach (var value in this._stringMap) {
                 this.Redis.SetEntryInHash(_hashId, value.Key, value.Value);
             }
 
-            List<string> expectedValues = this._stringMap.Select(x => x.Value).ToList();
+            var expectedValues = this._stringMap.Select(x => x.Value).ToList();
 
-            List<string> hashValues = this.Redis.GetHashValues(_hashId);
+            var hashValues = this.Redis.GetHashValues(_hashId);
 
             Assert.That(hashValues, Is.EquivalentTo(expectedValues));
         }
 
         [Test]
         public void Can_GetItemFromHash() {
-            foreach (KeyValuePair<string, string> value in this._stringMap) {
+            foreach (var value in this._stringMap) {
                 this.Redis.SetEntryInHash(_hashId, value.Key, value.Value);
             }
 
@@ -144,12 +143,12 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_GetItemsFromHash() {
-            foreach (KeyValuePair<string, string> value in this._stringMap) {
+            foreach (var value in this._stringMap) {
                 this.Redis.SetEntryInHash(_hashId, value.Key, value.Value);
             }
 
             var expectedValues = new List<string> { this._stringMap["one"], this._stringMap["two"], null };
-            List<string> hashValues = this.Redis.GetValuesFromHash(_hashId, "one", "two", "not-exists");
+            var hashValues = this.Redis.GetValuesFromHash(_hashId, "one", "two", "not-exists");
 
             Assert.That(hashValues.EquivalentTo(expectedValues), Is.True);
         }
@@ -161,8 +160,8 @@ namespace TheOne.Redis.Tests.Client {
             var fields = new Dictionary<string, string> { { "field1", "1" }, { "field2", "2" }, { "field3", "3" } };
 
             this.Redis.SetRangeInHash(key, fields);
-            Dictionary<string, string> members = this.Redis.GetAllEntriesFromHash(key);
-            foreach (KeyValuePair<string, string> member in members) {
+            var members = this.Redis.GetAllEntriesFromHash(key);
+            foreach (var member in members) {
                 Assert.IsTrue(fields.ContainsKey(member.Key));
                 Assert.AreEqual(fields[member.Key], member.Value);
             }
@@ -171,8 +170,8 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void Can_hash_set() {
             var key = _hashId + "key";
-            byte[] field = Encoding.UTF8.GetBytes("foo");
-            byte[] value = Encoding.UTF8.GetBytes("value");
+            var field = Encoding.UTF8.GetBytes("foo");
+            var value = Encoding.UTF8.GetBytes("value");
             Assert.AreEqual(this.Redis.HDel(key, field), 0);
             Assert.AreEqual(this.Redis.HSet(key, field, value), 1);
             Assert.AreEqual(this.Redis.HDel(key, field), 1);
@@ -180,15 +179,15 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_increment_Hash_field() {
-            IRedisHash hash = this.Redis.Hashes[_hashId];
-            foreach (KeyValuePair<string, int> value in this._stringIntMap) {
+            var hash = this.Redis.Hashes[_hashId];
+            foreach (var value in this._stringIntMap) {
                 hash.Add(value.Key, value.Value.ToString());
             }
 
             this._stringIntMap["two"] += 10;
             this.Redis.IncrementValueInHash(_hashId, "two", 10);
 
-            Dictionary<string, string> members = this.Redis.GetAllEntriesFromHash(_hashId);
+            var members = this.Redis.GetAllEntriesFromHash(_hashId);
             Assert.That(members, Is.EquivalentTo(ToStringMap(this._stringIntMap)));
         }
 
@@ -203,7 +202,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Remove_value_from_IDictionary_Hash() {
-            IRedisHash hash = this.Redis.Hashes[_hashId];
+            var hash = this.Redis.Hashes[_hashId];
             foreach (var key in this._stringMap.Keys) {
                 hash.Add(key, this._stringMap[key]);
             }
@@ -211,7 +210,7 @@ namespace TheOne.Redis.Tests.Client {
             this._stringMap.Remove("two");
             hash.Remove("two");
 
-            Dictionary<string, string> members = this.Redis.GetAllEntriesFromHash(_hashId);
+            var members = this.Redis.GetAllEntriesFromHash(_hashId);
             Assert.That(members, Is.EquivalentTo(this._stringMap));
         }
 
@@ -219,7 +218,7 @@ namespace TheOne.Redis.Tests.Client {
         public void Can_RemoveFromHash() {
             const string removeMember = "two";
 
-            foreach (KeyValuePair<string, string> value in this._stringMap) {
+            foreach (var value in this._stringMap) {
                 this.Redis.SetEntryInHash(_hashId, value.Key, value.Value);
             }
 
@@ -227,23 +226,23 @@ namespace TheOne.Redis.Tests.Client {
 
             this._stringMap.Remove(removeMember);
 
-            Dictionary<string, string> members = this.Redis.GetAllEntriesFromHash(_hashId);
+            var members = this.Redis.GetAllEntriesFromHash(_hashId);
             Assert.That(members, Is.EquivalentTo(this._stringMap));
         }
 
         [Test]
         public void Can_SetItemInHash_and_GetAllFromHash() {
-            foreach (KeyValuePair<string, string> value in this._stringMap) {
+            foreach (var value in this._stringMap) {
                 this.Redis.SetEntryInHash(_hashId, value.Key, value.Value);
             }
 
-            Dictionary<string, string> members = this.Redis.GetAllEntriesFromHash(_hashId);
+            var members = this.Redis.GetAllEntriesFromHash(_hashId);
             Assert.That(members, Is.EquivalentTo(this._stringMap));
         }
 
         [Test]
         public void Can_SetItemInHashIfNotExists() {
-            foreach (KeyValuePair<string, string> value in this._stringMap) {
+            foreach (var value in this._stringMap) {
                 this.Redis.SetEntryInHash(_hashId, value.Key, value.Value);
             }
 
@@ -251,7 +250,7 @@ namespace TheOne.Redis.Tests.Client {
             this.Redis.SetEntryInHashIfNotExists(_hashId, "five", "changed non existing item");
             this._stringMap["five"] = "changed non existing item";
 
-            Dictionary<string, string> members = this.Redis.GetAllEntriesFromHash(_hashId);
+            var members = this.Redis.GetAllEntriesFromHash(_hashId);
             Assert.That(members, Is.EquivalentTo(this._stringMap));
         }
 
@@ -262,17 +261,17 @@ namespace TheOne.Redis.Tests.Client {
                 { "six", "f" },
                 { "seven", "g" }
             };
-            foreach (KeyValuePair<string, string> value in this._stringMap) {
+            foreach (var value in this._stringMap) {
                 this.Redis.SetEntryInHash(_hashId, value.Key, value.Value);
             }
 
             this.Redis.SetRangeInHash(_hashId, newStringMap);
 
-            foreach (KeyValuePair<string, string> value1 in newStringMap) {
+            foreach (var value1 in newStringMap) {
                 this._stringMap.Add(value1.Key, value1.Value);
             }
 
-            Dictionary<string, string> members = this.Redis.GetAllEntriesFromHash(_hashId);
+            var members = this.Redis.GetAllEntriesFromHash(_hashId);
             Assert.That(members, Is.EquivalentTo(this._stringMap));
         }
 
@@ -281,16 +280,16 @@ namespace TheOne.Redis.Tests.Client {
             var dto = new HashTest { Id = 1 };
             this.Redis.StoreAsHash(dto);
 
-            List<string> storedHash = this.Redis.GetHashKeys(dto.ToUrn());
+            var storedHash = this.Redis.GetHashKeys(dto.ToUrn());
 
             Assert.That(storedHash, Is.EquivalentTo(new[] { "Id" }));
 
-            Func<object, Dictionary<string, string>> hold = RedisClient.ConvertToHashFn;
+            var hold = RedisClient.ConvertToHashFn;
 
             RedisClient.ConvertToHashFn = o => {
                 var dictionary = JObject.FromObject(o).ToObject<Dictionary<string, string>>();
                 var dict = new Dictionary<string, string>();
-                foreach (KeyValuePair<string, string> pair in dictionary) {
+                foreach (var pair in dictionary) {
                     dict[pair.Key] = pair.Value ?? "";
                 }
 
@@ -306,7 +305,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_Test_Contains_in_IDictionary_Hash() {
-            IRedisHash hash = this.Redis.Hashes[_hashId];
+            var hash = this.Redis.Hashes[_hashId];
             foreach (var key in this._stringMap.Keys) {
                 hash.Add(key, this._stringMap[key]);
             }
@@ -320,7 +319,7 @@ namespace TheOne.Redis.Tests.Client {
             const string existingMember = "two";
             const string nonExistingMember = "five";
 
-            foreach (KeyValuePair<string, string> value in this._stringMap) {
+            foreach (var value in this._stringMap) {
                 this.Redis.SetEntryInHash(_hashId, value.Key, value.Value);
             }
 

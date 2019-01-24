@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 using TheOne.Redis.Client;
 
@@ -28,7 +27,7 @@ namespace TheOne.Redis.Tests.Basic {
         public void Can_GeoAdd_and_GeoPos() {
             var count = this._redis.GeoAdd("Sicily", 13.361389, 38.115556, "Palermo");
             Assert.That(count, Is.EqualTo(1));
-            List<RedisGeo> results = this._redis.GeoPos("Sicily", "Palermo");
+            var results = this._redis.GeoPos("Sicily", "Palermo");
 
             Assert.That(results.Count, Is.EqualTo(1));
             Assert.That(results[0].Longitude, Is.EqualTo(13.361389).Within(.1));
@@ -43,7 +42,7 @@ namespace TheOne.Redis.Tests.Basic {
                 new RedisGeo(15.087269, 37.502669, "Catania"));
             Assert.That(count, Is.EqualTo(2));
 
-            List<RedisGeo> results = this._redis.GeoPos("Sicily", "Palermo", "Catania");
+            var results = this._redis.GeoPos("Sicily", "Palermo", "Catania");
 
             Assert.That(results.Count, Is.EqualTo(2));
             Assert.That(results[0].Longitude, Is.EqualTo(13.361389).Within(.1));
@@ -71,7 +70,7 @@ namespace TheOne.Redis.Tests.Basic {
                 new RedisGeo(13.361389, 38.115556, "Palermo"),
                 new RedisGeo(15.087269, 37.502669, "Catania"));
 
-            string[] hashes = this._redis.GeoHash("Sicily", "Palermo", "Catania");
+            var hashes = this._redis.GeoHash("Sicily", "Palermo", "Catania");
             Assert.That(hashes[0], Is.EqualTo("sqc8b49rny0"));
             Assert.That(hashes[1], Is.EqualTo("sqdtr74hyu0"));
 
@@ -87,7 +86,7 @@ namespace TheOne.Redis.Tests.Basic {
                 new RedisGeo(13.361389, 38.115556, "Palermo"),
                 new RedisGeo(15.087269, 37.502669, "Catania"));
 
-            List<RedisGeoResult> results = this._redis.GeoRadius("Sicily", 15, 37, 200, RedisGeoUnit.Kilometers);
+            var results = this._redis.GeoRadius("Sicily", 15, 37, 200, RedisGeoUnit.Kilometers);
 
             Assert.That(results.Count, Is.EqualTo(2));
             Assert.That(results[0].Member, Is.EqualTo("Palermo"));
@@ -102,7 +101,7 @@ namespace TheOne.Redis.Tests.Basic {
                 new RedisGeo(13.361389, 38.115556, "Palermo"),
                 new RedisGeo(15.087269, 37.502669, "Catania"));
 
-            List<RedisGeoResult> results = this._redis.GeoRadius("Sicily", 15, 37, 200, RedisGeoUnit.Kilometers, true);
+            var results = this._redis.GeoRadius("Sicily", 15, 37, 200, RedisGeoUnit.Kilometers, true);
 
             Assert.That(results.Count, Is.EqualTo(2));
             Assert.That(results[0].Member, Is.EqualTo("Palermo"));
@@ -122,7 +121,7 @@ namespace TheOne.Redis.Tests.Basic {
                 new RedisGeo(13.361389, 38.115556, "Palermo"),
                 new RedisGeo(15.087269, 37.502669, "Catania"));
 
-            List<RedisGeoResult> results = this._redis.GeoRadius("Sicily",
+            var results = this._redis.GeoRadius("Sicily",
                 15,
                 37,
                 200,
@@ -153,7 +152,7 @@ namespace TheOne.Redis.Tests.Basic {
                 new RedisGeo(13.361389, 38.115556, "Palermo"),
                 new RedisGeo(15.087269, 37.502669, "Catania"));
 
-            List<RedisGeoResult> results = this._redis.GeoRadius("Sicily",
+            var results = this._redis.GeoRadius("Sicily",
                 15,
                 37,
                 200,
@@ -198,7 +197,7 @@ namespace TheOne.Redis.Tests.Basic {
                 new RedisGeo(13.361389, 38.115556, "Palermo"),
                 new RedisGeo(15.087269, 37.502669, "Catania"));
 
-            List<RedisGeoResult> results = this._redis.GeoRadius("Sicily", 15, 37, 200, RedisGeoUnit.Kilometers, withDist: true);
+            var results = this._redis.GeoRadius("Sicily", 15, 37, 200, RedisGeoUnit.Kilometers, withDist: true);
 
             Assert.That(results.Count, Is.EqualTo(2));
             Assert.That(results[0].Member, Is.EqualTo("Palermo"));
@@ -217,7 +216,7 @@ namespace TheOne.Redis.Tests.Basic {
                 new RedisGeo(13.361389, 38.115556, "Palermo"),
                 new RedisGeo(15.087269, 37.502669, "Catania"));
 
-            List<RedisGeoResult> results = this._redis.GeoRadiusByMember("Sicily", "Agrigento", 100, RedisGeoUnit.Kilometers);
+            var results = this._redis.GeoRadiusByMember("Sicily", "Agrigento", 100, RedisGeoUnit.Kilometers);
 
             Assert.That(results.Count, Is.EqualTo(2));
             Assert.That(results[0].Member, Is.EqualTo("Agrigento"));
@@ -233,7 +232,7 @@ namespace TheOne.Redis.Tests.Basic {
                 new RedisGeo(13.361389, 38.115556, "Palermo"),
                 new RedisGeo(15.087269, 37.502669, "Catania"));
 
-            List<RedisGeoResult> results = this._redis.GeoRadiusByMember("Sicily",
+            var results = this._redis.GeoRadiusByMember("Sicily",
                 "Agrigento",
                 100,
                 RedisGeoUnit.Kilometers,
@@ -272,7 +271,7 @@ namespace TheOne.Redis.Tests.Basic {
             var count = this._redis.GeoAdd("Sicily", 13.361389, 38.115556, "Palermo");
             Console.WriteLine(count);
 
-            List<RedisGeo> results = this._redis.GeoPos("Sicily", "NonExistingMember");
+            var results = this._redis.GeoPos("Sicily", "NonExistingMember");
             Assert.That(results.Count, Is.EqualTo(0));
 
             results = this._redis.GeoPos("Sicily", "Palermo", "NonExistingMember");

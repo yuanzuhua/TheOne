@@ -76,7 +76,7 @@ namespace TheOne.Redis.Pipeline {
                     var result = this.DoubleReadCommand();
                     this.OnSuccessDoubleCallback?.Invoke(result);
                 } else if (this.BytesReadCommand != null) {
-                    byte[] result = this.BytesReadCommand();
+                    var result = this.BytesReadCommand();
                     if (result != null && result.Length == 0) {
                         result = null;
                     }
@@ -91,16 +91,16 @@ namespace TheOne.Redis.Pipeline {
                     this.OnSuccessStringCallback?.Invoke(result);
                     this.OnSuccessTypeCallback?.Invoke(result);
                 } else if (this.MultiBytesReadCommand != null) {
-                    byte[][] result = this.MultiBytesReadCommand();
+                    var result = this.MultiBytesReadCommand();
                     this.OnSuccessMultiBytesCallback?.Invoke(result);
                     this.OnSuccessMultiStringCallback?.Invoke(result?.ToStringList());
                     this.OnSuccessMultiTypeCallback?.Invoke(result?.ToStringList());
                     this.OnSuccessDictionaryStringCallback?.Invoke(result?.ToStringDictionary());
                 } else if (this.MultiStringReadCommand != null) {
-                    List<string> result = this.MultiStringReadCommand();
+                    var result = this.MultiStringReadCommand();
                     this.OnSuccessMultiStringCallback?.Invoke(result);
                 } else if (this.RedisDataReadCommand != null) {
-                    RedisData data = this.RedisDataReadCommand();
+                    var data = this.RedisDataReadCommand();
                     this.OnSuccessRedisTextCallback?.Invoke(data.ToRedisText());
                     this.OnSuccessRedisDataCallback?.Invoke(data);
                 }

@@ -79,7 +79,7 @@ namespace TheOne.Redis.Tests.Client {
 
             this._redisTyped.Store(cachedRecord);
 
-            DateTime in2Secs = DateTime.UtcNow.AddSeconds(2);
+            var in2Secs = DateTime.UtcNow.AddSeconds(2);
 
             this._redisTyped.ExpireAt("key", in2Secs);
 

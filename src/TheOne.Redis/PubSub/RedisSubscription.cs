@@ -39,7 +39,7 @@ namespace TheOne.Redis.PubSub {
 
         /// <inheritdoc />
         public void SubscribeToChannels(params string[] channels) {
-            byte[][] multiBytes = this._redisClient.Subscribe(channels);
+            var multiBytes = this._redisClient.Subscribe(channels);
             this.ParseSubscriptionResults(multiBytes);
 
             while (this.SubscriptionCount > 0) {
@@ -50,7 +50,7 @@ namespace TheOne.Redis.PubSub {
 
         /// <inheritdoc />
         public void SubscribeToChannelsMatching(params string[] patterns) {
-            byte[][] multiBytes = this._redisClient.PSubscribe(patterns);
+            var multiBytes = this._redisClient.PSubscribe(patterns);
             this.ParseSubscriptionResults(multiBytes);
 
             while (this.SubscriptionCount > 0) {
@@ -65,7 +65,7 @@ namespace TheOne.Redis.PubSub {
                 return;
             }
 
-            byte[][] multiBytes = this._redisClient.UnSubscribe();
+            var multiBytes = this._redisClient.UnSubscribe();
             this.ParseSubscriptionResults(multiBytes);
 
             this._activeChannels = new List<string>();
@@ -73,13 +73,13 @@ namespace TheOne.Redis.PubSub {
 
         /// <inheritdoc />
         public void UnSubscribeFromChannels(params string[] channels) {
-            byte[][] multiBytes = this._redisClient.UnSubscribe(channels);
+            var multiBytes = this._redisClient.UnSubscribe(channels);
             this.ParseSubscriptionResults(multiBytes);
         }
 
         /// <inheritdoc />
         public void UnSubscribeFromChannelsMatching(params string[] patterns) {
-            byte[][] multiBytes = this._redisClient.PUnSubscribe(patterns);
+            var multiBytes = this._redisClient.PUnSubscribe(patterns);
             this.ParseSubscriptionResults(multiBytes);
         }
 
@@ -95,7 +95,7 @@ namespace TheOne.Redis.PubSub {
         private void ParseSubscriptionResults(byte[][] multiBytes) {
             var componentsPerMsg = this.IsPSubscription ? 4 : 3;
             for (var i = 0; i < multiBytes.Length; i += componentsPerMsg) {
-                byte[] messageType = multiBytes[i];
+                var messageType = multiBytes[i];
                 var channel = multiBytes[i + 1].FromUtf8Bytes();
                 if (AreEqual(_subscribeWord, messageType)
                     || AreEqual(_psubscribeWord, messageType)) {
@@ -133,7 +133,7 @@ namespace TheOne.Redis.PubSub {
                 return;
             }
 
-            byte[][] multiBytes = this._redisClient.PUnSubscribe();
+            var multiBytes = this._redisClient.PUnSubscribe();
             this.ParseSubscriptionResults(multiBytes);
 
             this._activeChannels = new List<string>();

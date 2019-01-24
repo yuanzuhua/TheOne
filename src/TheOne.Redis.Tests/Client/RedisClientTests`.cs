@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using TheOne.Redis.Client;
 using TheOne.Redis.Common;
 
 namespace TheOne.Redis.Tests.Client {
@@ -56,7 +55,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_save_via_string() {
-            List<Dummy> dtos = Enumerable.Range(0, 10).Select(i => new Dummy { Id = i, Name = "Name" + i }).ToList();
+            var dtos = Enumerable.Range(0, 10).Select(i => new Dummy { Id = i, Name = "Name" + i }).ToList();
 
             this.Redis.SetValue("dummy:strings", dtos.ToJson());
 
@@ -67,7 +66,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_save_via_types() {
-            List<Dummy> dtos = Enumerable.Range(0, 10).Select(i => new Dummy { Id = i, Name = "Name" + i }).ToList();
+            var dtos = Enumerable.Range(0, 10).Select(i => new Dummy { Id = i, Name = "Name" + i }).ToList();
 
             this.Redis.Set("dummy:strings", dtos);
 
@@ -85,10 +84,10 @@ namespace TheOne.Redis.Tests.Client {
                 value[i] = (byte)i;
             }
 
-            IRedisTypedClient<byte[]> redis = this.Redis.As<byte[]>();
+            var redis = this.Redis.As<byte[]>();
 
             redis.SetValue(key, value);
-            byte[] resultValue = redis.GetValue(key);
+            var resultValue = redis.GetValue(key);
 
             Assert.That(resultValue, Is.EquivalentTo(value));
         }

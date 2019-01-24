@@ -149,7 +149,7 @@ namespace TheOne.Redis.Sentinel {
 
         private List<string> SanitizeHostsConfig(IEnumerable<Dictionary<string, string>> slaves) {
             var servers = new List<string>();
-            foreach (Dictionary<string, string> slave in slaves) {
+            foreach (var slave in slaves) {
                 slave.TryGetValue("flags", out var flags);
                 slave.TryGetValue("ip", out var ip);
                 slave.TryGetValue("port", out var port);

@@ -64,12 +64,12 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             }
 
             private IRedisHash<TKey, TValue> GetCollection(IRedisClient redis) {
-                IRedisTypedClient<TValue> redisTypedClient = redis.As<TValue>();
+                var redisTypedClient = redis.As<TValue>();
                 return redisTypedClient.GetHash<TKey>(this._collectionKey);
             }
 
             public void Add(TValue obj) {
-                TKey id = this.GetUniqueIdAction(obj);
+                var id = this.GetUniqueIdAction(obj);
 
                 this.RetryAction(redis => {
                     this.GetCollection(redis).Add(id, obj);
@@ -77,7 +77,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             }
 
             public bool Remove(TValue obj) {
-                TKey id = this.GetUniqueIdAction(obj);
+                var id = this.GetUniqueIdAction(obj);
                 return this.RetryAction(redis => {
                     if (!id.Equals(default)) {
                         {
@@ -109,7 +109,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             }
 
             public bool Contains(TValue obj) {
-                TKey id = this.GetUniqueIdAction(obj);
+                var id = this.GetUniqueIdAction(obj);
                 return this.RetryAction(redis => this.GetCollection(redis).ContainsKey(id));
             }
 
@@ -125,7 +125,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
             private void RetryAction(Action<IRedisClient> action) {
                 try {
-                    using (IRedisClient redis = this.RedisConnection) {
+                    using (var redis = this.RedisConnection) {
                         action(redis);
                     }
                 } catch (Exception ex) {
@@ -139,8 +139,8 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
                 while (true) {
                     try {
-                        using (IRedisClient redis = this.RedisConnection) {
-                            TOut result = action(redis);
+                        using (var redis = this.RedisConnection) {
+                            var result = action(redis);
                             return result;
                         }
                     } catch {
@@ -189,7 +189,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
             this._redisCollection = new RedisCachedCollection<string, string>(this._clientsManager, "Threads: " + 64);
 
-            DateTime startedAt = DateTime.Now;
+            var startedAt = DateTime.Now;
             Interlocked.Increment(ref this._running);
 
             Console.WriteLine("Starting HashCollectionStressTests with {0} threads", noOfThreads);

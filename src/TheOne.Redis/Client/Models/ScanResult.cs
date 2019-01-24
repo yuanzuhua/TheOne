@@ -21,7 +21,7 @@ namespace TheOne.Redis.Client {
         public static Dictionary<string, double> AsItemsWithScores(this ScanResult result) {
             var to = new Dictionary<string, double>();
             for (var i = 0; i < result.Results.Count; i += 2) {
-                byte[] key = result.Results[i];
+                var key = result.Results[i];
                 var score = double.Parse(result.Results[i + 1].FromUtf8Bytes(),
                     NumberStyles.Float,
                     CultureInfo.InvariantCulture);
@@ -34,8 +34,8 @@ namespace TheOne.Redis.Client {
         public static Dictionary<string, string> AsKeyValues(this ScanResult result) {
             var to = new Dictionary<string, string>();
             for (var i = 0; i < result.Results.Count; i += 2) {
-                byte[] key = result.Results[i];
-                byte[] value = result.Results[i + 1];
+                var key = result.Results[i];
+                var value = result.Results[i + 1];
                 to[key.FromUtf8Bytes()] = value.FromUtf8Bytes();
             }
 

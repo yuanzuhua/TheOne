@@ -1,8 +1,6 @@
 using System;
 using System.Threading;
 using NUnit.Framework;
-using TheOne.Redis.Client;
-using TheOne.Redis.ClientManager;
 using TheOne.Redis.Sentinel;
 
 namespace TheOne.Redis.Tests.ConsoleTests {
@@ -15,14 +13,14 @@ namespace TheOne.Redis.Tests.ConsoleTests {
         public void Execute() {
             var sentinel = new RedisSentinel(Config.SentinelHosts, Config.SentinelMasterName);
             sentinel.HostFilter = host => string.Format("password@{0}", host);
-            IRedisClientManager manager = sentinel.Start();
+            var manager = sentinel.Start();
 
             sentinel.OnWorkerError = Console.WriteLine;
 
             while (true) {
                 try {
                     const string redisKey = "my Name";
-                    using (IRedisClient client = manager.GetClient()) {
+                    using (var client = manager.GetClient()) {
                         var result = client.Get<string>(redisKey);
                         Console.WriteLine("Redis Key: {0} \t Port: {1}", result, client.Port);
                     }

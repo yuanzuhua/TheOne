@@ -22,7 +22,7 @@ namespace TheOne.Redis.Pipeline {
                 this.RedisClient.FlushSendBuffer();
 
                 // receive expected results
-                foreach (QueuedRedisOperation queuedCommand in this.QueuedCommands) {
+                foreach (var queuedCommand in this.QueuedCommands) {
                     queuedCommand.ProcessResult();
                 }
 
@@ -58,7 +58,7 @@ namespace TheOne.Redis.Pipeline {
         }
 
         protected void Execute() {
-            foreach (QueuedRedisOperation queuedCommand in this.QueuedCommands) {
+            foreach (var queuedCommand in this.QueuedCommands) {
                 if (queuedCommand is QueuedRedisTypedCommand<T> cmd) {
                     cmd.Execute(this.RedisClient);
                 }

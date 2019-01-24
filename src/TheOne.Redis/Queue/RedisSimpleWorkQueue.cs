@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using TheOne.Redis.Client;
-using TheOne.Redis.ClientManager;
-using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Queue {
 
@@ -23,9 +21,9 @@ namespace TheOne.Redis.Queue {
         /// </summary>
         public void Enqueue(T msg) {
             var key = this.QueueNamespace.GlobalCacheKey(this.PendingWorkItemIdQueue);
-            using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =
+            using (var disposableClient =
                 this.ClientManager.GetDisposableClient<SerializingRedisClient>()) {
-                SerializingRedisClient client = disposableClient.Client;
+                var client = disposableClient.Client;
                 client.RPush(key, client.Serialize(msg));
             }
         }
@@ -40,11 +38,11 @@ namespace TheOne.Redis.Queue {
         ///     KeyValuePair: key is work item id, and value is list of dequeued items.
         /// </returns>
         public IList<T> Dequeue(int maxBatchSize) {
-            using (PooledRedisClientManager.DisposablePooledClient<SerializingRedisClient> disposableClient =
+            using (var disposableClient =
                 this.ClientManager.GetDisposableClient<SerializingRedisClient>()) {
-                SerializingRedisClient client = disposableClient.Client;
+                var client = disposableClient.Client;
                 var dequeueItems = new List<T>();
-                using (IRedisPipeline pipe = client.CreatePipeline()) {
+                using (var pipe = client.CreatePipeline()) {
                     var key = this.QueueNamespace.GlobalCacheKey(this.PendingWorkItemIdQueue);
                     for (var i = 0; i < maxBatchSize; ++i) {
                         pipe.QueueCommand(

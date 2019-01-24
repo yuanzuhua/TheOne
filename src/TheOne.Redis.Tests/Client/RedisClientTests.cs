@@ -54,7 +54,7 @@ namespace TheOne.Redis.Tests.Client {
 
             for (var i = 0; i < 5; i++) {
                 var i1 = i;
-                Task item = Task.Run(() => {
+                var item = Task.Run(() => {
                     var client = new RedisClient(Config.MasterHost) { NamespacePrefix = this.Redis.NamespacePrefix };
                     this.IncrementKeyInsideLock(key, lockKey, i1, client);
                 });
@@ -74,9 +74,9 @@ namespace TheOne.Redis.Tests.Client {
             var key = this.PrefixedKey("AcquireLockKeyTimeout");
             var lockKey = this.PrefixedKey("Can_AcquireLock_Timeout");
             this.Redis.IncrementValue(key); // 1
-            using (IDisposable acquiredLock = this.Redis.AcquireLock(lockKey)) {
-                TimeSpan waitFor = TimeSpan.FromMilliseconds(1000);
-                DateTime now = DateTime.Now;
+            using (var acquiredLock = this.Redis.AcquireLock(lockKey)) {
+                var waitFor = TimeSpan.FromMilliseconds(1000);
+                var now = DateTime.Now;
 
                 try {
                     using (var client = new RedisClient(Config.MasterHost)) {
@@ -88,7 +88,7 @@ namespace TheOne.Redis.Tests.Client {
                     var val = this.Redis.Get<int>(key);
                     Assert.That(val, Is.EqualTo(1));
 
-                    TimeSpan timeTaken = DateTime.Now - now;
+                    var timeTaken = DateTime.Now - now;
                     Assert.That(timeTaken.TotalMilliseconds > waitFor.TotalMilliseconds, Is.True);
                     Assert.That(timeTaken.TotalMilliseconds < waitFor.TotalMilliseconds + 1000, Is.True);
                     return;
@@ -193,7 +193,7 @@ namespace TheOne.Redis.Tests.Client {
 
             Assert.That(this.Redis.ContainsKey("key"), Is.False);
 
-            Dictionary<string, string> keysMap = Enumerable.Range(0, 10).ToDictionary(i => "key" + i, i => "val" + i);
+            var keysMap = Enumerable.Range(0, 10).ToDictionary(i => "key" + i, i => "val" + i);
 
             this.Redis.SetAll(keysMap);
 
@@ -255,14 +255,14 @@ namespace TheOne.Redis.Tests.Client {
                 this.Redis.SetValue("k2:" + i, "val");
             }
 
-            byte[][] keys = this.Redis.Keys("k1:*");
+            var keys = this.Redis.Keys("k1:*");
             Assert.That(keys.Length, Is.EqualTo(5));
         }
 
         [Test]
         public void Can_get_RandomKey() {
             this.Redis.Db = 15;
-            Dictionary<string, string> keysMap =
+            var keysMap =
                 Enumerable.Range(0, 5).ToDictionary(i => this.Redis.NamespacePrefix + "key" + i, i => "val" + i);
 
             this.Redis.SetAll(keysMap);
@@ -274,9 +274,9 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_get_Slowlog() {
-            IEnumerable<SlowlogItem> log = this.Redis.GetSlowlog(10);
+            var log = this.Redis.GetSlowlog(10);
 
-            foreach (SlowlogItem t in log) {
+            foreach (var t in log) {
                 Console.WriteLine(t.Id);
                 Console.WriteLine(t.Duration);
                 Console.WriteLine(t.Timestamp);
@@ -302,14 +302,14 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_GetAll() {
-            Dictionary<string, string> keysMap = Enumerable.Range(0, 5).ToDictionary(i => "key" + i, i => "val" + i);
+            var keysMap = Enumerable.Range(0, 5).ToDictionary(i => "key" + i, i => "val" + i);
 
             this.Redis.SetAll(keysMap);
 
-            IDictionary<string, string> map = this.Redis.GetAll<string>(keysMap.Keys);
-            List<string> mapKeys = this.Redis.GetValues(keysMap.Keys.ToList());
+            var map = this.Redis.GetAll<string>(keysMap.Keys);
+            var mapKeys = this.Redis.GetValues(keysMap.Keys.ToList());
 
-            foreach (KeyValuePair<string, string> entry in keysMap) {
+            foreach (var entry in keysMap) {
                 Assert.That(map.ContainsKey(entry.Key), Is.True);
                 Assert.That(mapKeys.Contains(entry.Value), Is.True);
             }
@@ -324,14 +324,14 @@ namespace TheOne.Redis.Tests.Client {
             var toIndex = "Hello, World".Length - 1;
 
             var expectedString = helloWorld.Substring(fromIndex, toIndex - fromIndex + 1);
-            byte[] world = this.Redis.GetRange("key", fromIndex, toIndex);
+            var world = this.Redis.GetRange("key", fromIndex, toIndex);
 
             Assert.That(world.Length, Is.EqualTo(expectedString.Length));
         }
 
         [Test]
         public void Can_GetServerTime() {
-            DateTime now = this.Redis.GetServerTime();
+            var now = this.Redis.GetServerTime();
 
             Console.WriteLine(now.Kind.ToJson());
             Console.WriteLine(now.ToString("D"));
@@ -349,7 +349,7 @@ namespace TheOne.Redis.Tests.Client {
             this.Redis.SetValue("key", "val");
             this.Redis.Expire("key", 10);
 
-            TimeSpan? ttl = this.Redis.GetTimeToLive("key");
+            var ttl = this.Redis.GetTimeToLive("key");
             Assert.NotNull(ttl);
             Assert.That(ttl.Value.TotalSeconds, Is.GreaterThanOrEqualTo(9));
             Thread.Sleep(1700);
@@ -366,7 +366,7 @@ namespace TheOne.Redis.Tests.Client {
 
             this.Redis.SetValue("UserLevel/1", val);
 
-            List<string> strList = this.Redis.GetValues(new List<string>(new[] { "UserLevel/1" }));
+            var strList = this.Redis.GetValues(new List<string>(new[] { "UserLevel/1" }));
 
             Assert.That(strList.Count, Is.EqualTo(1));
             Assert.That(strList[0], Is.EqualTo(val));
@@ -418,7 +418,7 @@ namespace TheOne.Redis.Tests.Client {
             }
 
             this.Redis.Set(key, value);
-            byte[] resultValue = this.Redis.Get(key);
+            var resultValue = this.Redis.Get(key);
 
             Assert.That(resultValue, Is.EquivalentTo(value));
         }
@@ -426,7 +426,7 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void Can_Set_and_Get_key_with_space() {
             this.Redis.SetValue("key with space", _value);
-            byte[] valueBytes = this.Redis.Get("key with space");
+            var valueBytes = this.Redis.Get("key with space");
             var valueString = Encoding.UTF8.GetString(valueBytes);
             this.Redis.Remove("key with space");
 
@@ -438,7 +438,7 @@ namespace TheOne.Redis.Tests.Client {
             const string key = "key with spaces";
 
             this.Redis.SetValue(key, _value);
-            byte[] valueBytes = this.Redis.Get(key);
+            var valueBytes = this.Redis.Get(key);
             var valueString = Encoding.UTF8.GetString(valueBytes);
 
             Assert.That(valueString, Is.EqualTo(_value));
@@ -447,7 +447,7 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void Can_Set_and_Get_string() {
             this.Redis.SetValue("key", _value);
-            byte[] valueBytes = this.Redis.Get("key");
+            var valueBytes = this.Redis.Get("key");
             var valueString = Encoding.UTF8.GetString(valueBytes);
             this.Redis.Remove("key");
 
@@ -515,15 +515,15 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_store_Dictionary() {
-            List<string> keys = Enumerable.Range(0, 5).Select(x => "key" + x).ToList();
-            List<string> vals = Enumerable.Range(0, 5).Select(x => "val" + x).ToList();
+            var keys = Enumerable.Range(0, 5).Select(x => "key" + x).ToList();
+            var vals = Enumerable.Range(0, 5).Select(x => "val" + x).ToList();
             Console.WriteLine(vals.Count);
             var map = new Dictionary<string, string>();
             keys.ForEach(x => map[x] = "val" + x);
 
             this.Redis.SetAll(map);
 
-            Dictionary<string, string> all = this.Redis.GetValuesMap(keys);
+            var all = this.Redis.GetValuesMap(keys);
             Assert.AreEqual(map, all);
         }
 
@@ -555,12 +555,12 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_store_multiple_keys() {
-            List<string> keys = Enumerable.Range(0, 5).Select(x => "key" + x).ToList();
-            List<string> vals = Enumerable.Range(0, 5).Select(x => "val" + x).ToList();
+            var keys = Enumerable.Range(0, 5).Select(x => "key" + x).ToList();
+            var vals = Enumerable.Range(0, 5).Select(x => "val" + x).ToList();
 
             this.Redis.SetAll(keys, vals);
 
-            List<string> all = this.Redis.GetValues(keys);
+            var all = this.Redis.GetValues(keys);
             Assert.AreEqual(vals, all);
         }
 
@@ -577,7 +577,7 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void GetKeys_on_non_existent_keys_returns_empty_collection() {
-            List<string> matchingKeys = this.Redis.SearchKeys("ss-tests:NOTEXISTS");
+            var matchingKeys = this.Redis.SearchKeys("ss-tests:NOTEXISTS");
 
             Assert.That(matchingKeys.Count, Is.EqualTo(0));
         }
@@ -588,7 +588,7 @@ namespace TheOne.Redis.Tests.Client {
             this.Redis.Set("ss-tests:a2", "One");
             this.Redis.Set("ss-tests:b3", "One");
 
-            List<string> matchingKeys = this.Redis.SearchKeys("ss-tests:a*");
+            var matchingKeys = this.Redis.SearchKeys("ss-tests:a*");
 
             Assert.That(matchingKeys.Count, Is.EqualTo(2));
         }

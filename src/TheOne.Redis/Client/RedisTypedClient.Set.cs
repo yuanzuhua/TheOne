@@ -19,13 +19,13 @@ namespace TheOne.Redis.Client {
         /// <inheritdoc />
         public List<T> GetSortedEntryValues(IRedisSet<T> fromSet, int startingFrom, int endingAt) {
             var sortOptions = new SortOptions { Skip = startingFrom, Take = endingAt };
-            byte[][] multiDataList = this._client.Sort(fromSet.Id, sortOptions);
+            var multiDataList = this._client.Sort(fromSet.Id, sortOptions);
             return this.CreateList(multiDataList);
         }
 
         /// <inheritdoc />
         public HashSet<T> GetAllItemsFromSet(IRedisSet<T> fromSet) {
-            byte[][] multiDataList = this._client.SMembers(fromSet.Id);
+            var multiDataList = this._client.SMembers(fromSet.Id);
             return this.CreateHashSet(multiDataList);
         }
 
@@ -61,7 +61,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public HashSet<T> GetIntersectFromSets(params IRedisSet<T>[] sets) {
-            byte[][] multiDataList = this._client.SInter(sets.Select(x => x.Id).ToArray());
+            var multiDataList = this._client.SInter(sets.Select(x => x.Id).ToArray());
             return this.CreateHashSet(multiDataList);
         }
 
@@ -72,7 +72,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public HashSet<T> GetUnionFromSets(params IRedisSet<T>[] sets) {
-            byte[][] multiDataList = this._client.SUnion(sets.Select(x => x.Id).ToArray());
+            var multiDataList = this._client.SUnion(sets.Select(x => x.Id).ToArray());
             return this.CreateHashSet(multiDataList);
         }
 
@@ -83,7 +83,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public HashSet<T> GetDifferencesFromSet(IRedisSet<T> fromSet, params IRedisSet<T>[] withSets) {
-            byte[][] multiDataList = this._client.SDiff(fromSet.Id, withSets.Select(x => x.Id).ToArray());
+            var multiDataList = this._client.SDiff(fromSet.Id, withSets.Select(x => x.Id).ToArray());
             return this.CreateHashSet(multiDataList);
         }
 
@@ -99,7 +99,7 @@ namespace TheOne.Redis.Client {
 
         private HashSet<T> CreateHashSet(byte[][] multiDataList) {
             var results = new HashSet<T>();
-            foreach (byte[] multiData in multiDataList) {
+            foreach (var multiData in multiDataList) {
                 results.Add(multiData.FromJsonUtf8Bytes<T>());
             }
 
@@ -120,7 +120,7 @@ namespace TheOne.Redis.Client {
             public IRedisSet<T> this[string setId] {
                 get => new RedisClientSet<T>(this._client, setId);
                 set {
-                    IRedisSet<T> col = this[setId];
+                    var col = this[setId];
                     col.Clear();
                     col.CopyTo(value.ToArray(), 0);
                 }

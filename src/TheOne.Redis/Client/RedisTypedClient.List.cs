@@ -16,20 +16,20 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public List<T> GetAllItemsFromList(IRedisList<T> fromList) {
-            byte[][] multiDataList = this._client.LRange(fromList.Id, _firstElement, _lastElement);
+            var multiDataList = this._client.LRange(fromList.Id, _firstElement, _lastElement);
             return this.CreateList(multiDataList);
         }
 
         /// <inheritdoc />
         public List<T> GetRangeFromList(IRedisList<T> fromList, int startingFrom, int endingAt) {
-            byte[][] multiDataList = this._client.LRange(fromList.Id, startingFrom, endingAt);
+            var multiDataList = this._client.LRange(fromList.Id, startingFrom, endingAt);
             return this.CreateList(multiDataList);
         }
 
         /// <inheritdoc />
         public List<T> SortList(IRedisList<T> fromList, int startingFrom, int endingAt) {
             var sortOptions = new SortOptions { Skip = startingFrom, Take = endingAt };
-            byte[][] multiDataList = this._client.Sort(fromList.Id, sortOptions);
+            var multiDataList = this._client.Sort(fromList.Id, sortOptions);
             return this.CreateList(multiDataList);
         }
 
@@ -50,7 +50,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public T BlockingRemoveStartFromList(IRedisList<T> fromList, TimeSpan? timeout) {
-            byte[][] unblockingKeyAndValue = this._client.BLPop(fromList.Id, (int)timeout.GetValueOrDefault().TotalSeconds);
+            var unblockingKeyAndValue = this._client.BLPop(fromList.Id, (int)timeout.GetValueOrDefault().TotalSeconds);
             return unblockingKeyAndValue.Length == 0
                 ? default
                 : unblockingKeyAndValue[1].FromJsonUtf8Bytes<T>();
@@ -119,7 +119,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public T BlockingDequeueItemFromList(IRedisList<T> fromList, TimeSpan? timeout) {
-            byte[][] unblockingKeyAndValue = this._client.BRPop(fromList.Id, (int)timeout.GetValueOrDefault().TotalSeconds);
+            var unblockingKeyAndValue = this._client.BRPop(fromList.Id, (int)timeout.GetValueOrDefault().TotalSeconds);
             return unblockingKeyAndValue.Length == 0
                 ? default
                 : unblockingKeyAndValue[1].FromJsonUtf8Bytes<T>();
@@ -137,7 +137,7 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public T BlockingPopItemFromList(IRedisList<T> fromList, TimeSpan? timeout) {
-            byte[][] unblockingKeyAndValue = this._client.BRPop(fromList.Id, (int)timeout.GetValueOrDefault().TotalSeconds);
+            var unblockingKeyAndValue = this._client.BRPop(fromList.Id, (int)timeout.GetValueOrDefault().TotalSeconds);
             return unblockingKeyAndValue.Length == 0
                 ? default
                 : unblockingKeyAndValue[1].FromJsonUtf8Bytes<T>();
@@ -159,7 +159,7 @@ namespace TheOne.Redis.Client {
             }
 
             var results = new List<T>();
-            foreach (byte[] multiData in multiDataList) {
+            foreach (var multiData in multiDataList) {
                 results.Add(multiData.FromJsonUtf8Bytes<T>());
             }
 
@@ -168,7 +168,7 @@ namespace TheOne.Redis.Client {
 
         // TODO replace it with a pipeline implementation ala AddRangeToSet
         public void AddRangeToList(IRedisList<T> fromList, IEnumerable<T> values) {
-            foreach (T value in values) {
+            foreach (var value in values) {
                 this.AddItemToList(fromList, value);
             }
         }
@@ -187,7 +187,7 @@ namespace TheOne.Redis.Client {
             public IRedisList<T> this[string listId] {
                 get => new RedisClientList<T>(this._client, listId);
                 set {
-                    IRedisList<T> list = this[listId];
+                    var list = this[listId];
                     list.Clear();
                     list.CopyTo(value.ToArray(), 0);
                 }

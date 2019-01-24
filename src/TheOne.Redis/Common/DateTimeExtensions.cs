@@ -20,7 +20,7 @@ namespace TheOne.Redis.Common {
         }
 
         public static long ToUnixTimeMs(this DateTime dateTime) {
-            TimeSpan universal = ToDateTimeSinceUnixEpoch(dateTime);
+            var universal = ToDateTimeSinceUnixEpoch(dateTime);
             return (long)universal.TotalMilliseconds;
         }
 

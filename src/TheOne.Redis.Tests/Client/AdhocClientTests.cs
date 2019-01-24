@@ -33,7 +33,7 @@ namespace TheOne.Redis.Tests.Client {
         [Test]
         public void Can_infer_utf8_bytes() {
             var cmd = "GET" + 2 + "\r\n";
-            byte[] cmdBytes = Encoding.UTF8.GetBytes(cmd);
+            var cmdBytes = Encoding.UTF8.GetBytes(cmd);
 
             var hex = BitConverter.ToString(cmdBytes);
 
@@ -52,8 +52,8 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Compare_GetCmdBytes() {
-            byte[] res1 = GetCmdBytes1('$', 1234);
-            byte[] res2 = GetCmdBytes2('$', 1234);
+            var res1 = GetCmdBytes1('$', 1234);
+            var res2 = GetCmdBytes2('$', 1234);
 
             Console.WriteLine(BitConverter.ToString(res1));
             Console.WriteLine(BitConverter.ToString(res2));
