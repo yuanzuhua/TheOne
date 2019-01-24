@@ -22,7 +22,7 @@ namespace TheOne.RabbitMq {
         public static Action<string, Dictionary<string, object>> CreateQueueFilter { get; set; }
 
         public static IModel OpenChannel(this IConnection connection) {
-            IModel channel = connection.CreateModel();
+            var channel = connection.CreateModel();
             channel.RegisterDirectExchange();
             channel.RegisterDlqExchange();
             channel.RegisterTopicExchange();
@@ -198,7 +198,7 @@ namespace TheOne.RabbitMq {
                     props.Headers = new Dictionary<string, object>();
                 }
 
-                foreach (KeyValuePair<string, string> entry in message.Meta) {
+                foreach (var entry in message.Meta) {
                     props.Headers[entry.Key] = entry.Value;
                 }
             }
@@ -209,7 +209,7 @@ namespace TheOne.RabbitMq {
                 return null;
             }
 
-            IBasicProperties props = msgResult.BasicProperties;
+            var props = msgResult.BasicProperties;
             T body;
 
             // json only
@@ -233,9 +233,9 @@ namespace TheOne.RabbitMq {
             }
 
             if (props.Headers != null) {
-                foreach (KeyValuePair<string, object> entry in props.Headers) {
+                foreach (var entry in props.Headers) {
                     if (entry.Key == nameof(IMqMessage.Error)) {
-                        object errors = entry.Value;
+                        var errors = entry.Value;
                         if (errors != null) {
                             var errorsJson = errors is byte[] errorBytes
                                 ? errorBytes.FromUtf8Bytes()

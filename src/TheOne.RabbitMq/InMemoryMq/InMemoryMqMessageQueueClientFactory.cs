@@ -22,7 +22,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
         public event EventHandler<EventArgs> MessageReceived;
 
         private void InvokeMessageReceived(EventArgs e) {
-            EventHandler<EventArgs> received = this.MessageReceived;
+            var received = this.MessageReceived;
             received?.Invoke(this, e);
         }
 
@@ -31,7 +31,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
         /// </summary>
         public byte[] GetMessageAsync(string queueName) {
             lock (this._syncLock) {
-                if (!this._queueMessageBytesMap.TryGetValue(queueName, out Queue<byte[]> bytesQueue)) {
+                if (!this._queueMessageBytesMap.TryGetValue(queueName, out var bytesQueue)) {
                     return null;
                 }
 
@@ -39,7 +39,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
                     return null;
                 }
 
-                byte[] messageBytes = bytesQueue.Dequeue();
+                var messageBytes = bytesQueue.Dequeue();
                 return messageBytes;
             }
         }
@@ -50,7 +50,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
 
         public void PublishMessage(string queueName, byte[] messageBytes) {
             lock (this._syncLock) {
-                if (!this._queueMessageBytesMap.TryGetValue(queueName, out Queue<byte[]> bytesQueue)) {
+                if (!this._queueMessageBytesMap.TryGetValue(queueName, out var bytesQueue)) {
                     bytesQueue = new Queue<byte[]>();
                     this._queueMessageBytesMap[queueName] = bytesQueue;
                 }

@@ -22,7 +22,7 @@ namespace TheOne.RabbitMq.Messaging {
                 return null;
             }
 
-            Type type = response.GetType();
+            var type = response.GetType();
 
             MessageFactoryDelegate factoryFn;
             lock (_cacheFn) {
@@ -33,11 +33,11 @@ namespace TheOne.RabbitMq.Messaging {
                 return factoryFn(response);
             }
 
-            Type genericMessageType = typeof(MqMessage<>).MakeGenericType(type);
-            MethodInfo mi = genericMessageType.GetMethod(
-                                nameof(MqMessage<object>.Create),
-                                BindingFlags.Public | BindingFlags.Static
-                            ) ?? throw new ApplicationException();
+            var genericMessageType = typeof(MqMessage<>).MakeGenericType(type);
+            var mi = genericMessageType.GetMethod(
+                         nameof(MqMessage<object>.Create),
+                         BindingFlags.Public | BindingFlags.Static
+                     ) ?? throw new ApplicationException();
             factoryFn = (MessageFactoryDelegate)Delegate.CreateDelegate(typeof(MessageFactoryDelegate), mi);
 
             lock (_cacheFn) {

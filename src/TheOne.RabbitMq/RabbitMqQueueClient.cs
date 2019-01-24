@@ -19,10 +19,10 @@ namespace TheOne.RabbitMq {
 
         /// <inheritdoc />
         public virtual IMqMessage<T> Get<T>(string queueName, TimeSpan? timeout = null) {
-            DateTime now = DateTime.Now;
+            var now = DateTime.Now;
 
             while (timeout == null || DateTime.Now - now < timeout.Value) {
-                BasicGetResult basicMsg = this.GetMessage(queueName, false);
+                var basicMsg = this.GetMessage(queueName, false);
                 if (basicMsg != null) {
                     return basicMsg.ToMessage<T>();
                 }
@@ -35,7 +35,7 @@ namespace TheOne.RabbitMq {
 
         /// <inheritdoc />
         public virtual IMqMessage<T> GetAsync<T>(string queueName) {
-            BasicGetResult basicMsg = this.GetMessage(queueName, false);
+            var basicMsg = this.GetMessage(queueName, false);
             return basicMsg.ToMessage<T>();
         }
 
@@ -72,7 +72,7 @@ namespace TheOne.RabbitMq {
 
         /// <inheritdoc />
         public virtual string GetTempQueueName() {
-            QueueDeclareOk anonMq = this.Channel.QueueDeclare(MqQueueNames.GetTempQueueName(), false, true, true, null);
+            var anonMq = this.Channel.QueueDeclare(MqQueueNames.GetTempQueueName(), false, true, true, null);
             return anonMq.QueueName;
         }
 

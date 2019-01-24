@@ -197,13 +197,13 @@ namespace TheOne.RabbitMq {
         }
 
         private void StartSubscription() {
-            RabbitMqBasicConsumer consumer = this.ConnectSubscription();
+            var consumer = this.ConnectSubscription();
 
             // At this point, messages will be being asynchronously delivered,
             // and will be queueing up in consumer.Queue.
             while (true) {
                 try {
-                    BasicGetResult e = consumer.Queue.Dequeue();
+                    var e = consumer.Queue.Dequeue();
 
                     this._mqFactory.GetMessageFilter?.Invoke(this.QueueName, e);
 
@@ -241,7 +241,7 @@ namespace TheOne.RabbitMq {
         }
 
         private RabbitMqBasicConsumer ConnectSubscription() {
-            IModel channel = this.GetChannel();
+            var channel = this.GetChannel();
             var consumer = new RabbitMqBasicConsumer(channel);
             channel.BasicConsume(this.QueueName, false, consumer);
             return consumer;

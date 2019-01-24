@@ -30,13 +30,13 @@ namespace TheOne.RabbitMq.InMemoryMq {
 
         /// <inheritdoc />
         public void Publish(string queueName, IMqMessage message) {
-            byte[] messageBytes = message.ToJsonBytes();
+            var messageBytes = message.ToJsonBytes();
             this._factory.PublishMessage(queueName, messageBytes);
         }
 
         /// <inheritdoc />
         public void Notify(string queueName, IMqMessage message) {
-            byte[] messageBytes = message.ToJsonBytes();
+            var messageBytes = message.ToJsonBytes();
             this._factory.PublishMessage(queueName, messageBytes);
         }
 
@@ -44,7 +44,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
             var startedAt = DateTime.Now.Ticks; // No Stopwatch in Silverlight
             var timeoutMs = timeout == null ? -1 : (long)timeout.Value.TotalMilliseconds;
             while (timeoutMs == -1 || timeoutMs >= new TimeSpan(DateTime.Now.Ticks - startedAt).TotalMilliseconds) {
-                IMqMessage<T> msg = this.GetAsync<T>(queueName);
+                var msg = this.GetAsync<T>(queueName);
                 if (msg != null) {
                     return msg;
                 }
@@ -55,7 +55,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
 
         /// <inheritdoc />
         public IMqMessage<T> GetAsync<T>(string queueName) {
-            byte[] bytes = this._factory.GetMessageAsync(queueName);
+            var bytes = this._factory.GetMessageAsync(queueName);
             return MqMessageExtensions.ToMessage<T>(bytes);
         }
 

@@ -23,7 +23,7 @@ namespace TheOne.RabbitMq.Extensions {
 
         public static void RetryUntilTrue(Func<bool> action, TimeSpan? timeout) {
             var i = 0;
-            DateTime firstAttempt = DateTime.Now;
+            var firstAttempt = DateTime.Now;
 
             while (timeout == null || DateTime.Now - firstAttempt < timeout.Value) {
                 i++;
@@ -40,7 +40,7 @@ namespace TheOne.RabbitMq.Extensions {
         public static void RetryOnException(Action action, TimeSpan? timeout) {
             var i = 0;
             Exception lastEx = null;
-            DateTime firstAttempt = DateTime.Now;
+            var firstAttempt = DateTime.Now;
 
             while (timeout == null || DateTime.Now - firstAttempt < timeout.Value) {
                 i++;

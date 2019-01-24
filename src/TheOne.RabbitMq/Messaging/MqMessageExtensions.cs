@@ -42,17 +42,17 @@ namespace TheOne.RabbitMq.Messaging {
         }
 
         internal static ToMessageDelegate GetToMessageFn(Type type) {
-            _toMessageFnCache.TryGetValue(type, out ToMessageDelegate toMessageFn);
+            _toMessageFnCache.TryGetValue(type, out var toMessageFn);
 
             if (toMessageFn != null) {
                 return toMessageFn;
             }
 
-            Type genericType = typeof(MqMessageExtensions<>).MakeGenericType(type);
-            MethodInfo mi = genericType.GetMethod(
-                                nameof(MqMessageExtensions<object>.ConvertToMessage),
-                                BindingFlags.Static | BindingFlags.Public
-                            ) ?? throw new ApplicationException();
+            var genericType = typeof(MqMessageExtensions<>).MakeGenericType(type);
+            var mi = genericType.GetMethod(
+                         nameof(MqMessageExtensions<object>.ConvertToMessage),
+                         BindingFlags.Static | BindingFlags.Public
+                     ) ?? throw new ApplicationException();
             toMessageFn = (ToMessageDelegate)Delegate.CreateDelegate(typeof(ToMessageDelegate), mi, true);
 
             Dictionary<Type, ToMessageDelegate> snapshot, newCache;
@@ -73,8 +73,8 @@ namespace TheOne.RabbitMq.Messaging {
                 return null;
             }
 
-            ToMessageDelegate msgFn = GetToMessageFn(ofType);
-            IMqMessage msg = msgFn(bytes);
+            var msgFn = GetToMessageFn(ofType);
+            var msg = msgFn(bytes);
             return msg;
         }
 

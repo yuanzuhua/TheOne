@@ -5,7 +5,6 @@ using System.Threading;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using TheOne.RabbitMq.Extensions;
-using TheOne.RabbitMq.Interfaces;
 using TheOne.RabbitMq.Messaging;
 using TheOne.RabbitMq.Models;
 using TheOne.RabbitMq.Tests.Messaging.Models;
@@ -32,7 +31,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         [Test]
         [SuppressMessage("ReSharper", "AccessToDisposedClosure", Justification = "intentionally")]
         public void Does_process_all_messages_and_Starts_Stops_correctly_with_multiple_threads_racing() {
-            using (RabbitMqServer mqServer = RabbitMqServerTests.CreateMqServer()) {
+            using (var mqServer = RabbitMqServerTests.CreateMqServer()) {
                 void Action0(IModel channel) {
                     channel.PurgeQueue<Reverse>();
                     channel.PurgeQueue<NothingHere>();
@@ -52,7 +51,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                     return new NothingHereResponse { Value = x.GetBody().Value };
                 });
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     mqClient.Publish(new Reverse { Value = "Hello" });
                     mqClient.Publish(new Reverse { Value = "World" });
                     mqClient.Publish(new NothingHere { Value = "HelloWorld" });
@@ -89,7 +88,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         public void Does_process_messages_sent_before_it_was_started() {
             var reverseCalled = 0;
 
-            using (RabbitMqServer mqServer = RabbitMqServerTests.CreateMqServer()) {
+            using (var mqServer = RabbitMqServerTests.CreateMqServer()) {
                 void Action0(IModel channel) {
                     channel.PurgeQueue<Reverse>();
                     channel.PurgeQueue<ReverseResponse>();
@@ -102,7 +101,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                     return new ReverseResponse { Value = string.Join(",", x.GetBody().Value.Reverse()) };
                 });
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     RabbitMqServerTests.Publish_4_messages(mqClient);
 
                     mqServer.Start();
@@ -121,7 +120,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
             // in total, inc. first try
             var totalRetries = 1 + retryCount;
 
-            using (RabbitMqServer mqServer = RabbitMqServerTests.CreateMqServer(retryCount)) {
+            using (var mqServer = RabbitMqServerTests.CreateMqServer(retryCount)) {
                 void Action0(IModel channel) {
                     channel.PurgeQueue<Reverse>();
                     channel.PurgeQueue<NothingHere>();
@@ -145,7 +144,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                 mqServer.Start();
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     mqClient.Publish(new AlwaysThrows { Value = "1st" });
                     mqClient.Publish(new Reverse { Value = "Hello" });
                     mqClient.Publish(new Reverse { Value = "World" });

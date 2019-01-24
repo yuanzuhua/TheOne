@@ -44,7 +44,7 @@ namespace TheOne.RabbitMq.Messaging {
                     msg = (IMqMessage<T>)this.RequestFilter(msg);
                 }
 
-                object result = this._processMessageFn(msg);
+                var result = this._processMessageFn(msg);
 
                 if (this.ResponseFilter != null) {
                     result = this.ResponseFilter(result);

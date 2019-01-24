@@ -34,7 +34,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         }
 
         private static void RunHandlerOnMultipleThreads(int noOfThreads, int msgs) {
-            using (RabbitMqServer mqServer = CreateMqServer()) {
+            using (var mqServer = CreateMqServer()) {
                 var timesCalled = 0;
                 RabbitMqConfig.UsingChannel(mqServer.ConnectionFactory, channel => channel.PurgeQueue<Wait>());
 
@@ -47,7 +47,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                 mqServer.RegisterHandler<Wait>(WaitProcessMessageFn, noOfThreads);
                 mqServer.Start();
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     var dto = new Wait { ForMs = 100 };
                     for (var i1 = 0; i1 < msgs; i1++) {
                         mqClient.Publish(dto);
@@ -88,12 +88,12 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                     args.Remove(RabbitMqExtensions.XMaxPriority);
                 }
             };
-            using (RabbitMqServer mqServer = CreateMqServer()) {
+            using (var mqServer = CreateMqServer()) {
                 mqServer.PublishMessageFilter = (queueName, properties, msg) => {
                     properties.AppId = $"app:{queueName}";
                 };
                 mqServer.GetMessageFilter = (queueName, basicMsg) => {
-                    IBasicProperties props = basicMsg.BasicProperties;
+                    var props = basicMsg.BasicProperties;
                     // automatically added by RabbitMqProducer
                     receivedMsgType = props.Type;
                     receivedMsgApp = props.AppId;
@@ -113,7 +113,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                 mqServer.Start();
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     mqClient.Publish(new Hello { Name = "Bugs Bunny" });
                 }
 
@@ -126,13 +126,13 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                     var queueName = MqQueueNames<HelloResponse>.Direct;
                     channel.RegisterQueue(queueName);
 
-                    BasicGetResult basicMsg = channel.BasicGet(queueName, true);
-                    IBasicProperties props = basicMsg.BasicProperties;
+                    var basicMsg = channel.BasicGet(queueName, true);
+                    var props = basicMsg.BasicProperties;
 
                     Assert.That(props.Type, Is.EqualTo(typeof(HelloResponse).Name));
                     Assert.That(props.AppId, Is.EqualTo($"app:{queueName}"));
 
-                    IMqMessage<HelloResponse> msg = basicMsg.ToMessage<HelloResponse>();
+                    var msg = basicMsg.ToMessage<HelloResponse>();
                     Assert.That(msg.GetBody().Result, Is.EqualTo("Hello, Bugs Bunny!"));
                 });
             }
@@ -146,9 +146,9 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         [Test]
         public void Can_publish_and_receive_messages_with_MessageFactory() {
             using (var mqFactory = new RabbitMqMessageFactory(RabbitMqConfig.RabbitMqHostName)) {
-                using (IMqMessageQueueClient mqClient = mqFactory.CreateMessageQueueClient()) {
+                using (var mqClient = mqFactory.CreateMessageQueueClient()) {
                     mqClient.Publish(new Hello { Name = "Foo" });
-                    IMqMessage<Hello> msg = mqClient.Get<Hello>(MqQueueNames<Hello>.Direct);
+                    var msg = mqClient.Get<Hello>(MqQueueNames<Hello>.Direct);
 
                     Assert.That(msg.GetBody().Name, Is.EqualTo("Foo"));
                 }
@@ -158,7 +158,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         [Test]
         public void Can_receive_and_process_same_reply_responses() {
             var called = 0;
-            using (RabbitMqServer mqServer = CreateMqServer()) {
+            using (var mqServer = CreateMqServer()) {
                 RabbitMqConfig.UsingChannel(mqServer.ConnectionFactory, channel => channel.PurgeQueue<Incr>());
 
                 Incr ProcessMessageFn(IMqMessage<Incr> m) {
@@ -172,7 +172,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                 mqServer.Start();
 
                 var incr = new Incr { Value = 5 };
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     mqClient.Publish(incr);
                 }
 
@@ -183,7 +183,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
         [Test]
         public void Can_receive_and_process_standard_request_reply_combo() {
-            using (RabbitMqServer mqServer = CreateMqServer()) {
+            using (var mqServer = CreateMqServer()) {
                 void Action0(IModel channel) {
                     channel.PurgeQueue<Hello>();
                     channel.PurgeQueue<HelloResponse>();
@@ -203,7 +203,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                 mqServer.Start();
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     var dto = new Hello { Name = "TheOne" };
                     mqClient.Publish(dto);
 
@@ -215,7 +215,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
         [Test]
         public void Cannot_Start_a_Disposed_MqServer() {
-            RabbitMqServer mqServer = CreateMqServer();
+            var mqServer = CreateMqServer();
 
             mqServer.Dispose();
 
@@ -230,7 +230,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
         [Test]
         public void Cannot_Stop_a_Disposed_MqServer() {
-            RabbitMqServer mqServer = CreateMqServer();
+            var mqServer = CreateMqServer();
 
             mqServer.Start();
 
@@ -250,7 +250,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         [Test]
         public void Handler_with_null_Response_Messages_is_ignored() {
             var msgsReceived = 0;
-            using (RabbitMqServer mqServer = CreateMqServer()) {
+            using (var mqServer = CreateMqServer()) {
                 mqServer.RegisterHandler<HelloNull>(m => {
                     Interlocked.Increment(ref msgsReceived);
                     return null;
@@ -258,7 +258,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                 mqServer.Start();
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     mqClient.Publish(new HelloNull { Name = "Into the Void" });
 
                     Thread.Sleep(100);
@@ -271,7 +271,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         [Test]
         public void Messages_has_ReplayTo_with_null_Response_is_ignored() {
             var msgsReceived = 0;
-            using (RabbitMqServer mqServer = CreateMqServer()) {
+            using (var mqServer = CreateMqServer()) {
                 mqServer.RegisterHandler<HelloNull>(m => {
                     Interlocked.Increment(ref msgsReceived);
                     return null;
@@ -279,13 +279,13 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                 mqServer.Start();
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     var replyMq = mqClient.GetTempQueueName();
                     mqClient.Publish(new MqMessage<HelloNull>(new HelloNull { Name = "Into the Void" }) {
                         ReplyTo = replyMq
                     });
 
-                    IMqMessage<HelloNull> msg = mqClient.Get<HelloNull>(replyMq, TimeSpan.FromSeconds(5));
+                    var msg = mqClient.Get<HelloNull>(replyMq, TimeSpan.FromSeconds(5));
 
                     Assert.Null(msg);
 
@@ -298,13 +298,13 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
         [Test]
         public void Messages_notify() {
-            using (RabbitMqServer mqServer = CreateMqServer()) {
+            using (var mqServer = CreateMqServer()) {
                 mqServer.Start();
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     var name = new HelloNull { Name = "Into the Void" };
                     mqClient.Notify(MqQueueNames<HelloNull>.Topic, new MqMessage<HelloNull> { Body = name });
-                    IMqMessage<HelloNull> msg = mqClient.Get<HelloNull>(MqQueueNames<HelloNull>.Topic, TimeSpan.FromSeconds(5));
+                    var msg = mqClient.Get<HelloNull>(MqQueueNames<HelloNull>.Topic, TimeSpan.FromSeconds(5));
                     Assert.AreEqual(name.Name, msg.GetBody().Name);
                     Thread.Sleep(100);
                 }
@@ -314,7 +314,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         [Test]
         public void Misc_publish_NothingHere_messages() {
             using (var mqServer = new RabbitMqServer(RabbitMqConfig.RabbitMqHostName)) {
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     Publish_4_NothingHere_messages(mqClient);
                 }
             }
@@ -323,7 +323,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         [Test]
         public void Misc_publish_Reverse_messages() {
             using (var mqServer = new RabbitMqServer(RabbitMqConfig.RabbitMqHostName)) {
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     Publish_4_messages(mqClient);
                 }
             }
@@ -332,7 +332,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         [Test]
         [SuppressMessage("ReSharper", "AccessToDisposedClosure", Justification = "intentionally")]
         public void Only_allows_1_BgThread_to_run_at_a_time() {
-            using (RabbitMqServer mqServer = CreateMqServer()) {
+            using (var mqServer = CreateMqServer()) {
 
                 mqServer.RegisterHandler<Reverse>(x => {
                     return new ReverseResponse { Value = string.Join(",", x.GetBody().Value.Reverse()) };

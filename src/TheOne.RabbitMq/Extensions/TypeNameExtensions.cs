@@ -52,7 +52,7 @@ namespace TheOne.RabbitMq.Extensions {
             var nameOnly = pos == -1 ? strVal : strVal.Substring(0, pos);
 
             var sb = new StringBuilder();
-            foreach (Type arg in type.GetGenericArguments()) {
+            foreach (var arg in type.GetGenericArguments()) {
                 if (sb.Length > 0) {
                     sb.Append(",");
                 }

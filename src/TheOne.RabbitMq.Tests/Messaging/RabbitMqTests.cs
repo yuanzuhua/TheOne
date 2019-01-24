@@ -82,8 +82,8 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         }
 
         private static void PublishHelloRabbit(IModel channel, string text = "World!") {
-            byte[] payload = MqMessageExtensions.ToJsonBytes(new HelloRabbit { Name = text });
-            IBasicProperties props = channel.CreateBasicProperties();
+            var payload = MqMessageExtensions.ToJsonBytes(new HelloRabbit { Name = text });
+            var props = channel.CreateBasicProperties();
             props.Persistent = true;
             channel.BasicPublish(_exchange, MqQueueNames<HelloRabbit>.Direct, props, payload);
         }
@@ -99,7 +99,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                 while (true) {
                     try {
-                        BasicGetResult e = consumer.Queue.Dequeue();
+                        var e = consumer.Queue.Dequeue();
                         Console.WriteLine("Dequeued");
                         recvMsg = e.Body.FromUtf8Bytes();
                         // ... process the message
@@ -126,7 +126,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
                 PublishHelloRabbit(channel);
 
                 while (true) {
-                    BasicGetResult basicGetMsg = channel.BasicGet(MqQueueNames<HelloRabbit>.Direct, false);
+                    var basicGetMsg = channel.BasicGet(MqQueueNames<HelloRabbit>.Direct, false);
 
                     if (basicGetMsg == null) {
                         Console.WriteLine("End of the road...");
@@ -178,7 +178,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                         while (true) {
                             try {
-                                BasicGetResult e = consumer.Queue.Dequeue();
+                                var e = consumer.Queue.Dequeue();
                                 recvMsg = e.Body.FromUtf8Bytes();
                             } catch (EndOfStreamException ex) {
                                 // The consumer was cancelled, the model closed, or the
@@ -217,8 +217,8 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         public void Can_publish_messages_to_RabbitMQ() {
             RabbitMqConfig.UsingChannel(channel => {
                 for (var i1 = 0; i1 < 5; i1++) {
-                    byte[] payload = MqMessageExtensions.ToJsonBytes(new HelloRabbit { Name = $"World! #{i1}" });
-                    IBasicProperties props = channel.CreateBasicProperties();
+                    var payload = MqMessageExtensions.ToJsonBytes(new HelloRabbit { Name = $"World! #{i1}" });
+                    var props = channel.CreateBasicProperties();
                     props.Persistent = true;
 
                     channel.BasicPublish(_exchange, MqQueueNames<HelloRabbit>.Direct, props, payload);
@@ -235,8 +235,8 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                 PublishHelloRabbit(channel);
 
-                BasicGetResult basicGetMsg = channel.BasicGet(MqQueueNames<HelloRabbit>.Direct, true);
-                BasicGetResult dlqBasicMsg = channel.BasicGet(MqQueueNames<HelloRabbit>.Dlq, true);
+                var basicGetMsg = channel.BasicGet(MqQueueNames<HelloRabbit>.Direct, true);
+                var dlqBasicMsg = channel.BasicGet(MqQueueNames<HelloRabbit>.Dlq, true);
                 Assert.That(basicGetMsg, Is.Not.Null);
                 Assert.That(dlqBasicMsg, Is.Null);
 
@@ -263,13 +263,13 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                 RegisterQueue(channel, MqQueueNames<HelloRabbit>.Direct, _exchangeFanout);
 
-                byte[] body = MqMessageExtensions.ToJsonBytes(new HelloRabbit { Name = "World!" });
-                IBasicProperties props = channel.CreateBasicProperties();
+                var body = MqMessageExtensions.ToJsonBytes(new HelloRabbit { Name = "World!" });
+                var props = channel.CreateBasicProperties();
                 props.Persistent = true;
 
                 channel.BasicPublish(_exchangeFanout, MqQueueNames<HelloRabbit>.Direct, props, body);
 
-                BasicGetResult basicGetMsg = channel.BasicGet(MqQueueNames<HelloRabbit>.Direct, true);
+                var basicGetMsg = channel.BasicGet(MqQueueNames<HelloRabbit>.Direct, true);
                 Assert.That(basicGetMsg, Is.Not.Null);
             });
         }
@@ -279,7 +279,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
             RabbitMqConfig.UsingChannel(channel => {
                 PublishHelloRabbit(channel);
 
-                BasicGetResult basicGetMsg = channel.BasicGet(MqQueueNames<HelloRabbit>.Direct, true);
+                var basicGetMsg = channel.BasicGet(MqQueueNames<HelloRabbit>.Direct, true);
                 Assert.That(basicGetMsg, Is.Not.Null);
             });
         }

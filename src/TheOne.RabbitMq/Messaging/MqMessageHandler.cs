@@ -87,7 +87,7 @@ namespace TheOne.RabbitMq.Messaging {
 
         /// <inheritdoc />
         public void ProcessMessage(IMqMessageQueueClient mqClient, object mqResponse) {
-            IMqMessage<T> message = mqClient.CreateMessage<T>(mqResponse);
+            var message = mqClient.CreateMessage<T>(mqResponse);
             this.ProcessMessage(mqClient, message);
         }
 
@@ -108,13 +108,13 @@ namespace TheOne.RabbitMq.Messaging {
             var msgHandled = false;
 
             try {
-                object response = this._processMessageFn(message);
+                var response = this._processMessageFn(message);
 
                 if (response is Exception responseEx) {
                     this.TotalMessagesFailed++;
 
                     if (message.ReplyTo != null) {
-                        object responseDto = response;
+                        var responseDto = response;
                         mqClient.Publish(message.ReplyTo, MqMessageFactory.Create(responseDto));
                         return;
                     }
@@ -134,7 +134,7 @@ namespace TheOne.RabbitMq.Messaging {
 
                 if (response != null) {
                     var responseMessage = response as IMqMessage;
-                    Type responseType = responseMessage != null
+                    var responseType = responseMessage != null
                         ? responseMessage.Body?.GetType() ?? typeof(object)
                         : response.GetType();
 

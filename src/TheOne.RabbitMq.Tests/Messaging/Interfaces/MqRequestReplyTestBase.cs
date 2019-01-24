@@ -24,7 +24,7 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
             const int timeMs = 5000;
 
             var errors = new ConcurrentDictionary<long, string>();
-            using (IMqMessageService mqServer = this.CreateMqServer()) {
+            using (var mqServer = this.CreateMqServer()) {
                 mqServer.RegisterHandler<Incr>(m =>
                     new IncrResponse { Result = m.GetBody().Value + 1 });
                 mqServer.Start();
@@ -34,8 +34,8 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
                 var activeClientsLock = new object();
 
                 void CallBack(object _) {
-                    using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
-                        Stopwatch sw = Stopwatch.StartNew();
+                    using (var mqClient = mqServer.CreateMessageQueueClient()) {
+                        var sw = Stopwatch.StartNew();
                         var clientId = Interlocked.Increment(ref activeClients);
                         while (sw.ElapsedMilliseconds < timeMs) {
                             var next = Interlocked.Increment(ref counter);
@@ -45,7 +45,7 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
                                     ReplyTo = replyToMq
                                 });
 
-                                IMqMessage<IncrResponse> responseMsg =
+                                var responseMsg =
                                     mqClient.Get<IncrResponse>(replyToMq, TimeSpan.FromMilliseconds(timeMs));
                                 mqClient.Ack(responseMsg);
 
@@ -87,18 +87,18 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
 
         [Test]
         public void Can_publish_messages_to_the_ReplyTo_temporary_queue() {
-            using (IMqMessageService mqServer = this.CreateMqServer()) {
+            using (var mqServer = this.CreateMqServer()) {
                 mqServer.RegisterHandler<HelloIntro>(m =>
                     new HelloIntroResponse { Result = string.Format("Hello, {0}!", m.GetBody().Name) });
                 mqServer.Start();
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     var replyToMq = mqClient.GetTempQueueName();
                     mqClient.Publish(new MqMessage<HelloIntro>(new HelloIntro { Name = "World" }) {
                         ReplyTo = replyToMq
                     });
 
-                    IMqMessage<HelloIntroResponse> responseMsg = mqClient.Get<HelloIntroResponse>(replyToMq);
+                    var responseMsg = mqClient.Get<HelloIntroResponse>(replyToMq);
                     mqClient.Ack(responseMsg);
                     Assert.That(responseMsg.GetBody().Result, Is.EqualTo("Hello, World!"));
                 }
@@ -107,21 +107,21 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
 
         [Test]
         public void Can_send_message_with_custom_Header() {
-            using (IMqMessageService mqServer = this.CreateMqServer()) {
+            using (var mqServer = this.CreateMqServer()) {
                 mqServer.RegisterHandler<HelloIntro>(m =>
                     new MqMessage<HelloIntroResponse>(new HelloIntroResponse { Result = string.Format("Hello, {0}!", m.GetBody().Name) }) {
                         Meta = m.Meta
                     });
                 mqServer.Start();
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     var replyToMq = mqClient.GetTempQueueName();
                     mqClient.Publish(new MqMessage<HelloIntro>(new HelloIntro { Name = "World" }) {
                         ReplyTo = replyToMq,
                         Meta = new Dictionary<string, string> { { "Custom", "Header" } }
                     });
 
-                    IMqMessage<HelloIntroResponse> responseMsg = mqClient.Get<HelloIntroResponse>(replyToMq);
+                    var responseMsg = mqClient.Get<HelloIntroResponse>(replyToMq);
                     mqClient.Ack(responseMsg);
                     Assert.That(responseMsg.GetBody().Result, Is.EqualTo("Hello, World!"));
                     Assert.That(responseMsg.Meta["Custom"], Is.EqualTo("Header"));
@@ -131,7 +131,7 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
 
         [Test]
         public void Can_send_message_with_custom_Tag() {
-            using (IMqMessageService mqServer = this.CreateMqServer()) {
+            using (var mqServer = this.CreateMqServer()) {
                 if (mqServer is RabbitMqServer) {
                     return; // Uses DeliveryTag for Tag
                 }
@@ -142,14 +142,14 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
                     }) { Tag = m.Tag });
                 mqServer.Start();
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     var replyToMq = mqClient.GetTempQueueName();
                     mqClient.Publish(new MqMessage<HelloIntro>(new HelloIntro { Name = "World" }) {
                         ReplyTo = replyToMq,
                         Tag = "Custom"
                     });
 
-                    IMqMessage<HelloIntroResponse> responseMsg = mqClient.Get<HelloIntroResponse>(replyToMq);
+                    var responseMsg = mqClient.Get<HelloIntroResponse>(replyToMq);
                     mqClient.Ack(responseMsg);
                     Assert.That(responseMsg.GetBody().Result, Is.EqualTo("Hello, World!"));
                     Assert.That(responseMsg.Tag, Is.EqualTo("Custom"));

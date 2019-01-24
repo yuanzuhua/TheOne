@@ -185,7 +185,7 @@ namespace TheOne.RabbitMq {
                 sb.AppendLine("Num of Continuous Errors: " + Interlocked.CompareExchange(ref this._noOfContinuousErrors, 0, 0));
                 sb.AppendLine("Last ErrorMsg: " + this._lastExMsg);
                 sb.AppendLine("===============");
-                foreach (RabbitMqWorker worker in this._workers) {
+                foreach (var worker in this._workers) {
                     sb.AppendLine(worker.GetStats().ToString());
                     sb.AppendLine("---------------\n");
                 }
@@ -318,10 +318,10 @@ namespace TheOne.RabbitMq {
 
             var workerBuilder = new List<RabbitMqWorker>();
 
-            using (IModel channel = this.Connection.OpenChannel()) {
-                foreach (KeyValuePair<Type, IMqMessageHandlerFactory> entry in this._handlerMap) {
-                    Type msgType = entry.Key;
-                    IMqMessageHandlerFactory handlerFactory = entry.Value;
+            using (var channel = this.Connection.OpenChannel()) {
+                foreach (var entry in this._handlerMap) {
+                    var msgType = entry.Key;
+                    var handlerFactory = entry.Value;
 
                     var queueNames = new MqQueueNames(msgType);
                     var noOfThreads = this._handlerThreadCountMap[msgType];
@@ -341,9 +341,9 @@ namespace TheOne.RabbitMq {
 
                 this._queueWorkerIndexMap = new Dictionary<string, int[]>();
                 for (var i = 0; i < this._workers.Length; i++) {
-                    RabbitMqWorker worker = this._workers[i];
+                    var worker = this._workers[i];
 
-                    if (!this._queueWorkerIndexMap.TryGetValue(worker.QueueName, out int[] workerIds)) {
+                    if (!this._queueWorkerIndexMap.TryGetValue(worker.QueueName, out var workerIds)) {
                         this._queueWorkerIndexMap[worker.QueueName] = new[] { i };
                     } else {
                         workerIds = new List<int>(workerIds) { i }.ToArray();
@@ -442,7 +442,7 @@ namespace TheOne.RabbitMq {
         public virtual void StartWorkerThreads() {
             _logger.Info("Starting all Rabbit MQ Server worker threads...");
 
-            foreach (RabbitMqWorker worker in this._workers) {
+            foreach (var worker in this._workers) {
                 try {
                     worker.Start();
                 } catch (Exception ex) {
@@ -455,7 +455,7 @@ namespace TheOne.RabbitMq {
         public virtual void StopWorkerThreads() {
             _logger.Info("Stopping all Rabbit MQ Server worker threads...");
 
-            foreach (RabbitMqWorker worker in this._workers) {
+            foreach (var worker in this._workers) {
                 try {
                     worker.Stop();
                 } catch (Exception ex) {
@@ -467,7 +467,7 @@ namespace TheOne.RabbitMq {
 
         private void DisposeWorkerThreads() {
             _logger.Info("Disposing all Rabbit MQ Server worker threads...");
-            foreach (RabbitMqWorker value in this._workers) {
+            foreach (var value in this._workers) {
                 value.Dispose();
             }
         }
@@ -475,7 +475,7 @@ namespace TheOne.RabbitMq {
         private void WorkerErrorHandler(RabbitMqWorker source, Exception ex) {
             _logger.Error(ex, $"Received exception in Worker: {source.QueueName}.");
             for (var i = 0; i < this._workers.Length; i++) {
-                RabbitMqWorker worker = this._workers[i];
+                var worker = this._workers[i];
                 if (worker == source) {
                     _logger.Info("Starting new {0} Worker at index {1}...", source.QueueName, i);
                     this._workers[i] = source.Clone();

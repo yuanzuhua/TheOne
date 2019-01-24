@@ -70,8 +70,8 @@ namespace TheOne.RabbitMq.InMemoryMq {
                                                 .ToArray();
                 }
 
-                using (IMqMessageQueueClient mqClient = this.MessageFactory.CreateMessageQueueClient()) {
-                    foreach (IMqMessageHandler handler in this._messageHandlers) {
+                using (var mqClient = this.MessageFactory.CreateMessageQueueClient()) {
+                    foreach (var handler in this._messageHandlers) {
                         handler.Process(mqClient);
                     }
                 }
@@ -84,7 +84,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
         public IMqMessageHandlerStats GetStats() {
             var total = new MqMessageHandlerStats("All Handlers");
             lock (this._messageHandlers) {
-                foreach (IMqMessageHandler handler in this._messageHandlers) {
+                foreach (var handler in this._messageHandlers) {
                     total.Add(handler.GetStats());
                 }
             }
@@ -103,7 +103,7 @@ namespace TheOne.RabbitMq.InMemoryMq {
             sb.Append("#MQ HOST STATS:\n");
             sb.AppendLine("===============");
             lock (this._messageHandlers) {
-                foreach (IMqMessageHandler messageHandler in this._messageHandlers) {
+                foreach (var messageHandler in this._messageHandlers) {
                     sb.AppendLine(messageHandler.GetStats().ToString());
                     sb.AppendLine("---------------");
                 }

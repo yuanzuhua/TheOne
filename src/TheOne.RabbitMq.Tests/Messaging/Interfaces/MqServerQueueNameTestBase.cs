@@ -25,12 +25,12 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
         [Test]
         public void Can_Send_and_Receive_messages_using_QueueNamePrefix() {
 
-            using (IMqMessageService mqServer = this.CreateMqServer()) {
+            using (var mqServer = this.CreateMqServer()) {
                 mqServer.RegisterHandler<HelloIntro>(m =>
                     new HelloIntroResponse { Result = $"Hello, {m.GetBody().Name}!" });
                 mqServer.Start();
 
-                using (IMqMessageQueueClient mqClient = mqServer.CreateMessageQueueClient()) {
+                using (var mqClient = mqServer.CreateMessageQueueClient()) {
                     var request = new HelloIntro { Name = "World" };
                     var requestInq = MqMessageFactory.Create(request).ToInQueueName();
                     Assert.That(requestInq, Is.EqualTo("site1.theone:mq.HelloIntro.direct"));
@@ -40,7 +40,7 @@ namespace TheOne.RabbitMq.Tests.Messaging.Interfaces {
                     var responseInq = MqQueueNames<HelloIntroResponse>.Direct;
                     Assert.That(responseInq, Is.EqualTo("site1.theone:mq.HelloIntroResponse.direct"));
 
-                    IMqMessage<HelloIntroResponse> responseMsg = mqClient.Get<HelloIntroResponse>(responseInq);
+                    var responseMsg = mqClient.Get<HelloIntroResponse>(responseInq);
                     mqClient.Ack(responseMsg);
                     Assert.That(responseMsg.GetBody().Result, Is.EqualTo("Hello, World!"));
                 }

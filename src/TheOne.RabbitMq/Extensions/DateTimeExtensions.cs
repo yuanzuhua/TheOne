@@ -26,8 +26,8 @@ namespace TheOne.RabbitMq.Extensions {
         }
 
         private static TimeSpan ToDateTimeSinceUnixEpoch(this DateTime dateTime) {
-            DateTime dtUtc = dateTime.ToUniversalTime();
-            TimeSpan universal = dtUtc.Subtract(_unixEpochDateTimeUtc);
+            var dtUtc = dateTime.ToUniversalTime();
+            var universal = dtUtc.Subtract(_unixEpochDateTimeUtc);
             return universal;
         }
 

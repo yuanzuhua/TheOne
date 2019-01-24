@@ -91,13 +91,13 @@ namespace TheOne.RabbitMq {
         }
 
         public virtual void Publish(string queueName, string exchange, IMqMessage message) {
-            IBasicProperties props = this.Channel.CreateBasicProperties();
+            var props = this.Channel.CreateBasicProperties();
             props.Persistent = true;
             props.PopulateFromMessage(message);
 
             this.PublishMessageFilter?.Invoke(queueName, props, message);
 
-            byte[] messageBytes = MqMessageExtensions.ToJsonBytes(message.Body);
+            var messageBytes = MqMessageExtensions.ToJsonBytes(message.Body);
 
             this.PublishMessage(exchange ?? MqQueueNames.Exchange, queueName, props, messageBytes);
         }
@@ -141,7 +141,7 @@ namespace TheOne.RabbitMq {
                     _queues = new HashSet<string>(_queues) { queueName };
                 }
 
-                BasicGetResult basicMsg = this.Channel.BasicGet(queueName, noAck);
+                var basicMsg = this.Channel.BasicGet(queueName, noAck);
                 this.GetMessageFilter?.Invoke(queueName, basicMsg);
                 return basicMsg;
             } catch (OperationInterruptedException ex) {

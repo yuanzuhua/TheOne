@@ -12,8 +12,8 @@ namespace TheOne.RabbitMq.Tests.Messaging {
         [Test]
         public void Can_serialize_IMqMessage_into_typed_Message() {
             var dto = new Incr { Value = 1 };
-            IMqMessage iMsg = MqMessageFactory.Create(dto);
-            byte[] jsonBytes = MqMessageExtensions.ToJsonBytes((object)iMsg);
+            var iMsg = MqMessageFactory.Create(dto);
+            var jsonBytes = MqMessageExtensions.ToJsonBytes((object)iMsg);
             IMqMessage<Incr> typedMessage = MqMessageExtensions.FromJsonBytes<MqMessage<Incr>>(jsonBytes);
             Assert.That(typedMessage.GetBody().Value, Is.EqualTo(dto.Value));
         }
