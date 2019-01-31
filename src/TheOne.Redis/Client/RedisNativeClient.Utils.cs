@@ -533,9 +533,7 @@ namespace TheOne.Redis.Client {
             return this.BStream.ReadByte();
         }
 
-        protected T SendReceive<T>(byte[][] cmdWithBinaryArgs,
-            Func<T> fn,
-            Action<Func<T>> completePipelineFn = null,
+        protected T SendReceive<T>(byte[][] cmdWithBinaryArgs, Func<T> fn, Action<Func<T>> completePipelineFn = null,
             bool sendWithoutRead = false) {
             if (this.TrackThread != null) {
                 if (this.TrackThread.Value.ThreadId != Thread.CurrentThread.ManagedThreadId) {
@@ -544,8 +542,8 @@ namespace TheOne.Redis.Client {
             }
 
             var i = 0;
+            var didWriteToBuffer = false;
             Exception originalEx = null;
-
             DateTime firstAttempt = DateTime.UtcNow;
 
             while (true) {
@@ -556,9 +554,10 @@ namespace TheOne.Redis.Client {
                         throw new RedisRetryableException("Socket is not connected");
                     }
 
-                    if (i == 0) {
+                    if (!didWriteToBuffer) {
                         // only write to buffer once
                         this.WriteCommandToSendBuffer(cmdWithBinaryArgs);
+                        didWriteToBuffer = true;
                     }
 
                     if (this.Pipeline == null) {

@@ -11,8 +11,7 @@ namespace TheOne.Redis.ClientManager {
     /// <summary>
     ///     Provides thread-safe pooling of redis client connections. All connections are treated as read and write hosts.
     /// </summary>
-    public class RedisManagerPool
-        : IRedisClientManager, IRedisFailover, IHandleClientDispose, IHasRedisResolver, IRedisClientCacheManager {
+    public class RedisManagerPool : IRedisClientManager, IRedisFailover, IHandleClientDispose, IHasRedisResolver, IRedisClientCacheManager {
 
         private static readonly ILog _logger = LogProvider.GetLogger(typeof(RedisManagerPool));
         private static readonly ReservedClient _reservedSlot = new ReservedClient();

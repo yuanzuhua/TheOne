@@ -198,9 +198,7 @@ namespace TheOne.Redis.Tests.Sentinel {
         [Test]
         public void RedisManagerPool_can_execute_CustomResolver() {
             var resolver = new FixedResolver(RedisEndpoint.Create(Config.Sentinel6380), RedisEndpoint.Create(Config.Sentinel6381));
-            using (var redisManager = new RedisManagerPool("127.0.0.1:8888") {
-                RedisResolver = resolver
-            }) {
+            using (var redisManager = new RedisManagerPool("127.0.0.1:8888") { RedisResolver = resolver }) {
                 using (IRedisClient master = redisManager.GetClient()) {
                     Assert.That(master.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                     master.SetValue("KEY", "1");
