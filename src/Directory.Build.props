@@ -1,6 +1,5 @@
 <Project>
   <PropertyGroup>
-    <!--<PackageIconUrl></PackageIconUrl>-->
     <Authors>Master Inspire</Authors>
     <Company>Brotherhood</Company>
     <Copyright>Brotherhood 2018</Copyright>
@@ -9,7 +8,7 @@
     <LangVersion>latest</LangVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
     <NoWarn>$(NoWarn);1591</NoWarn>
-    <PackageLicenseUrl>https://github.com/Master-Inspire/TheOne/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Master-Inspire/TheOne</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Product>TheOne</Product>
