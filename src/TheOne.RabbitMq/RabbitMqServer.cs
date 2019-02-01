@@ -229,9 +229,9 @@ namespace TheOne.RabbitMq {
                             Name = "Rabbit MQ Server " + Interlocked.Increment(ref this._bgThreadCount)
                         };
                         this._bgThread.Start();
-                        _logger.Debug($"Started background thread: {this._bgThread.Name}.");
+                        _logger.Debug("Started background thread: {0}.", this._bgThread.Name);
                     } else {
-                        _logger.Debug($"Retrying RunLoop() on thread: {this._bgThread.Name}.");
+                        _logger.Debug("Retrying RunLoop() on thread: {0}.", this._bgThread.Name);
                         this.RunLoop();
                     }
                 } catch (Exception ex) {
@@ -473,7 +473,7 @@ namespace TheOne.RabbitMq {
         }
 
         private void WorkerErrorHandler(RabbitMqWorker source, Exception ex) {
-            _logger.Error(ex, $"Received exception in Worker: {source.QueueName}.");
+            _logger.Error(ex, "Received exception in Worker: {0}.", source.QueueName);
             for (var i = 0; i < this._workers.Length; i++) {
                 var worker = this._workers[i];
                 if (worker == source) {
@@ -491,10 +491,10 @@ namespace TheOne.RabbitMq {
                 // give it a small chance to die gracefully
                 if (!this._bgThread.Join(500)) {
                     // ideally we shouldn't get here, but lets try our hardest to clean it up
-                    _logger.Warn($"Interrupting previous background thread: {this._bgThread.Name}...");
+                    _logger.Warn("Interrupting previous background thread: {0}...", this._bgThread.Name);
                     this._bgThread.Interrupt();
                     if (!this._bgThread.Join(TimeSpan.FromSeconds(3))) {
-                        _logger.Warn($"{this._bgThread.Name} just won\'t die, so we\'re now aborting it...");
+                        _logger.Warn("{0} just won\'t die, so we\'re now aborting it...", this._bgThread.Name);
                         this._bgThread.Abort();
                     }
                 }

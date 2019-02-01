@@ -58,7 +58,7 @@ namespace TheOne.RabbitMq {
             try {
                 this.KillBgThreadIfExists();
             } catch (Exception ex) {
-                _logger.Error(ex, $"Error disposing MessageHandlerWorker for: {this.QueueName}...");
+                _logger.Error(ex, "Error disposing MessageHandlerWorker for: {0}...", this.QueueName);
             }
         }
 
@@ -281,10 +281,10 @@ namespace TheOne.RabbitMq {
                     // give it a small chance to die gracefully
                     if (!this._bgThread.Join(500)) {
                         // ideally we shouldn't get here, but lets try our hardest to clean it up
-                        _logger.Warn($"Interrupting previous background worker: {this._bgThread.Name}.");
+                        _logger.Warn("Interrupting previous background worker: {0}.", this._bgThread.Name);
                         this._bgThread.Interrupt();
                         if (!this._bgThread.Join(TimeSpan.FromSeconds(3))) {
-                            _logger.Warn($"{this._bgThread.Name} just won\'t die, so we\'re now aborting it...");
+                            _logger.Warn("{0} just won\'t die, so we\'re now aborting it...", this._bgThread.Name);
                             this._bgThread.Abort();
                         }
                     }

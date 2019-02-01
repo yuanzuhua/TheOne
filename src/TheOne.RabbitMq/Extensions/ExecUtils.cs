@@ -85,8 +85,8 @@ namespace TheOne.RabbitMq.Extensions {
 
                     try {
                         action();
-                    } catch (Exception e) {
-                        errors.Add(e);
+                    } catch (Exception ex) {
+                        errors.Add(ex);
                     }
 
                     Console.WriteLine("Thread {0} finished...", threadId);
