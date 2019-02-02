@@ -111,11 +111,10 @@ namespace TheOne.Redis.Sentinel {
                                 this._lastInvalidMasterHost = null;
                                 this.LastValidMasterFromSentinelAt = DateTime.UtcNow;
 
-                                _logger.Error(string.Format(
-                                        "Valid master was not found at '{0}' within '{1}'. Sending SENTINEL failover...",
-                                        client.GetHostString(),
-                                        this._sentinel.WaitBeforeForcingMasterFailover),
-                                    ex);
+                                _logger.Error(ex,
+                                    "Valid master was not found at '{0}' within '{1}'. Sending SENTINEL failover...",
+                                    client.GetHostString(),
+                                    this._sentinel.WaitBeforeForcingMasterFailover);
 
                                 Interlocked.Increment(ref RedisState.TotalForcedMasterFailovers);
 
@@ -157,8 +156,7 @@ namespace TheOne.Redis.Sentinel {
                             Thread.Sleep(this._sentinel.WaitBetweenFailedHosts);
                         }
                     } catch (Exception ex) {
-                        _logger.Error(string.Format("Redis Master Host '{0}' is {1}. Resetting allHosts...", config.GetHostString(), role),
-                            ex);
+                        _logger.Error(ex, "Redis Master Host '{0}' is {1}. Resetting allHosts...", config.GetHostString(), role);
 
                         var newMasters = new List<RedisEndpoint>();
                         var newSlaves = new List<RedisEndpoint>();
@@ -189,7 +187,9 @@ namespace TheOne.Redis.Sentinel {
                         if (masterClient == null) {
                             Interlocked.Increment(ref RedisState.TotalNoMastersFound);
                             var errorMsg = "No master found in: " + string.Join(", ", this._allHosts.Select(x => x.GetHostString()));
+
                             _logger.Error(errorMsg);
+
                             throw new Exception(errorMsg);
                         }
 
@@ -214,9 +214,7 @@ namespace TheOne.Redis.Sentinel {
                 this._allHosts.Add(value);
             }
 
-            if (_logger.IsDebugEnabled()) {
-                _logger.Debug("New Redis Masters: " + string.Join(", ", this.Masters.Select(x => x.GetHostString())));
-            }
+            _logger.Debug("New Redis Masters: " + string.Join(", ", this.Masters.Select(x => x.GetHostString())));
         }
 
         public virtual void ResetSlaves(List<RedisEndpoint> newSlaves) {
@@ -226,9 +224,7 @@ namespace TheOne.Redis.Sentinel {
                 this._allHosts.Add(value);
             }
 
-            if (_logger.IsDebugEnabled()) {
-                _logger.Debug("New Redis Slaves: " + string.Join(", ", this.Slaves.Select(x => x.GetHostString())));
-            }
+            _logger.Debug("New Redis Slaves: " + string.Join(", ", this.Slaves.Select(x => x.GetHostString())));
         }
 
     }

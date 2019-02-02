@@ -22,8 +22,8 @@ namespace TheOne.Redis.Tests.Issues {
                 } catch (NotSupportedException nse) {
                     Console.WriteLine(redisClient.ToString());
                     Assert.Fail(nse.Message);
-                } catch (Exception e) {
-                    Console.WriteLine(e.Message);
+                } catch (Exception ex) {
+                    Console.WriteLine(ex.Message);
                 }
 
                 Thread.Sleep(10);
@@ -48,8 +48,8 @@ namespace TheOne.Redis.Tests.Issues {
                 }
             } catch (NotSupportedException nse) {
                 Assert.Fail(nse.Message);
-            } catch (Exception e) {
-                Console.WriteLine(e.Message);
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
             }
 
             Thread.Sleep(5000);

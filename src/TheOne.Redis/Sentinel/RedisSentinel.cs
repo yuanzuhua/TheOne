@@ -184,8 +184,8 @@ namespace TheOne.Redis.Sentinel {
             void LogAndDispose(IDisposable disposable) {
                 try {
                     disposable?.Dispose();
-                } catch (Exception e) {
-                    _logger.Error($"Error disposing of '{disposable?.GetType().FullName ?? ""}'", e);
+                } catch (Exception ex) {
+                    _logger.Error(ex, "Error disposing of '{0}'", disposable?.GetType().FullName ?? "");
                 }
             }
 
@@ -199,9 +199,7 @@ namespace TheOne.Redis.Sentinel {
             var activeSentinelHosts = new List<string>();
             foreach (var sentinelHost in sentinelHosts.ToArray()) {
                 try {
-                    if (_logger.IsDebugEnabled()) {
-                        _logger.Debug("Connecting to all available Sentinels to discover Active Sentinel Hosts...");
-                    }
+                    _logger.Debug("Connecting to all available Sentinels to discover Active Sentinel Hosts...");
 
                     var endpoint = RedisEndpoint.Create(sentinelHost, RedisConfig.DefaultPortSentinel);
                     using (var sentinelWorker = new RedisSentinelWorker(this, endpoint)) {
@@ -218,11 +216,9 @@ namespace TheOne.Redis.Sentinel {
                         }
                     }
 
-                    if (_logger.IsDebugEnabled()) {
-                        _logger.Debug("All active Sentinels Found: " + string.Join(", ", activeSentinelHosts));
-                    }
+                    _logger.Debug("All active Sentinels Found: " + string.Join(", ", activeSentinelHosts));
                 } catch (Exception ex) {
-                    _logger.Error(string.Format("Could not get active Sentinels from: {0}", sentinelHost), ex);
+                    _logger.Error(ex, "Could not get active Sentinels from: {0}", sentinelHost);
                 }
             }
 
@@ -264,15 +260,11 @@ namespace TheOne.Redis.Sentinel {
             var sentinelInfo = this.GetSentinelInfo();
 
             if (this.RedisManager == null) {
-                if (_logger.IsDebugEnabled()) {
-                    _logger.Debug($"Configuring initial Redis Clients: {sentinelInfo}");
-                }
+                _logger.Debug("Configuring initial Redis Clients: {0}", sentinelInfo);
 
                 this.RedisManager = this.CreateRedisManager(sentinelInfo);
             } else {
-                if (_logger.IsDebugEnabled()) {
-                    _logger.Debug($"Failing over to Redis Clients: {sentinelInfo}");
-                }
+                _logger.Debug("Failing over to Redis Clients: {0}", sentinelInfo);
 
                 ((IRedisFailover)this.RedisManager).FailoverTo(this.ConfigureHosts(sentinelInfo.RedisMasters),
                     this.ConfigureHosts(sentinelInfo.RedisSlaves));

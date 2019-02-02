@@ -132,13 +132,10 @@ namespace TheOne.Redis.PubSub {
                             Name = "RedisPubSubServer " + Interlocked.Increment(ref this._bgThreadCount)
                         };
                         this._bgThread.Start();
-                        if (_logger.IsDebugEnabled()) {
-                            _logger.Debug("Started Background Thread: " + this._bgThread.Name);
-                        }
+
+                        _logger.Debug("Started Background Thread: " + this._bgThread.Name);
                     } else {
-                        if (_logger.IsDebugEnabled()) {
-                            _logger.Debug("Retrying RunLoop() on Thread: " + this._bgThread.Name);
-                        }
+                        _logger.Debug("Retrying RunLoop() on Thread: " + this._bgThread.Name);
 
                         this.RunLoop();
                     }
@@ -206,7 +203,7 @@ namespace TheOne.Redis.PubSub {
             try {
                 this.OnDispose?.Invoke();
             } catch (Exception ex) {
-                _logger.Error("Error OnDispose(): ", ex);
+                _logger.Error(ex, "Error in OnDispose()");
             }
 
             try {
@@ -321,15 +318,12 @@ namespace TheOne.Redis.PubSub {
 
                                     switch (op) {
                                         case Operation.Stop:
-                                            if (_logger.IsDebugEnabled()) {
-                                                _logger.Debug("Stop Command Issued");
-                                            }
+                                            _logger.Debug("Stop Command Issued");
 
                                             Interlocked.CompareExchange(ref this._status, Status.Stopping, Status.Started);
+
                                             try {
-                                                if (_logger.IsDebugEnabled()) {
-                                                    _logger.Debug("UnSubscribe From All Channels...");
-                                                }
+                                                _logger.Debug("UnSubscribe From All Channels...");
 
                                                 subscription.UnSubscribeFromAllChannels(); // Un block thread.
                                             } finally {
@@ -397,9 +391,7 @@ namespace TheOne.Redis.PubSub {
             }
 
             if (Interlocked.CompareExchange(ref this._status, Status.Stopping, Status.Started) == Status.Started) {
-                if (_logger.IsDebugEnabled()) {
-                    _logger.Debug("Stopping RedisPubSubServer...");
-                }
+                _logger.Debug("Stopping RedisPubSubServer...");
 
                 // Unblock current bgthread by issuing StopCommand
                 this.SendControlCommand(Operation.Stop);
@@ -425,7 +417,7 @@ namespace TheOne.Redis.PubSub {
                 }
             } catch (Exception ex) {
                 this.OnError?.Invoke(ex);
-                _logger.Warn(string.Format("Could not send '{0}' message to bg thread: {1}", msg, ex.Message));
+                _logger.Warn(ex, "Could not send '{0}' message to bg thread: {1}", msg, ex.Message);
             }
         }
 
@@ -446,15 +438,13 @@ namespace TheOne.Redis.PubSub {
                 }
             } catch (Exception ex) {
                 this.OnError?.Invoke(ex);
-                _logger.Warn("Error trying to UnSubscribeFromChannels in OnFailover. Restarting...", ex);
+                _logger.Warn(ex, "Error trying to UnSubscribeFromChannels in OnFailover. Restarting...");
                 this.Restart();
             }
         }
 
         private void HandleUnSubscribe(string channel) {
-            if (_logger.IsDebugEnabled()) {
-                _logger.Debug("OnUnSubscribe: " + channel);
-            }
+            _logger.Debug("OnUnSubscribe: " + channel);
 
             this.OnUnSubscribe?.Invoke(channel);
         }
@@ -488,9 +478,7 @@ namespace TheOne.Redis.PubSub {
                 this._random.Next((int)Math.Pow(continuousErrorsCount, 3), (int)Math.Pow(continuousErrorsCount + 1, 3) + 1),
                 maxSleepMs);
 
-            if (_logger.IsDebugEnabled()) {
-                _logger.Debug($"Sleeping for {nextTry}ms after {continuousErrorsCount} continuous errors");
-            }
+            _logger.Debug("Sleeping for {0}ms after {1} continuous errors", nextTry, continuousErrorsCount);
 
             Thread.Sleep(nextTry);
         }

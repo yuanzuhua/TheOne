@@ -1,6 +1,6 @@
 using System;
-using System.Diagnostics;
 using System.Threading;
+using TheOne.Logging;
 using TheOne.Redis.Client;
 
 namespace TheOne.Redis.Queue.Locking {
@@ -10,6 +10,8 @@ namespace TheOne.Redis.Queue.Locking {
         public const int LockNotAcquired = 0;
         public const int LockAcquired = 1;
         public const int LockRecovered = 2;
+
+        private static readonly ILog _logger = LogProvider.GetCurrentClassLogger();
 
         /// <summary>
         ///     acquire distributed, non-reentrant lock on key
@@ -112,9 +114,9 @@ namespace TheOne.Redis.Queue.Locking {
 
             if (lockVal != lockExpire) {
                 if (lockVal != 0) {
-                    Debug.WriteLine($"Unlock(): Failed to unlock key {key}; lock has been acquired by another client ");
+                    _logger.Debug("Unlock(): Failed to unlock key {0}; lock has been acquired by another client ", key);
                 } else {
-                    Debug.WriteLine($"Unlock(): Failed to unlock key {key}; lock has been identifed as a zombie and harvested ");
+                    _logger.Debug("Unlock(): Failed to unlock key {0}; lock has been identifed as a zombie and harvested ", key);
                 }
 
                 localClient.UnWatch();
@@ -125,7 +127,7 @@ namespace TheOne.Redis.Queue.Locking {
                 trans.QueueCommand(r => ((RedisNativeClient)r).Del(key));
                 var rc = trans.Commit();
                 if (!rc) {
-                    Debug.WriteLine($"Unlock(): Failed to delete key {key}; lock has been acquired by another client ");
+                    _logger.Debug("Unlock(): Failed to delete key {0}; lock has been acquired by another client ", key);
                 }
 
                 return rc;

@@ -241,8 +241,8 @@ namespace TheOne.Redis.Client {
                 this.OnConnected();
 
                 this.ConnectionFilter?.Invoke(this);
-            } catch (SocketException e) {
-                _logger.Error(e, string.Format(ErrorConnect, this.Host, this.Port));
+            } catch (SocketException ex) {
+                _logger.Error(ex, ErrorConnect, this.Host, this.Port);
                 throw;
             }
         }
@@ -284,16 +284,17 @@ namespace TheOne.Redis.Client {
                 var isConnected = this.Socket != null;
                 return isConnected;
             } catch (SocketException ex) {
-                _logger.Error(string.Format(ErrorConnect, this.Host, this.Port));
+                _logger.Error(ErrorConnect, this.Host, this.Port);
 
                 this.Socket?.Close();
-
                 this.Socket = null;
 
                 this.DeactivatedAt = DateTime.UtcNow;
                 var message = this.Host + ":" + this.Port;
                 var throwEx = new RedisException(message, ex);
-                _logger.Error(throwEx.Message, ex);
+
+                _logger.Error(ex, throwEx.Message);
+
                 throw throwEx;
             }
         }
@@ -340,7 +341,9 @@ namespace TheOne.Redis.Client {
             }
 
             var throwEx = new RedisResponseException(error);
+
             _logger.Error(error);
+
             return throwEx;
         }
 
@@ -354,19 +357,31 @@ namespace TheOne.Redis.Client {
                 ? this._lastCommand
                 : (this._lastCommand ?? "").Replace(this.Password, "");
 
-            var throwEx = new RedisRetryableException(
-                $"[{DateTime.UtcNow:HH:mm:ss.fff}] {error}, sPort: {this._clientPort}, LastCommand: {safeLastCommand}");
-            _logger.Error(throwEx.Message);
+            var message = string.Format("[{0:HH:mm:ss.fff}] {1}, sPort: {2}, LastCommand: {3}",
+                DateTime.UtcNow,
+                error,
+                this._clientPort,
+                safeLastCommand);
+
+            var throwEx = new RedisRetryableException(message);
+
+            _logger.Error(message);
+
             throw throwEx;
         }
 
         private RedisException CreateConnectionError(Exception originalEx) {
             this.DeactivatedAt = DateTime.UtcNow;
-            var throwEx = new RedisException(
-                $"[{DateTime.UtcNow:HH:mm:ss.fff}] Unable to Connect: sPort: {this._clientPort}" +
-                $"{(originalEx != null ? ", Error: " + originalEx.Message + "\n" + originalEx.StackTrace : "")}",
-                originalEx ?? this._lastSocketException);
-            _logger.Error(throwEx.Message);
+
+            var message = string.Format("[{0:HH:mm:ss.fff}] Unable to Connect: sPort: {1}{2}",
+                DateTime.UtcNow,
+                this._clientPort,
+                originalEx != null ? ", Error: " + originalEx.Message + "\n" + originalEx.StackTrace : "");
+
+            var throwEx = new RedisException(message, originalEx ?? this._lastSocketException);
+
+            _logger.Error(message);
+
             throw throwEx;
         }
 
@@ -621,7 +636,7 @@ namespace TheOne.Redis.Client {
 
         private RedisException CreateRetryTimeoutException(TimeSpan retryTimeout, Exception originalEx) {
             this.DeactivatedAt = DateTime.UtcNow;
-            var message = string.Format("Exceeded timeout of {0}", retryTimeout);
+            var message = $"Exceeded timeout of {retryTimeout}";
             _logger.Error(message);
             return new RedisException(message, originalEx);
         }
@@ -635,12 +650,13 @@ namespace TheOne.Redis.Client {
                 return null;
             }
 
-            _logger.Error("SocketException in SendReceive, retrying...", socketEx);
+            _logger.Error(socketEx, "SocketException in SendReceive, retrying...");
+
             this._lastSocketException = socketEx;
 
             this.Socket?.Close();
-
             this.Socket = null;
+
             return socketEx;
         }
 
@@ -752,7 +768,7 @@ namespace TheOne.Redis.Client {
                 return;
             }
 
-            _logger.TraceFormat("{0}", string.Format(fmt, args).Trim());
+            _logger.Trace(string.Format(fmt, args).Trim());
         }
 
         protected void CmdLog(byte[][] args) {
@@ -796,9 +812,7 @@ namespace TheOne.Redis.Client {
 
             var s = this.ReadLine();
 
-            if (_logger.IsTraceEnabled()) {
-                this.Log((char)c + s);
-            }
+            this.Log((char)c + s);
 
             if (c == '-') {
                 throw this.CreateResponseError(s.StartsWith("ERR") && s.Length >= 4 ? s.Substring(4) : s);
@@ -812,10 +826,7 @@ namespace TheOne.Redis.Client {
             }
 
             var s = this.ReadLine();
-
-            if (_logger.IsTraceEnabled()) {
-                this.Log((char)c + s);
-            }
+            this.Log((char)c + s);
 
             if (c == '-') {
                 throw this.CreateResponseError(s.StartsWith("ERR") ? s.Substring(4) : s);
@@ -833,10 +844,7 @@ namespace TheOne.Redis.Client {
             }
 
             var s = this.ReadLine();
-
-            if (_logger.IsTraceEnabled()) {
-                this.Log((char)c + s);
-            }
+            this.Log((char)c + s);
 
             if (c == '-') {
                 throw this.CreateResponseError(s.StartsWith("ERR") ? s.Substring(4) : s);
@@ -860,10 +868,7 @@ namespace TheOne.Redis.Client {
             }
 
             var s = this.ReadLine();
-
-            if (_logger.IsTraceEnabled()) {
-                this.Log("R: {0}", s);
-            }
+            this.Log("R: {0}", s);
 
             if (c == '-') {
                 throw this.CreateResponseError(s.StartsWith("ERR") ? s.Substring(4) : s);
@@ -896,9 +901,7 @@ namespace TheOne.Redis.Client {
         }
 
         private byte[] ParseSingleLine(string r) {
-            if (_logger.IsTraceEnabled()) {
-                this.Log("R: {0}", r);
-            }
+            this.Log("R: {0}", r);
 
             if (r.Length == 0) {
                 throw this.CreateResponseError("Zero length response");
@@ -953,9 +956,7 @@ namespace TheOne.Redis.Client {
             }
 
             var s = this.ReadLine();
-            if (_logger.IsTraceEnabled()) {
-                this.Log("R: {0}", s);
-            }
+            this.Log("R: {0}", s);
 
             switch (c) {
                 // Some commands like BRPOPLPUSH may return Bulk Reply instead of Multi-bulk
@@ -1001,9 +1002,7 @@ namespace TheOne.Redis.Client {
             }
 
             var s = this.ReadLine();
-            if (_logger.IsTraceEnabled()) {
-                this.Log("R: {0}", s);
-            }
+            this.Log("R: {0}", s);
 
             switch (c) {
                 case '$':
@@ -1038,9 +1037,7 @@ namespace TheOne.Redis.Client {
             }
 
             var s = this.ReadLine();
-            if (_logger.IsTraceEnabled()) {
-                this.Log("R: {0}", s);
-            }
+            this.Log("R: {0}", s);
 
             switch (c) {
                 case '$':
@@ -1077,9 +1074,7 @@ namespace TheOne.Redis.Client {
             }
 
             var s = this.ReadLine();
-            if (_logger.IsTraceEnabled()) {
-                this.Log("R: {0}", s);
-            }
+            this.Log("R: {0}", s);
 
             if (c == '-') {
                 throw this.CreateResponseError(s.StartsWith("ERR") ? s.Substring(4) : s);

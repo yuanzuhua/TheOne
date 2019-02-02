@@ -209,7 +209,7 @@ namespace TheOne.Redis.Client {
             try {
                 this.Quit();
             } catch (Exception ex) {
-                _logger.Error("Error when trying to Quit()", ex);
+                _logger.Error(ex, "Error when trying to Quit()");
             } finally {
                 this.SafeConnectionClose();
             }

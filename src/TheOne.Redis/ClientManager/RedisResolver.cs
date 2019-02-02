@@ -77,7 +77,7 @@ namespace TheOne.Redis.ClientManager {
 
             Interlocked.Increment(ref RedisState.TotalInvalidMasters);
 
-            _logger.Error(string.Format("Redis Master Host '{0}' is {1}. Resetting allHosts...", config.GetHostString(), role));
+            _logger.Warn("Redis Master Host '{0}' is {1}. Resetting allHosts...", config.GetHostString(), role);
 
             var newMasters = new List<RedisEndpoint>();
             var newSlaves = new List<RedisEndpoint>();
@@ -107,15 +107,17 @@ namespace TheOne.Redis.ClientManager {
 
             if (masterClient == null) {
                 Interlocked.Increment(ref RedisState.TotalNoMastersFound);
+
                 var errorMsg = "No master found in: " + string.Join(", ", this._allHosts.Select(x => x.GetHostString()));
+
                 _logger.Error(errorMsg);
+
                 throw new Exception(errorMsg);
             }
 
             this.ResetMasters(newMasters);
             this.ResetSlaves(newSlaves);
             return masterClient;
-
         }
 
         /// <inheritdoc />
@@ -141,9 +143,7 @@ namespace TheOne.Redis.ClientManager {
                 this._allHosts.Add(value);
             }
 
-            if (_logger.IsDebugEnabled()) {
-                _logger.Debug("New Redis Masters: " + string.Join(", ", this.Masters.Select(x => x.GetHostString())));
-            }
+            _logger.Debug("New Redis Masters: " + string.Join(", ", this.Masters.Select(x => x.GetHostString())));
         }
 
         public virtual void ResetSlaves(List<RedisEndpoint> newSlaves) {
@@ -153,9 +153,7 @@ namespace TheOne.Redis.ClientManager {
                 this._allHosts.Add(value);
             }
 
-            if (_logger.IsDebugEnabled()) {
-                _logger.Debug("New Redis Slaves: " + string.Join(", ", this.Slaves.Select(x => x.GetHostString())));
-            }
+            _logger.Debug("New Redis Slaves: " + string.Join(", ", this.Slaves.Select(x => x.GetHostString())));
         }
 
     }

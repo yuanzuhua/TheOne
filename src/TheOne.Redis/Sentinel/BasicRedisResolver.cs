@@ -77,18 +77,14 @@ namespace TheOne.Redis.Sentinel {
             this.Masters = newMasters.ToArray();
             this.ReadWriteHostsCount = this.Masters.Length;
 
-            if (_logger.IsDebugEnabled()) {
-                _logger.Debug("New Redis Masters: " + string.Join(", ", this.Masters.Select(x => x.GetHostString())));
-            }
+            _logger.Debug("New Redis Masters: " + string.Join(", ", this.Masters.Select(x => x.GetHostString())));
         }
 
         public virtual void ResetSlaves(List<RedisEndpoint> newSlaves) {
             this.Slaves = newSlaves?.ToArray() ?? Array.Empty<RedisEndpoint>();
             this.ReadOnlyHostsCount = this.Slaves.Length;
 
-            if (_logger.IsDebugEnabled()) {
-                _logger.Debug("New Redis Slaves: " + string.Join(", ", this.Slaves.Select(x => x.GetHostString())));
-            }
+            _logger.Debug("New Redis Slaves: " + string.Join(", ", this.Slaves.Select(x => x.GetHostString())));
         }
 
     }

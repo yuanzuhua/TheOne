@@ -29,9 +29,7 @@ namespace TheOne.Redis.Sentinel {
                 SendTimeout = sentinel.SentinelWorkerSendTimeoutMs
             };
 
-            if (_logger.IsDebugEnabled()) {
-                _logger.Debug(string.Format("Set up Redis Sentinel on {0}", sentinelEndpoint));
-            }
+            _logger.Debug("Set up Redis Sentinel on {0}", sentinelEndpoint);
         }
 
         public int Id { get; }
@@ -40,8 +38,8 @@ namespace TheOne.Redis.Sentinel {
             void LogAndDispose(IDisposable disposable) {
                 try {
                     disposable?.Dispose();
-                } catch (Exception e) {
-                    _logger.Error($"Error disposing of '{disposable?.GetType().FullName ?? ""}'", e);
+                } catch (Exception ex) {
+                    _logger.Error(ex, "Error disposing of '{0}'", disposable?.GetType().FullName ?? "");
                 }
             }
 
@@ -53,9 +51,7 @@ namespace TheOne.Redis.Sentinel {
         ///     Event that is fired when the sentinel subscription raises an event
         /// </summary>
         private void SentinelMessageReceived(string channel, string message) {
-            if (_logger.IsDebugEnabled()) {
-                _logger.Debug(string.Format("Received '{0}' on channel '{1}' from Sentinel", channel, message));
-            }
+            _logger.Debug("Received '{0}' on channel '{1}' from Sentinel", channel, message);
 
             // {+|-}sdown is the event for server coming up or down
             var c = channel.ToLower();
@@ -73,9 +69,7 @@ namespace TheOne.Redis.Sentinel {
                 || c == "+switch-master"
                 || this._sentinel.ResetWhenSubjectivelyDown && isSubjectivelyDown
                 || this._sentinel.ResetWhenObjectivelyDown && isObjectivelyDown) {
-                if (_logger.IsDebugEnabled()) {
-                    _logger.Debug($"Sentinel detected server down/up '{channel}' with message: {message}");
-                }
+                _logger.Debug("Sentinel detected server down/up '{0}' with message: {1}", channel, message);
 
                 this._sentinel.ResetClients();
             }
@@ -187,7 +181,7 @@ namespace TheOne.Redis.Sentinel {
 
                 this._sentinelPubSub.Start();
             } catch (Exception ex) {
-                _logger.Error($"Error Subscribing to Redis Channel on {this._sentinelClient.Host}:{this._sentinelClient.Port}", ex);
+                _logger.Error(ex, "Error Subscribing to Redis Channel on {0}:{1}", this._sentinelClient.Host, this._sentinelClient.Port);
 
                 this.OnSentinelError?.Invoke(ex);
             }

@@ -126,10 +126,7 @@ namespace TheOne.Redis.ClientManager {
                         var stillReserved = inactivePoolIndex >= 0 && inactivePoolIndex < this._clients.Length &&
                                             this._clients[inactivePoolIndex] == existingClient;
                         if (inactivePoolIndex == -1 || !stillReserved) {
-                            if (_logger.IsDebugEnabled()) {
-                                _logger.Debug(string.Format("clients[inactivePoolIndex] != existingClient: {0}",
-                                    !stillReserved ? "!stillReserved" : "-1"));
-                            }
+                            _logger.Debug("clients[inactivePoolIndex] != existingClient: {0}", !stillReserved ? "!stillReserved" : "-1");
 
                             Interlocked.Increment(ref RedisState.TotalClientsCreatedOutsidePool);
 
@@ -206,7 +203,7 @@ namespace TheOne.Redis.ClientManager {
                     try {
                         callback(this);
                     } catch (Exception ex) {
-                        _logger.Error("Error firing OnFailover callback(): ", ex);
+                        _logger.Error(ex, "Error firing OnFailover callback(): ");
                     }
                 }
             }
@@ -353,7 +350,7 @@ namespace TheOne.Redis.ClientManager {
                     this.Dispose(t);
                 }
             } catch (Exception ex) {
-                _logger.Error("Error when trying to dispose of PooledRedisClientManager", ex);
+                _logger.Error(ex, "Error when trying to dispose of PooledRedisClientManager");
             }
 
             RedisState.DisposeAllDeactivatedClients();
@@ -367,11 +364,7 @@ namespace TheOne.Redis.ClientManager {
             try {
                 redisClient.DisposeConnection();
             } catch (Exception ex) {
-                _logger.Error(string.Format(
-                        "Error when trying to dispose of RedisClient to host {0}:{1}",
-                        redisClient.Host,
-                        redisClient.Port),
-                    ex);
+                _logger.Error(ex, "Error when trying to dispose of RedisClient to host {0}:{1}", redisClient.Host, redisClient.Port);
             }
         }
 

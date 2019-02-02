@@ -230,11 +230,7 @@ namespace TheOne.Redis.ClientManager {
                     lock (this._writeClients) {
                         // If existingClient at inactivePoolIndex changed (failover) return new client outside of pool
                         if (this._writeClients[inactivePoolIndex] != existingClient) {
-                            if (_logger.IsDebugEnabled()) {
-                                _logger.Debug(
-                                    string.Format("writeClients[inactivePoolIndex] != existingClient: {0}",
-                                        this._writeClients[inactivePoolIndex]));
-                            }
+                            _logger.Debug("writeClients[inactivePoolIndex] != existingClient: {0}", this._writeClients[inactivePoolIndex]);
 
                             return newClient; // return client outside of pool
                         }
@@ -311,10 +307,7 @@ namespace TheOne.Redis.ClientManager {
                     lock (this._readClients) {
                         // If existingClient at inactivePoolIndex changed (failover) return new client outside of pool
                         if (this._readClients[inactivePoolIndex] != existingClient) {
-                            if (_logger.IsDebugEnabled()) {
-                                _logger.Debug(string.Format("readClients[inactivePoolIndex] != existingClient: {0}",
-                                    this._readClients[inactivePoolIndex]));
-                            }
+                            _logger.Debug("readClients[inactivePoolIndex] != existingClient: {0}", this._readClients[inactivePoolIndex]);
 
                             Interlocked.Increment(ref RedisState.TotalClientsCreatedOutsidePool);
 
@@ -399,7 +392,7 @@ namespace TheOne.Redis.ClientManager {
                     try {
                         callback(this);
                     } catch (Exception ex) {
-                        _logger.Error("Error firing OnFailover callback(): ", ex);
+                        _logger.Error(ex, "Error firing OnFailover callback(): ");
                     }
                 }
             }
@@ -688,7 +681,7 @@ namespace TheOne.Redis.ClientManager {
                     this.Dispose(t);
                 }
             } catch (Exception ex) {
-                _logger.Error("Error when trying to dispose of PooledRedisClientManager", ex);
+                _logger.Error(ex, "Error when trying to dispose of PooledRedisClientManager");
             }
 
             RedisState.DisposeAllDeactivatedClients();
@@ -702,11 +695,7 @@ namespace TheOne.Redis.ClientManager {
             try {
                 redisClient.DisposeConnection();
             } catch (Exception ex) {
-                _logger.Error(string.Format(
-                        "Error when trying to dispose of RedisClient to host {0}:{1}",
-                        redisClient.Host,
-                        redisClient.Port),
-                    ex);
+                _logger.Error(ex, "Error when trying to dispose of RedisClient to host {0}:{1}", redisClient.Host, redisClient.Port);
             }
         }
 

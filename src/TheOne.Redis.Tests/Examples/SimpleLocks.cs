@@ -38,8 +38,8 @@ namespace TheOne.Redis.Tests.Examples {
                                 redisClient.Set("atomic-counter", counter + 1);
                                 Console.WriteLine("client {0} released lock", (int)clientNo);
                             }
-                        } catch (Exception e) {
-                            Console.WriteLine(e.Message);
+                        } catch (Exception ex) {
+                            Console.WriteLine(ex.Message);
                         }
 
                     },

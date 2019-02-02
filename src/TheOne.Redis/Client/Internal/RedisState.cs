@@ -63,9 +63,7 @@ namespace TheOne.Redis.Client.Internal {
                         continue;
                     }
 
-                    if (_logger.IsDebugEnabled()) {
-                        _logger.Debug(string.Format("Disposed Deactivated Client: {0}", entry.Key.GetHostString()));
-                    }
+                    _logger.Debug("Disposed Deactivated Client: {0}", entry.Key.GetHostString());
 
                     entry.Key.DisposeConnection();
                     removeDisposed.Add(entry.Key);
@@ -92,9 +90,7 @@ namespace TheOne.Redis.Client.Internal {
             var allClients = DeactivatedClients.Keys.ToArray();
             DeactivatedClients.Clear();
             foreach (var client in allClients) {
-                if (_logger.IsDebugEnabled()) {
-                    _logger.Debug(string.Format("Disposed Deactivated Client (All): {0}", client.GetHostString()));
-                }
+                _logger.Debug("Disposed Deactivated Client (All): {0}", client.GetHostString());
 
                 client.DisposeConnection();
             }
