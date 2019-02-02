@@ -188,7 +188,7 @@ namespace TheOne.Redis.Client {
                     this.SslStream.AuthenticateAsClientAsync(this.Host).Wait();
 
                     if (!this.SslStream.IsEncrypted) {
-                        throw new Exception("Could not establish an encrypted connection to " + this.Host);
+                        throw new RedisException("Could not establish an encrypted connection to " + this.Host);
                     }
 
                     networkStream = this.SslStream;

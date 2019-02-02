@@ -172,7 +172,7 @@ namespace TheOne.Redis.Sentinel {
                 var sentinelWorker = this.GetValidSentinelWorker();
 
                 if (this.RedisManager == null || sentinelWorker == null) {
-                    throw new Exception("Unable to resolve sentinels!");
+                    throw new RedisException("Unable to resolve sentinels!");
                 }
 
                 return this.RedisManager;

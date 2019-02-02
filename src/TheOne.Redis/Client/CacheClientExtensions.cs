@@ -76,7 +76,7 @@ namespace TheOne.Redis.Client {
         public static TimeSpan? GetTimeToLive(this ICacheClient cache, string key) {
             var extendedCache = cache as ICacheClientExtended;
             if (extendedCache == null) {
-                throw new Exception("GetTimeToLive is not implemented by: " + cache.GetType().FullName);
+                throw new InvalidOperationException("GetTimeToLive is not implemented by: " + cache.GetType().FullName);
             }
 
             return extendedCache.GetTimeToLive(key);

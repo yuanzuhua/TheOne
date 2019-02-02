@@ -71,7 +71,7 @@ namespace TheOne.Redis.Sentinel {
 
         public virtual void ResetMasters(List<RedisEndpoint> newMasters) {
             if (newMasters == null || newMasters.Count == 0) {
-                throw new Exception("Must provide at least 1 master");
+                throw new InvalidOperationException("Must provide at least 1 master");
             }
 
             this.Masters = newMasters.ToArray();

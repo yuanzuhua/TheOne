@@ -112,7 +112,7 @@ namespace TheOne.Redis.ClientManager {
 
                 _logger.Error(errorMsg);
 
-                throw new Exception(errorMsg);
+                throw new RedisException(errorMsg);
             }
 
             this.ResetMasters(newMasters);
@@ -134,7 +134,7 @@ namespace TheOne.Redis.ClientManager {
 
         public virtual void ResetMasters(List<RedisEndpoint> newMasters) {
             if (newMasters == null || newMasters.Count == 0) {
-                throw new Exception("Must provide at least 1 master");
+                throw new InvalidOperationException("Must provide at least 1 master");
             }
 
             this.Masters = newMasters.ToArray();

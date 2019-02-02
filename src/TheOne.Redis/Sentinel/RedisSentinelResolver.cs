@@ -190,7 +190,7 @@ namespace TheOne.Redis.Sentinel {
 
                             _logger.Error(errorMsg);
 
-                            throw new Exception(errorMsg);
+                            throw new RedisException(errorMsg);
                         }
 
                         this.ResetMasters(newMasters);

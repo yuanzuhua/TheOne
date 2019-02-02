@@ -136,7 +136,8 @@ namespace TheOne.Redis.Client {
             var valueArray = values.ToArray();
 
             if (keyArray.Length != valueArray.Length) {
-                throw new Exception(string.Format("Key length != Value Length. {0}/{1}", keyArray.Length, valueArray.Length));
+                throw new InvalidOperationException(
+                    string.Format("Key length != Value Length. {0}/{1}", keyArray.Length, valueArray.Length));
             }
 
             if (keyArray.Length == 0) {
