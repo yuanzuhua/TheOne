@@ -23,7 +23,6 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             RedisConfig.VerifyMasterConnections = true;
             RedisConfig.HostLookupTimeoutMs = 1000;
             RedisConfig.DeactivatedClientsExpiry = TimeSpan.FromSeconds(15);
-            RedisConfig.DisableVerboseLogging = false;
 
             var redisManager = new RedisManagerPool(Config.MasterHost);
 

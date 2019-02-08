@@ -10,9 +10,6 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
         [Test]
         public void Execute() {
-
-            RedisConfig.DisableVerboseLogging = true;
-
             var sentinel = new RedisSentinel(Config.SentinelHosts, Config.SentinelMasterName);
 
             var redisManager = sentinel.Start();

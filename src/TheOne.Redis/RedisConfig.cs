@@ -87,13 +87,19 @@ namespace TheOne.Redis {
         /// <summary>
         ///     Whether Debug Logging should log detailed Redis operations (default false)
         /// </summary>
-        public static bool DisableVerboseLogging;
+        public static bool EnableVerboseLogging;
 
         /// <summary>
         ///     Assert all access using pooled RedisClient instance should be limited to same thread.
         ///     Captures StackTrace so is very slow, use only for debugging connection issues.
         /// </summary>
         public static bool AssertAccessOnlyOnSameThread;
+
+        [Obsolete("Use EnableVerboseLogging")]
+        public static bool DisableVerboseLogging {
+            get => !EnableVerboseLogging;
+            set => EnableVerboseLogging = !value;
+        }
 
         /// <summary>
         ///     The Byte Buffer Size to combine Redis Operations within (1024 bytes)
@@ -125,7 +131,7 @@ namespace TheOne.Redis {
             HostLookupTimeoutMs = 200;
             AssumeServerVersion = null;
             DeactivatedClientsExpiry = TimeSpan.FromSeconds(10);
-            DisableVerboseLogging = false;
+            EnableVerboseLogging = false;
             CertificateSelectionCallback = null;
             CertificateValidationCallback = null;
             AssertAccessOnlyOnSameThread = false;

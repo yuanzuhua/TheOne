@@ -13,7 +13,6 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
         [Test]
         public void Execute() {
-            RedisConfig.DisableVerboseLogging = true;
             RedisConfig.DefaultReceiveTimeout = 10000;
 
             using (var sentinel = new RedisSentinel(Config.SentinelHosts)) {

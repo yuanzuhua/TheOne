@@ -330,7 +330,7 @@ namespace TheOne.Redis.Client {
         private RedisResponseException CreateResponseError(string error) {
             this.DeactivatedAt = DateTime.UtcNow;
 
-            if (!RedisConfig.DisableVerboseLogging) {
+            if (RedisConfig.EnableVerboseLogging) {
                 var safeLastCommand = string.IsNullOrEmpty(this.Password)
                     ? this._lastCommand
                     : (this._lastCommand ?? "").Replace(this.Password, "");
@@ -410,7 +410,7 @@ namespace TheOne.Redis.Client {
                 // Interlocked.Increment(ref _requestsPerHour);
             }
 
-            if (_logger.IsTraceEnabled() && !RedisConfig.DisableVerboseLogging) {
+            if (_logger.IsTraceEnabled() && RedisConfig.EnableVerboseLogging) {
                 this.CmdLog(cmdWithBinaryArgs);
             }
 
@@ -764,7 +764,7 @@ namespace TheOne.Redis.Client {
         }
 
         protected void Log(string fmt, params object[] args) {
-            if (RedisConfig.DisableVerboseLogging) {
+            if (!RedisConfig.EnableVerboseLogging) {
                 return;
             }
 
