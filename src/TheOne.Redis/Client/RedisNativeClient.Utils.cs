@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using TheOne.Logging;
 using TheOne.Redis.Client.Internal;
@@ -22,12 +23,17 @@ namespace TheOne.Redis.Client {
         private const string _queued = "QUEUED";
         private const int _unknown = -1;
         public static string ErrorConnect = "Could not connect to redis Instance at {0}:{1}";
+
+        private static long _idCounter;
         private readonly IList<ArraySegment<byte>> _cmdBuffer = new List<ArraySegment<byte>>();
         private byte[] _currentBuffer = BufferPool.GetBuffer();
         private int _currentBufferIndex;
+        private string _logPrefix = string.Empty;
         internal TrackThread? TrackThread;
 
         public static int ServerVersionNumber { get; set; }
+        public long ClientId { get; } = Interlocked.Increment(ref _idCounter);
+
         public bool HasConnected => this.Socket != null;
         public Action OnBeforeFlush { get; set; }
 
@@ -170,11 +176,14 @@ namespace TheOne.Redis.Client {
                 this.Socket.Connect(addresses.First(a => a.AddressFamily == AddressFamily.InterNetwork), this.Port);
 
                 if (!this.Socket.Connected) {
+                    _logger.Debug(this._logPrefix + "Socket Connect failed");
                     this.Socket.Close();
                     this.Socket = null;
                     this.DeactivatedAt = DateTime.UtcNow;
                     return;
                 }
+
+                _logger.Debug(this._logPrefix + "Socket Connected");
 
                 Stream networkStream = new NetworkStream(this.Socket);
 
@@ -242,7 +251,7 @@ namespace TheOne.Redis.Client {
 
                 this.ConnectionFilter?.Invoke(this);
             } catch (SocketException ex) {
-                _logger.Error(ex, ErrorConnect, this.Host, this.Port);
+                _logger.Error(ex, this._logPrefix + ErrorConnect, this.Host, this.Port);
                 throw;
             }
         }
@@ -284,7 +293,7 @@ namespace TheOne.Redis.Client {
                 var isConnected = this.Socket != null;
                 return isConnected;
             } catch (SocketException ex) {
-                _logger.Error(ErrorConnect, this.Host, this.Port);
+                _logger.Error(this._logPrefix + ErrorConnect, this.Host, this.Port);
 
                 this.Socket?.Close();
                 this.Socket = null;
@@ -293,7 +302,7 @@ namespace TheOne.Redis.Client {
                 var message = this.Host + ":" + this.Port;
                 var throwEx = new RedisException(message, ex);
 
-                _logger.Error(ex, throwEx.Message);
+                _logger.Error(ex, this._logPrefix + throwEx.Message);
 
                 throw throwEx;
             }
@@ -342,7 +351,7 @@ namespace TheOne.Redis.Client {
 
             var throwEx = new RedisResponseException(error);
 
-            _logger.Error(error);
+            _logger.Error(this._logPrefix + error);
 
             return throwEx;
         }
@@ -365,7 +374,7 @@ namespace TheOne.Redis.Client {
 
             var throwEx = new RedisRetryableException(message);
 
-            _logger.Error(message);
+            _logger.Error(this._logPrefix + message);
 
             throw throwEx;
         }
@@ -380,7 +389,7 @@ namespace TheOne.Redis.Client {
 
             var throwEx = new RedisException(message, originalEx ?? this._lastSocketException);
 
-            _logger.Error(message);
+            _logger.Error(this._logPrefix + message);
 
             throw throwEx;
         }
@@ -442,6 +451,11 @@ namespace TheOne.Redis.Client {
 
             foreach (var safeBinaryValue in cmdWithBinaryArgs) {
                 bytes = Combine(bytes, GetCmdBytes('$', safeBinaryValue.Length), safeBinaryValue, this._endData);
+            }
+
+            if (RedisConfig.EnableVerboseLogging) {
+                var message = Encoding.UTF8.GetString(bytes, 0, Math.Min(bytes.Length, 50)).TrimNewLine();
+                _logger.Debug(this._logPrefix + "stream.Write: " + message);
             }
 
             this.BStream.Write(bytes, 0, bytes.Length);
@@ -511,6 +525,24 @@ namespace TheOne.Redis.Client {
 
                 if ( /*!Env.IsMono &&*/
                     this.SslStream == null) {
+
+                    if (_logger.IsDebugEnabled() && RedisConfig.EnableVerboseLogging) {
+                        var sb = StringBuilderCache.Acquire();
+                        foreach (var cmd in this._cmdBuffer) {
+                            if (sb.Length > 50) {
+                                break;
+                            }
+
+                            if (cmd.Array != null) {
+                                sb.Append(Encoding.UTF8.GetString(cmd.Array, cmd.Offset, cmd.Count));
+                            }
+                        }
+
+                        sb.TrimNewLine();
+                        _logger.Debug(this._logPrefix + "socket.Send: " + StringBuilderCache.GetStringAndRelease(sb));
+                    }
+
+
                     this.Socket.Send(this._cmdBuffer); // Optimized for Windows
                 } else {
                     // Sending IList<ArraySegment> Throws 'Message to Large' SocketException in Mono
@@ -543,7 +575,11 @@ namespace TheOne.Redis.Client {
             }
         }
 
-        private int SafeReadByte() {
+        private int SafeReadByte(string name) {
+            if (RedisConfig.EnableVerboseLogging) {
+                _logger.Debug(this._logPrefix + name + "()");
+            }
+
             return this.BStream.ReadByte();
         }
 
@@ -603,6 +639,8 @@ namespace TheOne.Redis.Client {
 
                     return result;
                 } catch (Exception outerEx) {
+                    _logger.Debug(this._logPrefix + "SendReceive Exception: " + outerEx.Message);
+
                     var retryableEx = outerEx as RedisRetryableException;
                     if (retryableEx == null && outerEx is RedisException) {
                         this.ResetSendBuffer();
@@ -637,7 +675,7 @@ namespace TheOne.Redis.Client {
         private RedisException CreateRetryTimeoutException(TimeSpan retryTimeout, Exception originalEx) {
             this.DeactivatedAt = DateTime.UtcNow;
             var message = $"Exceeded timeout of {retryTimeout}";
-            _logger.Error(message);
+            _logger.Error(this._logPrefix + message);
             return new RedisException(message, originalEx);
         }
 
@@ -650,7 +688,7 @@ namespace TheOne.Redis.Client {
                 return null;
             }
 
-            _logger.Error(socketEx, "SocketException in SendReceive, retrying...");
+            _logger.Error(socketEx, this._logPrefix + "SocketException in SendReceive, retrying...");
 
             this._lastSocketException = socketEx;
 
@@ -768,7 +806,7 @@ namespace TheOne.Redis.Client {
                 return;
             }
 
-            _logger.Trace(string.Format(fmt, args).Trim());
+            _logger.Trace(this._logPrefix + string.Format(fmt, args).Trim());
         }
 
         protected void CmdLog(byte[][] args) {
@@ -795,7 +833,7 @@ namespace TheOne.Redis.Client {
                 this._lastCommand = this._lastCommand.Substring(0, 100) + "...";
             }
 
-            _logger.Trace("S: " + this._lastCommand);
+            _logger.Trace(this._logPrefix + "S: " + this._lastCommand);
         }
 
         // Turn Action into Func Hack
@@ -805,7 +843,7 @@ namespace TheOne.Redis.Client {
         }
 
         protected void ExpectSuccess() {
-            var c = this.SafeReadByte();
+            var c = this.SafeReadByte(nameof(this.ExpectSuccess));
             if (c == -1) {
                 throw this.CreateNoMoreDataError();
             }
@@ -820,7 +858,7 @@ namespace TheOne.Redis.Client {
         }
 
         private void ExpectWord(string word) {
-            var c = this.SafeReadByte();
+            var c = this.SafeReadByte(nameof(this.ExpectWord));
             if (c == -1) {
                 throw this.CreateNoMoreDataError();
             }
@@ -838,7 +876,7 @@ namespace TheOne.Redis.Client {
         }
 
         private string ExpectCode() {
-            var c = this.SafeReadByte();
+            var c = this.SafeReadByte(nameof(this.ExpectCode));
             if (c == -1) {
                 throw this.CreateNoMoreDataError();
             }
@@ -862,7 +900,7 @@ namespace TheOne.Redis.Client {
         }
 
         public long ReadLong() {
-            var c = this.SafeReadByte();
+            var c = this.SafeReadByte(nameof(this.ReadLong));
             if (c == -1) {
                 throw this.CreateNoMoreDataError();
             }
@@ -950,7 +988,7 @@ namespace TheOne.Redis.Client {
         }
 
         private byte[][] ReadMultiData() {
-            var c = this.SafeReadByte();
+            var c = this.SafeReadByte(nameof(this.ReadMultiData));
             if (c == -1) {
                 throw this.CreateNoMoreDataError();
             }
@@ -996,7 +1034,7 @@ namespace TheOne.Redis.Client {
         }
 
         private object ReadDeeplyNestedMultiDataItem() {
-            var c = this.SafeReadByte();
+            var c = this.SafeReadByte(nameof(this.ReadDeeplyNestedMultiDataItem));
             if (c == -1) {
                 throw this.CreateNoMoreDataError();
             }
@@ -1031,7 +1069,7 @@ namespace TheOne.Redis.Client {
         }
 
         internal RedisData ReadComplexResponse() {
-            var c = this.SafeReadByte();
+            var c = this.SafeReadByte(nameof(this.ReadComplexResponse));
             if (c == -1) {
                 throw this.CreateNoMoreDataError();
             }
@@ -1068,7 +1106,7 @@ namespace TheOne.Redis.Client {
         }
 
         internal int ReadMultiDataResultCount() {
-            var c = this.SafeReadByte();
+            var c = this.SafeReadByte(nameof(this.ReadMultiDataResultCount));
             if (c == -1) {
                 throw this.CreateNoMoreDataError();
             }

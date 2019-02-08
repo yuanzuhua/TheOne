@@ -177,6 +177,7 @@ namespace TheOne.Redis.Client {
             this.Ssl = config.Ssl;
             this.IdleTimeoutSecs = config.IdleTimeoutSecs;
             ServerVersionNumber = RedisConfig.AssumeServerVersion.GetValueOrDefault();
+            this._logPrefix = "#" + this.ClientId + " ";
         }
 
         ~RedisNativeClient() {

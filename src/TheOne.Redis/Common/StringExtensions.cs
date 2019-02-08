@@ -105,6 +105,18 @@ namespace TheOne.Redis.Common {
                 : new[] { strVal.Substring(0, pos), strVal.Substring(pos + 1) };
         }
 
+        public static string TrimNewLine(this string input) {
+            return input.Replace("\r\n", "")
+                        .Replace("\n", "")
+                        .Replace("\r", "");
+        }
+
+        public static StringBuilder TrimNewLine(this StringBuilder input) {
+            return input.Replace("\r\n", "")
+                        .Replace("\n", "")
+                        .Replace("\r", "");
+        }
+
         public static string ToJson<T>(this T obj) {
             if (obj == null) {
                 return default;
