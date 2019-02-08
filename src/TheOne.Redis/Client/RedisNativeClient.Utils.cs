@@ -598,7 +598,9 @@ namespace TheOne.Redis.Client {
 
             while (true) {
                 try {
-                    this.TryConnectIfNeeded();
+                    if (this.TryConnectIfNeeded()) {
+                        didWriteToBuffer = false;
+                    }
 
                     if (this.Socket == null) {
                         throw new RedisRetryableException("Socket is not connected");
