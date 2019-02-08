@@ -172,8 +172,12 @@ namespace TheOne.Redis.Client {
                 ReceiveTimeout = this.ReceiveTimeout
             };
             try {
-                var addresses = Dns.GetHostAddressesAsync(this.Host).Result;
-                this.Socket.Connect(addresses.First(a => a.AddressFamily == AddressFamily.InterNetwork), this.Port);
+                if (IPAddress.TryParse(this.Host, out var ip)) {
+                    this.Socket.Connect(ip, this.Port);
+                } else {
+                    var addresses = Dns.GetHostAddresses(this.Host);
+                    this.Socket.Connect(addresses.First(a => a.AddressFamily == AddressFamily.InterNetwork), this.Port);
+                }
 
                 if (!this.Socket.Connected) {
                     _logger.Debug(this._logPrefix + "Socket Connect failed");
