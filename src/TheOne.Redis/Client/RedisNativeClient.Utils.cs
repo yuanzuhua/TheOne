@@ -1109,8 +1109,7 @@ namespace TheOne.Redis.Client {
             return MergeCommandWithKeysAndValues(firstParams, keys, values);
         }
 
-        private static byte[][] MergeCommandWithKeysAndValues(byte[][] firstParams,
-            byte[][] keys, byte[][] values) {
+        private static byte[][] MergeCommandWithKeysAndValues(byte[][] firstParams, byte[][] keys, byte[][] values) {
             if (keys == null || keys.Length == 0) {
                 throw new ArgumentNullException(nameof(keys));
             }

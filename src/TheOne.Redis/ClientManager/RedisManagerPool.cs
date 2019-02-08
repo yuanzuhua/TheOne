@@ -126,7 +126,8 @@ namespace TheOne.Redis.ClientManager {
                         var stillReserved = inactivePoolIndex >= 0 && inactivePoolIndex < this._clients.Length &&
                                             this._clients[inactivePoolIndex] == existingClient;
                         if (inactivePoolIndex == -1 || !stillReserved) {
-                            _logger.Debug("clients[inactivePoolIndex] != existingClient: {0}", !stillReserved ? "!stillReserved" : "-1");
+                            _logger.Debug("POOL clients[inactivePoolIndex] != existingClient: {0}",
+                                !stillReserved ? "!stillReserved" : "-1");
 
                             Interlocked.Increment(ref RedisState.TotalClientsCreatedOutsidePool);
 
