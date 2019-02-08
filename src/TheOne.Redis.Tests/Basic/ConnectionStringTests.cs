@@ -111,35 +111,6 @@ namespace TheOne.Redis.Tests.Basic {
         }
 
         [Test]
-        public void Does_retry_failed_commands_auth() {
-            RedisStats.Reset();
-
-            var redisCtrl = new RedisClient(Config.MasterHost);
-            redisCtrl.FlushAll();
-            redisCtrl.SetClient("redisCtrl");
-
-            var redis = new RedisClient(Config.MasterHost);
-            redis.SetClient("redisRetry");
-
-            var clientInfo = redisCtrl.GetClientsInfo();
-            var redisId = clientInfo.First(m => m["name"] == "redisRetry")["id"];
-            Assert.That(redisId.Length, Is.GreaterThan(0));
-
-            Assert.That(redis.IncrementValue("retryCounter"), Is.EqualTo(1));
-
-            redis.OnBeforeFlush = () => {
-                redisCtrl.KillClients(withId: redisId);
-            };
-
-            Assert.That(redis.IncrementValue("retryCounter"), Is.EqualTo(2));
-            Assert.That(redis.Get<int>("retryCounter"), Is.EqualTo(2));
-
-            Assert.That(RedisStats.TotalRetryCount, Is.EqualTo(1));
-            Assert.That(RedisStats.TotalRetrySuccess, Is.EqualTo(1));
-            Assert.That(RedisStats.TotalRetryTimedout, Is.EqualTo(0));
-        }
-
-        [Test]
         [TestCase("host", "host:6379")]
         [TestCase("redis://host", "host:6379")]
         [TestCase("host:1", "host:1")]

@@ -46,8 +46,9 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_AcquireLock() {
-            var key = this.PrefixedKey("AcquireLockKey");
-            var lockKey = this.PrefixedKey("Can_AcquireLock");
+            var id = Guid.NewGuid().ToString("N");
+            var key = this.PrefixedKey("AcquireLockKey" + id);
+            var lockKey = this.PrefixedKey("Can_AcquireLock" + id);
             this.Redis.IncrementValue(key); // 1
 
             var tasks = new List<Task>();
@@ -71,10 +72,11 @@ namespace TheOne.Redis.Tests.Client {
 
         [Test]
         public void Can_AcquireLock_Timeout() {
-            var key = this.PrefixedKey("AcquireLockKeyTimeout");
-            var lockKey = this.PrefixedKey("Can_AcquireLock_Timeout");
+            var id = Guid.NewGuid().ToString("N");
+            var key = this.PrefixedKey("AcquireLockKeyTimeout" + id);
+            var lockKey = this.PrefixedKey("Can_AcquireLock_Timeout" + id);
             this.Redis.IncrementValue(key); // 1
-            using (var acquiredLock = this.Redis.AcquireLock(lockKey)) {
+            using (this.Redis.AcquireLock(lockKey)) {
                 var waitFor = TimeSpan.FromMilliseconds(1000);
                 var now = DateTime.Now;
 
