@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using TheOne.Redis.Client;
+using TheOne.Redis.Common;
 using TheOne.Redis.Tests.Extensions;
 
 namespace TheOne.Redis.Tests.Client {
@@ -98,7 +99,6 @@ namespace TheOne.Redis.Tests.Client {
 
         private readonly Question _question1 = Question.Create(1);
         private List<Answer> _q1Answers;
-
         private IRedisTypedClient<Question> _redisQuestions;
 
         public override void SetUp() {
@@ -159,7 +159,7 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         [Test]
-        public void Can_GetEarliestFromRecentsList() {
+        public void Can_GetEarliestFromRecentList() {
             var redisAnswers = this.Redis.As<Answer>();
 
             redisAnswers.StoreAll(this._q1Answers);
@@ -206,6 +206,28 @@ namespace TheOne.Redis.Tests.Client {
         }
 
         [Test]
+        public void Can_save_quoted_strings() {
+            var str = "string \"with\" \"quotes\"";
+            var cacheKey = "quotetest";
+
+            this.Redis.As<string>().SetValue(cacheKey, str);
+            var fromRedis = this.Redis.As<string>().GetValue(cacheKey);
+            Assert.That(fromRedis, Is.EqualTo(str));
+
+            this.Redis.Set(cacheKey, str);
+            fromRedis = this.Redis.Get<string>(cacheKey);
+            Assert.That(fromRedis, Is.EqualTo(str));
+
+            this.Redis.SetValue(cacheKey, str);
+            fromRedis = this.Redis.GetValue(cacheKey);
+            Assert.That(fromRedis, Is.EqualTo(str));
+
+            this.Redis.SetValue(cacheKey, str.ToJson());
+            fromRedis = this.Redis.GetValue(cacheKey).FromJson<string>();
+            Assert.That(fromRedis, Is.EqualTo(str));
+        }
+
+        [Test]
         public void Can_StoreRelatedEntities() {
             this._redisQuestions.Store(this._question1);
 
@@ -235,6 +257,12 @@ namespace TheOne.Redis.Tests.Client {
 
             Assert.That(actualAddresses.Select(x => x.Id).ToArray(),
                 Is.EquivalentTo(new[] { "ADDR-01", "ADDR-02" }));
+        }
+
+        [Test]
+        public void Does_return_non_existent_keys_as_defaultValue() {
+            Assert.That(this.Redis.Get<string>("notexists"), Is.Null);
+            Assert.That(this.Redis.Get<int>("notexists"), Is.EqualTo(0));
         }
 
     }
