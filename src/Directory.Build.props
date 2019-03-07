@@ -10,11 +10,11 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Master-Inspire/TheOne</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/masterinspire/TheOne</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Product>TheOne</Product>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/Master-Inspire/TheOne.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/masterinspire/TheOne.git</RepositoryUrl>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 </Project>
