@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Net;
 using NUnit.Framework;
 using TheOne.Redis.Client;
