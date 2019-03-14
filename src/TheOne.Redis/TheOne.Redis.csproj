@@ -10,8 +10,8 @@
     <Description>Redis client</Description>
     <PackageId>TheOne.Redis</PackageId>
     <PackageTags>Redis</PackageTags>
-    <PackageReleaseNotes>0.0.4</PackageReleaseNotes>
-    <Version>0.0.4</Version>
+    <PackageReleaseNotes>0.0.5</PackageReleaseNotes>
+    <Version>0.0.5</Version>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\external\**\*.cs">
