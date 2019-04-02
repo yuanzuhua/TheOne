@@ -35,6 +35,9 @@ namespace TheOne.Redis.PubSub {
         public Action<string, string> OnMessage { get; set; }
 
         /// <inheritdoc />
+        public Action<string, byte[]> OnMessageBytes { get; set; }
+
+        /// <inheritdoc />
         public Action<string> OnUnSubscribe { get; set; }
 
         /// <inheritdoc />
@@ -100,27 +103,23 @@ namespace TheOne.Redis.PubSub {
                 if (AreEqual(_subscribeWord, messageType)
                     || AreEqual(_psubscribeWord, messageType)) {
                     this.IsPSubscription = AreEqual(_psubscribeWord, messageType);
-
                     this.SubscriptionCount = int.Parse(multiBytes[i + _msgIndex].FromUtf8Bytes());
-
                     this._activeChannels.Add(channel);
-
                     this.OnSubscribe?.Invoke(channel);
                 } else if (AreEqual(_unsubscribeWord, messageType)
                            || AreEqual(_punsubscribeWord, messageType)) {
                     this.SubscriptionCount = int.Parse(multiBytes[i + 2].FromUtf8Bytes());
-
                     this._activeChannels.Remove(channel);
-
                     this.OnUnSubscribe?.Invoke(channel);
                 } else if (AreEqual(_messageWord, messageType)) {
-                    var message = multiBytes[i + _msgIndex].FromUtf8Bytes();
-
-                    this.OnMessage?.Invoke(channel, message);
+                    var msgBytes = multiBytes[i + _msgIndex];
+                    this.OnMessageBytes?.Invoke(channel, msgBytes);
+                    this.OnMessage?.Invoke(channel, msgBytes.FromUtf8Bytes());
                 } else if (AreEqual(_pmessageWord, messageType)) {
-                    var message = multiBytes[i + _msgIndex + 1].FromUtf8Bytes();
                     channel = multiBytes[i + 2].FromUtf8Bytes();
-                    this.OnMessage?.Invoke(channel, message);
+                    var msgBytes = multiBytes[i + _msgIndex + 1];
+                    this.OnMessageBytes?.Invoke(channel, msgBytes);
+                    this.OnMessage?.Invoke(channel, msgBytes.FromUtf8Bytes());
                 } else {
                     throw new RedisException(
                         "Invalid state. Expected [[p]subscribe|[p]unsubscribe|message] got: " + messageType.FromUtf8Bytes());

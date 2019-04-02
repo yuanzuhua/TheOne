@@ -50,9 +50,10 @@ namespace TheOne.Redis.PubSub {
 
         public Action OnHeartbeatSent { get; set; }
         public Action OnHeartbeatReceived { get; set; }
-
+        public Action<string, byte[]> OnMessageBytes { get; set; }
         public Action<string> OnControlCommand { get; set; }
         public bool IsSentinelSubscription { get; set; }
+        public string[] ChannelsMatching { get; set; }
 
         public bool AutoRestart {
             get => Interlocked.CompareExchange(ref this._autoRestart, 0, 0) == _yes;
@@ -60,7 +61,6 @@ namespace TheOne.Redis.PubSub {
         }
 
         public long BgThreadCount => Interlocked.CompareExchange(ref this._bgThreadCount, 0, 0);
-        public string[] ChannelsMatching { get; set; }
 
         /// <inheritdoc />
         public Action OnInit { get; set; }
@@ -301,18 +301,34 @@ namespace TheOne.Redis.PubSub {
                         using (var subscription = redis.CreateSubscription()) {
                             subscription.OnUnSubscribe = this.HandleUnSubscribe;
 
+                            if (this.OnMessageBytes != null) {
+                                bool IsCtrlMessage(byte[] msg) {
+                                    if (msg.Length < 4) {
+                                        return false;
+                                    }
+
+                                    return msg[0] == 'C' && msg[1] == 'T' && msg[0] == 'R' && msg[0] == 'L';
+                                }
+
+                                ((RedisSubscription)subscription).OnMessageBytes = (channel, msg) => {
+                                    if (IsCtrlMessage(msg)) {
+                                        return;
+                                    }
+
+                                    this.OnMessageBytes(channel, msg);
+                                };
+                            }
+
+
                             subscription.OnMessage = (channel, msg) => {
                                 if (string.IsNullOrEmpty(msg)) {
                                     return;
                                 }
 
-                                var ctrlMsg = msg.SplitOnFirst(':');
-                                if (ctrlMsg[0] == ControlCommand.Control) {
+                                var ctrlMsg = msg.LeftPart(':');
+                                if (ctrlMsg == ControlCommand.Control) {
                                     var op = Interlocked.CompareExchange(ref this._doOperation, Operation.NoOp, this._doOperation);
-
-                                    var msgType = ctrlMsg.Length > 1
-                                        ? ctrlMsg[1]
-                                        : null;
+                                    var msgType = msg.IndexOf(':') >= 0 ? msg.RightPart(':') : null;
 
                                     this.OnControlCommand?.Invoke(msgType ?? Operation.GetName(op));
 
@@ -325,7 +341,7 @@ namespace TheOne.Redis.PubSub {
                                             try {
                                                 _logger.Debug("UnSubscribe From All Channels...");
 
-                                                subscription.UnSubscribeFromAllChannels(); // Un block thread.
+                                                subscription.UnSubscribeFromAllChannels(); // Unblock thread.
                                             } finally {
                                                 Interlocked.CompareExchange(ref this._status, Status.Stopped, Status.Stopping);
                                             }
@@ -333,7 +349,7 @@ namespace TheOne.Redis.PubSub {
                                             return;
 
                                         case Operation.Reset:
-                                            subscription.UnSubscribeFromAllChannels(); // Un block thread.
+                                            subscription.UnSubscribeFromAllChannels(); // Unblock thread.
                                             return;
                                     }
 
