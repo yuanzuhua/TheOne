@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using TheOne.Logging;
 using TheOne.RabbitMq.Extensions;
 using TheOne.RabbitMq.Interfaces;
@@ -78,6 +79,8 @@ namespace TheOne.RabbitMq.Messaging {
                         return msgsProcessed;
                     }
                 }
+            } catch (TaskCanceledException) {
+                //
             } catch (Exception ex) {
                 this._logger.Error(ex, "Error serializing message from mq server.");
             }
