@@ -24,6 +24,7 @@ namespace TheOne.Redis.Client {
 
     public interface IRedisSortedSet<T> : ICollection<T>, IHasRedisStringId {
 
+        void Add(T item, double score);
         T PopItemWithHighestScore();
         T PopItemWithLowestScore();
         double IncrementItem(T item, double incrementBy);
@@ -40,7 +41,9 @@ namespace TheOne.Redis.Client {
         long RemoveRangeByScore(double fromScore, double toScore);
         double GetItemScore(T item);
         long PopulateWithIntersectOf(params IRedisSortedSet<T>[] setIds);
+        long PopulateWithIntersectOf(IRedisSortedSet<T>[] setIds, string[] args);
         long PopulateWithUnionOf(params IRedisSortedSet<T>[] setIds);
+        long PopulateWithUnionOf(IRedisSortedSet<T>[] setIds, string[] args);
 
     }
 

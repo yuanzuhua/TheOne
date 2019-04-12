@@ -37,6 +37,11 @@ namespace TheOne.Redis.Client.Internal {
         }
 
         /// <inheritdoc />
+        public void Add(T item, double score) {
+            this._client.AddItemToSortedSet(this, item, score);
+        }
+
+        /// <inheritdoc />
         public void Clear() {
             this._client.RemoveEntry(this.Id);
         }
@@ -150,8 +155,18 @@ namespace TheOne.Redis.Client.Internal {
         }
 
         /// <inheritdoc />
+        public long PopulateWithIntersectOf(IRedisSortedSet<T>[] setIds, string[] args) {
+            return this._client.StoreIntersectFromSortedSets(this, setIds, args);
+        }
+
+        /// <inheritdoc />
         public long PopulateWithUnionOf(params IRedisSortedSet<T>[] setIds) {
             return this._client.StoreUnionFromSortedSets(this, setIds);
+        }
+
+        /// <inheritdoc />
+        public long PopulateWithUnionOf(IRedisSortedSet<T>[] setIds, string[] args) {
+            return this._client.StoreUnionFromSortedSets(this, setIds, args);
         }
 
         public IEnumerator<T> GetPagingEnumerator() {
@@ -165,18 +180,6 @@ namespace TheOne.Redis.Client.Internal {
 
                 skip += PageLimit;
             } while (pageResults.Count == PageLimit);
-        }
-
-        public void Add(T item, double score) {
-            this._client.AddItemToSortedSet(this, item, score);
-        }
-
-        public long PopulateWithIntersectOf(IRedisSortedSet<T>[] setIds, string[] args) {
-            return this._client.StoreIntersectFromSortedSets(this, setIds, args);
-        }
-
-        public long PopulateWithUnionOf(IRedisSortedSet<T>[] setIds, string[] args) {
-            return this._client.StoreUnionFromSortedSets(this, setIds, args);
         }
 
     }
