@@ -1,8 +1,6 @@
 **/packages/*
 *.[Pp]ublish.xml
 *.log
-*.nuget.props
-*.nuget.targets
 *.nupkg
 *.obj
 *.pdb
@@ -11,10 +9,9 @@
 .vs/
 [Bb]in/
 [Bb]uild/
-[Bb]uild/
 [Dd]ebug/
 [Ll]ib
 [Oo]bj/
 [Rr]elease/
-[Rr]eleases/
-[Tt]est[Rr]esult*/
+logs
+temp
