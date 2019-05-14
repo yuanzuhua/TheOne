@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
 using System.Threading;
 using TheOne.Logging;
 using TheOne.Redis.Client.Internal;
@@ -101,6 +102,7 @@ namespace TheOne.Redis.Client {
         public string Host { get; private set; }
         public int Port { get; private set; }
         public bool Ssl { get; private set; }
+        public SslProtocols? SslProtocols { get; private set; }
 
         /// <summary>
         ///     Gets or sets object key prefix.
@@ -175,6 +177,7 @@ namespace TheOne.Redis.Client {
             this.Client = config.Client;
             this.Db = config.Db;
             this.Ssl = config.Ssl;
+            this.SslProtocols = config.SslProtocols;
             this.IdleTimeoutSecs = config.IdleTimeoutSecs;
             ServerVersionNumber = RedisConfig.AssumeServerVersion.GetValueOrDefault();
             this._logPrefix = "#" + this.ClientId + " ";

@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using TheOne.Logging;
@@ -198,7 +199,11 @@ namespace TheOne.Redis.Client {
                         RedisConfig.CertificateSelectionCallback,
                         EncryptionPolicy.RequireEncryption);
 
-                    this.SslStream.AuthenticateAsClientAsync(this.Host).Wait();
+                    if (this.SslProtocols != null) {
+                        this.SslStream.AuthenticateAsClient(this.Host, new X509CertificateCollection(), this.SslProtocols.Value, true);
+                    } else {
+                        this.SslStream.AuthenticateAsClient(this.Host);
+                    }
 
                     if (!this.SslStream.IsEncrypted) {
                         throw new RedisException("Could not establish an encrypted connection to " + this.Host);

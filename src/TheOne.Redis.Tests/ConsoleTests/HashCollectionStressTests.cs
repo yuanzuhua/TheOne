@@ -27,32 +27,22 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             public IRedisClient RedisConnection => this._clientsManager.GetClient();
 
             public TValue this[TKey id] {
-                get {
-                    return this.RetryAction(redis => {
+                get =>
+                    this.RetryAction(redis => {
                         if (this.GetCollection(redis).ContainsKey(id)) {
                             return this.GetCollection(redis)[id];
                         }
 
                         return default;
                     });
-                }
-                set {
-                    this.RetryAction(redis => {
-                        this.GetCollection(redis)[id] = value;
-                    });
-                }
+                set => this.RetryAction(redis => this.GetCollection(redis)[id] = value);
             }
 
-            public int Count {
-                get { return this.RetryAction(redis => this.GetCollection(redis).Count); }
-            }
+            public int Count => this.RetryAction(redis => this.GetCollection(redis).Count);
 
-            public bool IsReadOnly {
-                get { return this.RetryAction(redis => this.GetCollection(redis).IsReadOnly); }
-            }
+            public bool IsReadOnly => this.RetryAction(redis => this.GetCollection(redis).IsReadOnly);
 
             public Func<TValue, TKey> GetUniqueIdAction { get; set; }
-
 
             public IEnumerator<TValue> GetEnumerator() {
                 return this.RetryAction(redis => this.GetCollection(redis).Values.GetEnumerator());
@@ -60,7 +50,6 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
             IEnumerator IEnumerable.GetEnumerator() {
                 return this.RetryAction(redis => ((IEnumerable)this.GetCollection(redis).Values).GetEnumerator());
-
             }
 
             private IRedisHash<TKey, TValue> GetCollection(IRedisClient redis) {
@@ -71,18 +60,14 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             public void Add(TValue obj) {
                 var id = this.GetUniqueIdAction(obj);
 
-                this.RetryAction(redis => {
-                    this.GetCollection(redis).Add(id, obj);
-                });
+                this.RetryAction(redis => this.GetCollection(redis).Add(id, obj));
             }
 
             public bool Remove(TValue obj) {
                 var id = this.GetUniqueIdAction(obj);
                 return this.RetryAction(redis => {
                     if (!id.Equals(default)) {
-                        {
-                            return this.GetCollection(redis).Remove(id);
-                        }
+                        return this.GetCollection(redis).Remove(id);
                     }
 
                     return false;
@@ -91,21 +76,15 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             }
 
             public IEnumerable<TValue> Where(Func<TValue, bool> predicate) {
-                return this.RetryAction(redis => {
-                    return this.GetCollection(redis).Values.Where(predicate);
-                });
+                return this.RetryAction(redis => this.GetCollection(redis).Values.Where(predicate));
             }
 
             public bool Any(Func<TValue, bool> predicate) {
-                return this.RetryAction(redis => {
-                    return this.GetCollection(redis).Values.Any(predicate);
-                });
+                return this.RetryAction(redis => this.GetCollection(redis).Values.Any(predicate));
             }
 
             public void Clear() {
-                this.RetryAction(redis => {
-                    this.GetCollection(redis).Clear();
-                });
+                this.RetryAction(redis => this.GetCollection(redis).Clear());
             }
 
             public bool Contains(TValue obj) {
@@ -118,9 +97,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
             }
 
             public void CopyTo(TValue[] array, int arrayIndex) {
-                this.RetryAction(redis => {
-                    this.GetCollection(redis).Values.CopyTo(array, arrayIndex);
-                });
+                this.RetryAction(redis => this.GetCollection(redis).Values.CopyTo(array, arrayIndex));
             }
 
             private void RetryAction(Action<IRedisClient> action) {
@@ -144,9 +121,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
                             return result;
                         }
                     } catch {
-
                         if (i++ < 3) {
-
                             continue;
                         }
 

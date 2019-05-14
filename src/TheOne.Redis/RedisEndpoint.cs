@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Authentication;
 using TheOne.Redis.Common;
 using TheOne.Redis.External;
 
@@ -33,6 +34,8 @@ namespace TheOne.Redis {
         ///     If this is an SSL connection
         /// </summary>
         public bool Ssl { get; set; }
+
+        public SslProtocols? SslProtocols { get; set; }
 
         /// <summary>
         ///     Timeout in ms for making a TCP Socket connection
@@ -147,6 +150,15 @@ namespace TheOne.Redis {
                             }
 
                             break;
+                        case "sslprotocols":
+                            value = value?.Replace("|", ",");
+                            if (!Enum.TryParse(value, true, out SslProtocols protocols)) {
+                                var message = "Keyword '" + name + "' requires an SslProtocol value (multiple values separated by '|').";
+                                throw new ArgumentOutOfRangeException(message);
+                            }
+
+                            endpoint.SslProtocols = protocols;
+                            break;
                         case "client":
                             endpoint.Client = value;
                             break;
@@ -202,6 +214,10 @@ namespace TheOne.Redis {
                 args.Add("Ssl=true");
             }
 
+            if (this.SslProtocols != null) {
+                args.Add("SslProtocols=" + this.SslProtocols);
+            }
+
             if (this.ConnectTimeout != RedisConfig.DefaultConnectTimeout) {
                 args.Add("ConnectTimeout=" + this.ConnectTimeout);
             }
@@ -237,6 +253,7 @@ namespace TheOne.Redis {
             return string.Equals(this.Host, other.Host)
                    && this.Port == other.Port
                    && this.Ssl.Equals(other.Ssl)
+                   && this.SslProtocols.Equals(other.SslProtocols)
                    && this.ConnectTimeout == other.ConnectTimeout
                    && this.SendTimeout == other.SendTimeout
                    && this.ReceiveTimeout == other.ReceiveTimeout
@@ -270,6 +287,7 @@ namespace TheOne.Redis {
                 var hashCode = this.Host != null ? this.Host.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ this.Port;
                 hashCode = (hashCode * 397) ^ this.Ssl.GetHashCode();
+                hashCode = (hashCode * 397) ^ this.SslProtocols.GetHashCode();
                 hashCode = (hashCode * 397) ^ this.ConnectTimeout;
                 hashCode = (hashCode * 397) ^ this.SendTimeout;
                 hashCode = (hashCode * 397) ^ this.ReceiveTimeout;

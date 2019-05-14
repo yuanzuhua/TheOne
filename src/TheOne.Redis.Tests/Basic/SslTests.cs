@@ -237,6 +237,18 @@ namespace TheOne.Redis.Tests.Basic {
         }
 
         [Test]
+        public void Can_connect_to_ssl_azure_redis_with_UrlFormat_Custom_SSL_Protocol() {
+            var url = string.Format("redis://{0}?ssl=true&sslprotocols=Tls12&password={1}",
+                this._host,
+                WebUtility.UrlEncode(this._password));
+            using (var client = new RedisClient(url)) {
+                client.Set("foo", "bar");
+                var foo = client.GetValue("foo");
+                Console.WriteLine(foo);
+            }
+        }
+
+        [Test]
         public void SSL_can_support_64_threads_using_the_client_sequentially() {
             var
                 results = Enumerable.Range(0, 100).Select(ModelWithFieldsOfDifferentTypes.Create).ToList();

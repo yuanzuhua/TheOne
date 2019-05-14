@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Authentication;
 using NUnit.Framework;
 using TheOne.Redis.Client;
 using TheOne.Redis.ClientManager;
@@ -37,6 +38,7 @@ namespace TheOne.Redis.Tests.Basic {
             Assert.That(redis.Host, Is.EqualTo(expected.Host));
             Assert.That(redis.Port, Is.EqualTo(expected.Port));
             Assert.That(redis.Ssl, Is.EqualTo(expected.Ssl));
+            Assert.That(redis.SslProtocols, Is.EqualTo(expected.SslProtocols));
             Assert.That(redis.Client, Is.EqualTo(expected.Client));
             Assert.That(redis.Password, Is.EqualTo(expected.Password));
             Assert.That(redis.Db, Is.EqualTo(expected.Db));
@@ -124,6 +126,7 @@ namespace TheOne.Redis.Tests.Basic {
         [TestCase(
             "redis://nunit:pass@host:1?ssl=true&db=1&connectTimeout=2&sendtimeout=3&receiveTimeout=4&idletimeoutsecs=5&NamespacePrefix=prefix.",
             "host:1?Client=nunit&Password=pass&Db=1&Ssl=true&ConnectTimeout=2&SendTimeout=3&ReceiveTimeout=4&IdleTimeoutSecs=5&NamespacePrefix=prefix.")]
+        [TestCase("password@host:6380?ssl=true&sslprotocols=Tls12", "host:6380?Password=password&Ssl=true&SslProtocols=Tls12")]
         public void Does_Serialize_RedisEndpoint(string connString, string expectedString) {
             var actual = RedisEndpoint.Create(connString);
             Assert.That(actual.ToString(), Is.EqualTo(expectedString));
@@ -132,11 +135,12 @@ namespace TheOne.Redis.Tests.Basic {
         [Test]
         public void Does_set_all_properties_on_Client_using_ClientsManagers() {
             var connStr =
-                "redis://nunit:pass@host:1?ssl=true&db=0&connectTimeout=2&sendtimeout=3&receiveTimeout=4&idletimeoutsecs=5&NamespacePrefix=prefix.";
+                "redis://nunit:pass@host:1?ssl=true&sslprotocols=Tls12&db=0&connectTimeout=2&sendtimeout=3&receiveTimeout=4&idletimeoutsecs=5&NamespacePrefix=prefix.";
             var expected = new RedisEndpoint {
                 Host = "host",
                 Port = 1,
                 Ssl = true,
+                SslProtocols = SslProtocols.Tls12,
                 Client = "nunit",
                 Password = "pass",
                 Db = 0,
