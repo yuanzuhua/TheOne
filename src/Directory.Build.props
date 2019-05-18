@@ -3,7 +3,7 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Authors>Master Inspire</Authors>
     <Company>Brotherhood</Company>
-    <Copyright>Brotherhood 2018</Copyright>
+    <Copyright>Brotherhood 2019</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
