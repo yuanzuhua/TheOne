@@ -125,6 +125,16 @@ namespace TheOne.RabbitMq {
         private IConnection Connection => this._connection ?? (this._connection = this.ConnectionFactory.CreateConnection());
         public long BgThreadCount => Interlocked.CompareExchange(ref this._bgThreadCount, 0, 0);
 
+        public Action<RabbitMqQueueClient> MqQueueClientFilter {
+            get => this._messageFactory.MqQueueClientFilter;
+            set => this._messageFactory.MqQueueClientFilter = value;
+        }
+
+        public Action<RabbitMqProducer> MqProducerFilter {
+            get => this._messageFactory.MqProducerFilter;
+            set => this._messageFactory.MqProducerFilter = value;
+        }
+
         /// <inheritdoc />
         public IMqMessageFactory MessageFactory => this._messageFactory;
 

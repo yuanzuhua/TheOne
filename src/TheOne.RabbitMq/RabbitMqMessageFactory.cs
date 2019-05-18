@@ -31,6 +31,9 @@ namespace TheOne.RabbitMq {
         }
 
         public ConnectionFactory ConnectionFactory { get; }
+
+        public Action<RabbitMqQueueClient> MqQueueClientFilter { get; set; }
+        public Action<RabbitMqProducer> MqProducerFilter { get; set; }
         public Action<string, IBasicProperties, IMqMessage> PublishMessageFilter { get; set; }
         public Action<string, BasicGetResult> GetMessageFilter { get; set; }
 
@@ -53,20 +56,26 @@ namespace TheOne.RabbitMq {
 
         /// <inheritdoc />
         public virtual IMqMessageQueueClient CreateMessageQueueClient() {
-            return new RabbitMqQueueClient(this) {
+            var client = new RabbitMqQueueClient(this) {
                 RetryCount = this.RetryCount,
                 PublishMessageFilter = this.PublishMessageFilter,
                 GetMessageFilter = this.GetMessageFilter
             };
+
+            this.MqQueueClientFilter?.Invoke(client);
+            return client;
         }
 
         /// <inheritdoc />
         public virtual IMqMessageProducer CreateMessageProducer() {
-            return new RabbitMqProducer(this) {
+            var producer = new RabbitMqProducer(this) {
                 RetryCount = this.RetryCount,
                 PublishMessageFilter = this.PublishMessageFilter,
                 GetMessageFilter = this.GetMessageFilter
             };
+
+            this.MqProducerFilter?.Invoke(producer);
+            return producer;
         }
 
         /// <inheritdoc />
