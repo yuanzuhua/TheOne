@@ -11,10 +11,12 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/masterinspire/TheOne</PackageProjectUrl>
+    <PackageReleaseNotes>0.1.0</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Product>TheOne</Product>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/masterinspire/TheOne.git</RepositoryUrl>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 </Project>
