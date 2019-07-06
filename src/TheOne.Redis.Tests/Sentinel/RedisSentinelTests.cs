@@ -35,10 +35,10 @@ namespace TheOne.Redis.Tests.Sentinel {
         }
 
         [Test]
-        public void Can_Get_Redis_ClientsManager() {
+        public void Can_Get_Redis_ClientManager() {
             using (var sentinel = new RedisSentinel(Config.SentinelHosts, Config.SentinelMasterName)) {
-                var clientsManager = sentinel.Start();
-                using (var client = clientsManager.GetClient()) {
+                var clientManager = sentinel.Start();
+                using (var client = clientManager.GetClient()) {
                     Assert.That(client.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                 }
             }
@@ -88,8 +88,8 @@ namespace TheOne.Redis.Tests.Sentinel {
             using (var sentinel = new RedisSentinel(Config.SentinelHosts, Config.SentinelMasterName)) {
                 sentinel.HostFilter = host => string.Format("{0}?db=1", host);
 
-                using (var clientsManager = sentinel.Start()) {
-                    using (var client = clientsManager.GetClient()) {
+                using (var clientManager = sentinel.Start()) {
+                    using (var client = clientManager.GetClient()) {
                         Assert.That(client.Db, Is.EqualTo(1));
                     }
                 }
@@ -101,9 +101,9 @@ namespace TheOne.Redis.Tests.Sentinel {
             using (var sentinel = new RedisSentinel(Config.SentinelHosts, Config.SentinelMasterName)) {
                 sentinel.RedisManagerFactory = (masters, slaves) => new PooledRedisClientManager(masters, slaves) { IdleTimeoutSecs = 20 };
 
-                using (var clientsManager = (PooledRedisClientManager)sentinel.Start()) {
-                    using (var client = clientsManager.GetClient()) {
-                        Assert.That(clientsManager.IdleTimeoutSecs, Is.EqualTo(20));
+                using (var clientManager = (PooledRedisClientManager)sentinel.Start()) {
+                    using (var client = clientManager.GetClient()) {
+                        Assert.That(clientManager.IdleTimeoutSecs, Is.EqualTo(20));
                         Assert.That(((RedisNativeClient)client).IdleTimeoutSecs, Is.EqualTo(20));
                     }
                 }
@@ -121,11 +121,11 @@ namespace TheOne.Redis.Tests.Sentinel {
             using (var sentinel = new RedisSentinel(Config.Sentinel26380) {
                 ScanForOtherSentinels = true
             }) {
-                var clientsManager = sentinel.Start();
+                var clientManager = sentinel.Start();
 
                 Assert.That(sentinel.SentinelHosts, Is.EquivalentTo(Config.SentinelHosts));
 
-                using (var client = clientsManager.GetClient()) {
+                using (var client = clientManager.GetClient()) {
                     Assert.That(client.GetHostString(), Is.EqualTo(Config.Sentinel6380));
                 }
             }

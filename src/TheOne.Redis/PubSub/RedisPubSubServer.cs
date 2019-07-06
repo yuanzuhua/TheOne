@@ -40,12 +40,12 @@ namespace TheOne.Redis.PubSub {
         public TimeSpan? HeartbeatInterval = TimeSpan.FromSeconds(10);
         public TimeSpan HeartbeatTimeout = TimeSpan.FromSeconds(30);
 
-        public RedisPubSubServer(IRedisClientManager clientsManager, params string[] channels) {
-            this.ClientsManager = clientsManager;
+        public RedisPubSubServer(IRedisClientManager clientManager, params string[] channels) {
+            this.ClientManager = clientManager;
             this.Channels = channels;
             this._startedAt = Stopwatch.StartNew();
 
-            var failoverHost = clientsManager as IRedisFailover;
+            var failoverHost = clientManager as IRedisFailover;
             failoverHost?.OnFailover.Add(this.HandleFailover);
         }
 
@@ -91,7 +91,7 @@ namespace TheOne.Redis.PubSub {
         public DateTime CurrentServerTime => new DateTime(this._serverTimeAtStart.Ticks + this._startedAt.ElapsedTicks, DateTimeKind.Utc);
 
         /// <inheritdoc />
-        public IRedisClientManager ClientsManager { get; set; }
+        public IRedisClientManager ClientManager { get; set; }
 
         /// <inheritdoc />
         public string[] Channels { get; set; }
@@ -219,7 +219,7 @@ namespace TheOne.Redis.PubSub {
 
         private void Init() {
             try {
-                using (var redis = this.ClientsManager.GetReadOnlyClient()) {
+                using (var redis = this.ClientManager.GetReadOnlyClient()) {
                     this._startedAt = Stopwatch.StartNew();
                     this._serverTimeAtStart = this.IsSentinelSubscription
                         ? DateTime.UtcNow
@@ -293,7 +293,7 @@ namespace TheOne.Redis.PubSub {
             try {
                 // RESET
                 while (Interlocked.CompareExchange(ref this._status, 0, 0) == Status.Started) {
-                    using (var redis = this.ClientsManager.GetReadOnlyClient()) {
+                    using (var redis = this.ClientManager.GetReadOnlyClient()) {
                         this._masterClient = redis;
 
                         // Record that we had a good run...
@@ -427,7 +427,7 @@ namespace TheOne.Redis.PubSub {
             }
 
             try {
-                using (var redis = this.ClientsManager.GetClient()) {
+                using (var redis = this.ClientManager.GetClient()) {
                     foreach (var channel in this.Channels) {
                         redis.PublishMessage(channel, msg);
                     }
@@ -438,7 +438,7 @@ namespace TheOne.Redis.PubSub {
             }
         }
 
-        private void HandleFailover(IRedisClientManager clientsManager) {
+        private void HandleFailover(IRedisClientManager clientManager) {
             try {
                 this.OnFailover?.Invoke(this);
 

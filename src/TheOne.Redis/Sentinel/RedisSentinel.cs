@@ -150,7 +150,7 @@ namespace TheOne.Redis.Sentinel {
         public bool ResetWhenObjectivelyDown { get; set; }
 
         /// <summary>
-        ///     Initialize Sentinel Subscription and Configure Redis ClientsManager
+        ///     Initialize Sentinel Subscription and Configure Redis ClientManager
         /// </summary>
         public IRedisClientManager Start() {
             lock (this._oLock) {

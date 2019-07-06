@@ -11,13 +11,13 @@ namespace TheOne.Redis.Tests.Basic {
     internal sealed class RedisPubSubServerTests : RedisTestBase {
 
         private RedisPubSubServer CreatePubSubServer(int intervalSecs = 1, int timeoutSecs = 3) {
-            var clientsManager = new PooledRedisClientManager(Config.MasterHost);
-            using (var redis = clientsManager.GetClient()) {
+            var clientManager = new PooledRedisClientManager(Config.MasterHost);
+            using (var redis = clientManager.GetClient()) {
                 redis.FlushAll();
             }
 
             var pubSub = new RedisPubSubServer(
-                clientsManager,
+                clientManager,
                 "topic:test") {
                 HeartbeatInterval = TimeSpan.FromSeconds(intervalSecs),
                 HeartbeatTimeout = TimeSpan.FromSeconds(timeoutSecs)

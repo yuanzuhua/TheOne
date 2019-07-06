@@ -16,15 +16,15 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
         public class RedisCachedCollection<TKey, TValue> : IEnumerable<TValue> {
 
-            private readonly IRedisClientManager _clientsManager;
+            private readonly IRedisClientManager _clientManager;
             private readonly string _collectionKey;
 
-            public RedisCachedCollection(IRedisClientManager clientsManager, string collectionKey) {
-                this._clientsManager = clientsManager;
+            public RedisCachedCollection(IRedisClientManager clientManager, string collectionKey) {
+                this._clientManager = clientManager;
                 this._collectionKey = string.Format("urn:{0}:{1}", "XXXXX", collectionKey);
             }
 
-            public IRedisClient RedisConnection => this._clientsManager.GetClient();
+            public IRedisClient RedisConnection => this._clientManager.GetClient();
 
             public TValue this[TKey id] {
                 get =>
@@ -134,7 +134,7 @@ namespace TheOne.Redis.Tests.ConsoleTests {
 
         #endregion
 
-        private IRedisClientManager _clientsManager;
+        private IRedisClientManager _clientManager;
         private long _readCount;
         private RedisCachedCollection<string, string> _redisCollection;
         private int _running;
@@ -160,9 +160,9 @@ namespace TheOne.Redis.Tests.ConsoleTests {
         [Test]
         public void Execute() {
             const int noOfThreads = 64;
-            this._clientsManager = new PooledRedisClientManager(Config.MasterHost);
+            this._clientManager = new PooledRedisClientManager(Config.MasterHost);
 
-            this._redisCollection = new RedisCachedCollection<string, string>(this._clientsManager, "Threads: " + 64);
+            this._redisCollection = new RedisCachedCollection<string, string>(this._clientManager, "Threads: " + 64);
 
             var startedAt = DateTime.Now;
             Interlocked.Increment(ref this._running);

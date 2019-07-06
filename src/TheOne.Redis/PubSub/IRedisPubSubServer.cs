@@ -49,7 +49,7 @@ namespace TheOne.Redis.PubSub {
         /// </summary>
         Action<IRedisPubSubServer> OnFailover { get; set; }
 
-        IRedisClientManager ClientsManager { get; }
+        IRedisClientManager ClientManager { get; }
         string[] Channels { get; }
 
         TimeSpan? WaitBeforeNextRestart { get; set; }

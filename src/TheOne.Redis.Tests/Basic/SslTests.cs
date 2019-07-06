@@ -214,7 +214,7 @@ namespace TheOne.Redis.Tests.Basic {
         }
 
         [Test]
-        public void Can_connect_to_ssl_azure_redis_with_PooledClientsManager() {
+        public void Can_connect_to_ssl_azure_redis_with_PooledClientManager() {
             using (var redisManager = new PooledRedisClientManager(this._connectionString)) {
                 using (var client1 = redisManager.GetClient()) {
                     using (var client2 = redisManager.GetClient()) {

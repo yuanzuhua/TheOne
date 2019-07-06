@@ -125,8 +125,8 @@ container.Register<IRedisClientManager>(c => new BasicRedisClientManager(redisCo
 Once registered, accessing the RedisClient is the same in all Client Managers, e.g:
 
 ```csharp
-var clientsManager = container.Resolve<IRedisClientManager>();
-using (IRedisClient redis = clientsManager.GetClient()) {
+var clientManager = container.Resolve<IRedisClientManager>();
+using (IRedisClient redis = clientManager.GetClient()) {
     redis.IncrementValue("counter");
     List<string> days = redis.GetAllItemsFromList("days");
 
@@ -220,8 +220,8 @@ To use `RedisPubSubServer`, initialize it with the channels you want to subscrib
 for each of the events you want to handle. At a minimum you'll want to handle `OnMessage`:
 
 ```csharp
-var clientsManager = new PooledRedisClientManager();
-var redisPubSub = new RedisPubSubServer(clientsManager, "channel-1", "channel-2") {
+var clientManager = new PooledRedisClientManager();
+var redisPubSub = new RedisPubSubServer(clientManager, "channel-1", "channel-2") {
         OnMessage = (channel, msg) => Console.WriteLine($"Received '{msg}' from '{channel}'")
     }.Start();
 ```

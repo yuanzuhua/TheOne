@@ -133,7 +133,7 @@ namespace TheOne.Redis.Tests.Basic {
         }
 
         [Test]
-        public void Does_set_all_properties_on_Client_using_ClientsManagers() {
+        public void Does_set_all_properties_on_Client_using_ClientManagers() {
             var connStr =
                 "redis://nunit:pass@host:1?ssl=true&sslprotocols=Tls12&db=0&connectTimeout=2&sendtimeout=3&receiveTimeout=4&idletimeoutsecs=5&NamespacePrefix=prefix.";
             var expected = new RedisEndpoint {
