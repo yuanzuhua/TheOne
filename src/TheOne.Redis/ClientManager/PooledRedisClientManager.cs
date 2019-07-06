@@ -361,6 +361,14 @@ namespace TheOne.Redis.ClientManager {
         public void FailoverTo(IEnumerable<string> readWriteHosts, IEnumerable<string> readOnlyHosts) {
             Interlocked.Increment(ref RedisState.TotalFailovers);
 
+            var masters = readWriteHosts.ToList();
+            var replicas = readOnlyHosts.ToList();
+
+            _logger.Info("FailoverTo: {0} : {1} Total: {2}",
+                string.Join(",", masters),
+                string.Join(",", replicas),
+                RedisState.TotalFailovers);
+
             lock (this._readClients) {
                 for (var i = 0; i < this._readClients.Length; i++) {
                     var redis = this._readClients[i];
@@ -371,7 +379,7 @@ namespace TheOne.Redis.ClientManager {
                     this._readClients[i] = null;
                 }
 
-                this.RedisResolver.ResetSlaves(readOnlyHosts);
+                this.RedisResolver.ResetSlaves(replicas);
             }
 
             lock (this._writeClients) {
@@ -384,7 +392,7 @@ namespace TheOne.Redis.ClientManager {
                     this._writeClients[i] = null;
                 }
 
-                this.RedisResolver.ResetMasters(readWriteHosts);
+                this.RedisResolver.ResetMasters(masters);
             }
 
             if (this.OnFailover != null) {

@@ -186,6 +186,8 @@ namespace TheOne.Redis.ClientManager {
         public void FailoverTo(params string[] readWriteHosts) {
             Interlocked.Increment(ref RedisState.TotalFailovers);
 
+            _logger.Info("FailoverTo: {0} Total: {1}", string.Join(",", readWriteHosts), RedisState.TotalFailovers);
+
             lock (this._clients) {
                 for (var i = 0; i < this._clients.Length; i++) {
                     var redis = this._clients[i];

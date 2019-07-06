@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using TheOne.Logging;
 using TheOne.Redis.Client;
 using TheOne.Redis.Client.Internal;
 
@@ -22,6 +24,8 @@ namespace TheOne.Redis.ClientManager {
     ///     </para>
     /// </remarks>
     public partial class BasicRedisClientManager : ICacheClient, IRedisClientManager, IRedisFailover, IHasRedisResolver {
+
+        private static readonly ILog _logger = LogProvider.GetCurrentClassLogger();
 
         private int _readOnlyHostsIndex;
         private int _readWriteHostsIndex;
@@ -122,9 +126,17 @@ namespace TheOne.Redis.ClientManager {
         public void FailoverTo(IEnumerable<string> readWriteHosts, IEnumerable<string> readOnlyHosts) {
             Interlocked.Increment(ref RedisState.TotalFailovers);
 
+            var masters = readWriteHosts.ToList();
+            var replicas = readOnlyHosts.ToList();
+
+            _logger.Info("FailoverTo: {0} : {1} Total: {2}",
+                string.Join(",", masters),
+                string.Join(",", replicas),
+                RedisState.TotalFailovers);
+
             lock (this) {
-                this.RedisResolver.ResetMasters(readWriteHosts);
-                this.RedisResolver.ResetSlaves(readOnlyHosts);
+                this.RedisResolver.ResetMasters(masters);
+                this.RedisResolver.ResetSlaves(replicas);
             }
 
             this.Start();

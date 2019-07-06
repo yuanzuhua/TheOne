@@ -43,6 +43,7 @@ namespace TheOne.Redis.PubSub {
         public RedisPubSubServer(IRedisClientManager clientsManager, params string[] channels) {
             this.ClientsManager = clientsManager;
             this.Channels = channels;
+            this._startedAt = Stopwatch.StartNew();
 
             var failoverHost = clientsManager as IRedisFailover;
             failoverHost?.OnFailover.Add(this.HandleFailover);
