@@ -59,7 +59,7 @@ namespace TheOne.Redis.Tests.Basic {
         [Test]
         public void Does_send_heartbeat_pulses() {
             var pulseCount = 0;
-            using (var pubSub = this.CreatePubSubServer(1, 3)) {
+            using (var pubSub = this.CreatePubSubServer()) {
                 pubSub.OnHeartbeatReceived = () => {
                     Console.WriteLine("pulse #{0}", pulseCount++);
                 };

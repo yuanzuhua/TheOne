@@ -42,7 +42,7 @@ namespace TheOne.Redis.Tests.Basic {
             var i = 0;
             var ret = new ScanResult();
             while (true) {
-                ret = this.Redis.Scan(ret.Cursor, 10);
+                ret = this.Redis.Scan(ret.Cursor);
                 i++;
                 ret.AsStrings().ForEach(x => allKeys.Add(x));
                 if (ret.Cursor == 0) {
