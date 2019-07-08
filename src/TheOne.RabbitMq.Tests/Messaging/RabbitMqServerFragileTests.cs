@@ -58,7 +58,7 @@ namespace TheOne.RabbitMq.Tests.Messaging {
 
                     mqServer.Start();
 
-                    Thread.Sleep(1500);
+                    Thread.Sleep(3000);
                     Assert.That(mqServer.GetStatus(), Is.EqualTo("Started"));
                     Assert.That(mqServer.GetStats().TotalMessagesProcessed, Is.EqualTo(3));
 
