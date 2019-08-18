@@ -115,7 +115,7 @@ If no client became available within `PoolTimeout`, a Pool `TimeoutException` wi
 
 ### BasicRedisClientManager
 
-If don't want to use connection pooling (i.e. your accessing a local redis-server instance),
+If don't want to use connection pooling (i.e. accessing a local redis-server instance),
 you can use a basic (non-pooled) Client Manager which creates a new `RedisClient` instance each time:
 
 ```csharp

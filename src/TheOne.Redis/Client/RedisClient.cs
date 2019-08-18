@@ -321,8 +321,8 @@ namespace TheOne.Redis.Client {
 
         /// <inheritdoc />
         public List<string> SearchKeys(string pattern) {
-            var multiDataList = this.Keys(pattern);
-            return multiDataList.ToStringList();
+            var multiDataList = this.ScanAllKeys(pattern);
+            return multiDataList.ToList();
         }
 
         /// <inheritdoc />
