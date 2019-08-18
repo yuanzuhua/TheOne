@@ -4,7 +4,7 @@ using TheOne.Redis.Pipeline;
 
 namespace TheOne.Redis.Client {
 
-    public partial interface IRedisClient : IEntityStore, ICacheClientExtended {
+    public partial interface IRedisClient : IEntityStore, ICacheClientExtended, IRemoveByPattern {
 
         long Db { get; set; }
         long DbSize { get; }
